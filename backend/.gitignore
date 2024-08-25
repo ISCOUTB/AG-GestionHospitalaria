@@ -1,7 +1,7 @@
-# __pycache__/
+__pycache__/
 
-# .env
-# env/
+.env
+env/
 
-# lib/
-# lib64/
+lib/
+lib64/
