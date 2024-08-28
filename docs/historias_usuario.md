@@ -30,7 +30,7 @@ Como Administrador, quiero poder gestionar las camas disponibles dentro del hosp
 ### Descripción
 Como Doctor, me gustaría ser capaz de ingresar a los pacientes según su tipo de cita para evitar confusiones dentro de las historias clínicas y el uso innecesario de camas hospitalarias. 
 
-### Criterios de aceptación
+## Criterios de aceptación
 * Los usuarios doctores son capaces de registrar visitas de pacientes como citas u emergencias.
 * Las citas no ocuparán camas hospitalarias.
 
@@ -52,7 +52,7 @@ Como doctor, me gustaría poder consultar los exámenes de los pacientes almacen
 * Los exámenes de cada usuario deben permanecer en el sistema a través del tiempo.
 
 ## Historia de usuario N°7
-###Descripción 
+### Descripción 
 Como doctor, me gustaría poder consultar y crear nuevas órdenes médicas asociadas a mis pacientes para facilitar las recomendaciones de medicamentos y exámenes previas y futuras. 
 
 ### Criterios de aceptación 
@@ -62,7 +62,7 @@ Como doctor, me gustaría poder consultar y crear nuevas órdenes médicas asoci
 
 ## Historia de usuario N°8 
 ### Descripción
-Como cliente, me gustaría poder acceder a mi usuario y ver mis exámenes e historia médica dentro de la plataforma para estar conciente de mis resultados y las recomendaciones de los doctores. 
+Como cliente, me gustaría poder acceder a mi usuario y ver mis exámenes e historia médica dentro de la plataforma para estar consciente de mis resultados y las recomendaciones de los doctores. 
 
 ### Criterios de aceptación 
 * Los usuarios catalogados como clientes son capaces de acceder a su usuario privado mediante su identificación y contraseña.
@@ -74,6 +74,15 @@ Como cliente, me gustaría que mis datos no sean accesibles para otros clientes,
 
 ### Criterios de aceptación 
 * Las historias médicas, órdenes y exámenes solo son consultables por los doctores, administrativos y el paciente al que corresponden. Es imposible para un cliente acceder a un examen, órden o historia que no es suyo.
+
+## Historia de usuario N°10
+### Descripción 
+Como usuario, me gustaría que la aplicación tuviera una interfaz gráfica para facilitar su uso y aprendizaje. 
+
+### Criterios de aceptación
+* La interacción usuario - sistema será realizada por medio de una interfaz visual amigable con los individuos. 
+* La interfaz construida debe ser lo más simple posible, haciendo fácil el aprendizaje del usuario acerca del uso del software. 
+
 
 
 
