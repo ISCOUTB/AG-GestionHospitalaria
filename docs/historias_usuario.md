@@ -16,7 +16,8 @@ Como Administrador, quiero poder gestionar los usuarios (crear, actualizar y env
 ### Criterios de aceptación
 * Es posible la creación, actualización de datos y el cambio de estado (activo - inactivo) de nuevos usuarios de clientes y doctores por parte de los usuarios administradores.
 * Los usuarios permanecen en el tiempo. 
-* Es posible acceder a cada usuario conociendo su identificador y contraseña. 
+* Es posible acceder a cada usuario conociendo su identificador y contraseña.
+* A la hora de crear un usuario, es posible personalizarlo ingresando los datos personales de un individuo. 
 
 ## Historia de usuario N°3
 ### Descripción
@@ -29,7 +30,7 @@ Como Administrador, quiero poder gestionar las camas disponibles dentro del hosp
 ### Descripción
 Como Doctor, me gustaría ser capaz de ingresar a los pacientes según su tipo de cita para evitar confusiones dentro de las historias clínicas y el uso innecesario de camas hospitalarias. 
 
-### Criterios de aceptación
+## Criterios de aceptación
 * Los usuarios doctores son capaces de registrar visitas de pacientes como citas u emergencias.
 * Las citas no ocuparán camas hospitalarias.
 
@@ -47,7 +48,42 @@ Como doctor, me gustaría poder consultar los exámenes de los pacientes almacen
 
 ### Criterios de aceptación
 * Los usuarios doctores son capaces de consultar y almacenar nuevos exámenes dentro de la plataforma.
-* Los exámenes de cada usuario deben estar diferenciados entre sí, de tal forma que sea posible consultar de forma aislada todos los exámenes de un único usuario. 
+* Los exámenes de cada usuario deben estar diferenciados entre sí, de tal forma que sea posible consultar de forma aislada todos los exámenes de un único usuario.
+* Los exámenes de cada usuario deben permanecer en el sistema a través del tiempo.
+
+## Historia de usuario N°7
+### Descripción 
+Como doctor, me gustaría poder consultar y crear nuevas órdenes médicas asociadas a mis pacientes para facilitar las recomendaciones de medicamentos y exámenes previas y futuras. 
+
+### Criterios de aceptación 
+* Los usuarios doctores son capaces de crear y consultar las órdenes médicas asociadas a cada paciente.
+* Las órdenes médicas deben estar relacionadas a un y solo un paciente, de forma que puedan ser consultadas de forma individual.
+* Las órdenes médicas de cada usuario deben permanecer en el sistema a través del tiempo.
+
+## Historia de usuario N°8 
+### Descripción
+Como cliente, me gustaría poder acceder a mi usuario y ver mis exámenes e historia médica dentro de la plataforma para estar consciente de mis resultados y las recomendaciones de los doctores. 
+
+### Criterios de aceptación 
+* Los usuarios catalogados como clientes son capaces de acceder a su usuario privado mediante su identificación y contraseña.
+* Al acceder a un usuario de cliente deben ser accesible tanto la historia médica como los exámenes registrados en la plataforma correspondientes a él.
+
+## Historia de usuario N°9
+### Descripción 
+Como cliente, me gustaría que mis datos no sean accesibles para otros clientes, con el objetivo de mantener mi privacidad y seguridad. 
+
+### Criterios de aceptación 
+* Las historias médicas, órdenes y exámenes solo son consultables por los doctores, administrativos y el paciente al que corresponden. Es imposible para un cliente acceder a un examen, órden o historia que no es suyo.
+
+## Historia de usuario N°10
+### Descripción 
+Como usuario, me gustaría que la aplicación tuviera una interfaz gráfica para facilitar su uso y aprendizaje. 
+
+### Criterios de aceptación
+* La interacción usuario - sistema será realizada por medio de una interfaz visual amigable con los individuos. 
+* La interfaz construida debe ser lo más simple posible, haciendo fácil el aprendizaje del usuario acerca del uso del software. 
+
+
 
 
 
