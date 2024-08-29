@@ -22,6 +22,7 @@ Como Administrador, quiero poder gestionar los usuarios (crear, actualizar y env
 
 * Es posible la creación, actualización de datos y el cambio de estado (activo - inactivo) de nuevos usuarios de clientes y doctores por parte de los usuarios administradores.
 * Es posible reconocer a cada usuario conociendo su identificador y contraseña.
+* A la hora de crear un usuario, es posible personalizarlo ingresando los datos personales de un individuo. 
 
 ## Historia de usuario N°3
 
@@ -66,4 +67,38 @@ Como doctor, me gustaría poder consultar los exámenes de los pacientes almacen
 ### Criterios de aceptación
 
 * Los usuarios doctores son capaces de consultar y almacenar nuevos exámenes dentro de la plataforma.
-* Los exámenes de cada usuario deben estar diferenciados entre sí, de tal forma que sea posible consultar de forma aislada todos los exámenes de un único usuario. 
+* Los exámenes de cada usuario deben estar diferenciados entre sí, de tal forma que sea posible consultar de forma aislada todos los exámenes de un único usuario.
+* Los exámenes de cada usuario deben permanecer en el sistema a través del tiempo.
+
+## Historia de usuario N°7
+
+### Descripción
+
+Como doctor, me gustaría poder consultar y crear nuevas órdenes médicas asociadas a mis pacientes para facilitar las recomendaciones de medicamentos y exámenes previas y futuras. 
+
+### Criterios de aceptación
+
+* Los usuarios doctores son capaces de crear y consultar las órdenes médicas asociadas a cada paciente.
+* Las órdenes médicas deben estar relacionadas a un y solo un paciente, de forma que puedan ser consultadas de forma individual.
+* Las órdenes médicas de cada usuario deben permanecer en el sistema a través del tiempo.
+
+## Historia de usuario N°8
+
+### Descripción
+
+Como paciente, me gustaría poder acceder a mi usuario y ver mis exámenes e historia médica dentro de la plataforma para estar consciente de mis resultados y las recomendaciones de los doctores. 
+
+### Criterios de aceptación
+
+* Los usuarios catalogados como pacientes son capaces de acceder a su usuario privado mediante su identificación y contraseña.
+* Al acceder a un usuario de paciente deben ser accesible tanto la historia médica como los exámenes registrados en la plataforma correspondientes a él.
+
+## Historia de usuario N°9
+
+### Descripción
+
+Como paciente, me gustaría que mis datos no sean accesibles para otros pacientes, con el objetivo de mantener mi privacidad y seguridad. 
+
+### Criterios de aceptación
+
+* Las historias médicas, órdenes y exámenes solo son consultables por los doctores, administrativos y el paciente al que corresponden. Es imposible para un cliente acceder a un examen, órden o historia que no es suyo.
