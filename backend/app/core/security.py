@@ -1,14 +1,15 @@
 from datetime import datetime, timedelta, timezone
 
 import jwt
-from passlib.context import CryptContext  # type: ignore
+from passlib.context import CryptContext
 
 from app.core.config import settings
+from app.schemas import Roles
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def create_access_token(number_document: str, rol: str, expires_delta: timedelta = timedelta(minutes=15)) -> str:
+def create_access_token(number_document: str, rol: Roles, expires_delta: timedelta = timedelta(minutes=15)) -> str:
     """
     Genera un token de acceso (JWT) para un usuario.
 

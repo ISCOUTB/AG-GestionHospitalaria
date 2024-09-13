@@ -54,6 +54,7 @@ class PatientInfo(BaseModel):
     type_doc_responsable = Column(default=None, nullable=True)
     name_responsable = Column(String, default=None, nullable=True)
     surname_responsable = Column(String, default=None, nullable=True)
+    phone_responsable = Column(String, default=None, nullable=True)
     relationship_responsable = Column(String, default=None, nullable=True)
 
     user_roles = relationship('UserRoles', uselist=False, back_populates='patient_info',
@@ -88,7 +89,8 @@ class Beds(BaseModel):
     __tablename__ = 'beds'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    room = Column(String, nullable=False)
+    room = Column(String, nullable=False, unique=True)  # Esto es básicamente una llave primaria
+    # Se le pueden seguir agregando otros atributos en caso de de ser necesario
 
     beds_used = relationship('BedsUsed', uselist=False, back_populates='',
                              passive_deletes=True, passive_updates=True)
