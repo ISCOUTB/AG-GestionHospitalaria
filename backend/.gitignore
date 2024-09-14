@@ -5,3 +5,5 @@ __pycache__/
 
 lib/
 lib64/
+
+**/prueba.py
