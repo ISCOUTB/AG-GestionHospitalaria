@@ -85,3 +85,9 @@ def get_current_patient(current_user: CurrentUser) -> schemas.models.UserRoles |
                         detail="Usuario no autorizado")
     
     return current_user
+
+
+Admin = Annotated[schemas.models.UserRoles, Depends(get_current_admin)]
+Doctor = Annotated[schemas.models.UserRoles, Depends(get_current_doctor)]
+Patient = Annotated[schemas.models.UserRoles, Depends(get_current_patient)]
+SuperUser = Annotated[schemas.models.UserRoles, Depends(get_superuser)]  # Nada más existe un solo superuser
