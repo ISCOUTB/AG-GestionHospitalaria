@@ -1,8 +1,11 @@
 from app.schemas.users import (
-    UserInfo,
+    UserBase,
+    User,
+    UserAll,
     UserLogin,
     UserSearch,
-    UserUpdate
+    UserUpdate,
+    Roles
 )
 
 from app.schemas.token import (
@@ -10,11 +13,14 @@ from app.schemas.token import (
     TokenPayload
 )
 
-from app.schemas.doctors import AddSpeciality
+from app.schemas.doctors import (
+    AddSpeciality,
+    DoctorAll
+)
 
 from app.schemas.patient import (
     ResponsablesInfo,
-    PatientInfo
+    PatientAll
 )
 
 from app.schemas.beds import (
@@ -28,3 +34,5 @@ from app.schemas.consults import (
     RegisterHospitalization,
     DischargeHospitalization
 )
+
+import app.schemas.models as models
