@@ -97,3 +97,16 @@ class UserSearch(BaseModel):
     """
     num_document: str
     rol: Roles
+
+
+class UserCreate(UserBase):
+    """
+    Modelo para crear un usuario en el sistema
+
+    Inherits from:
+        UserBase: Contiene los atributos comunes de un usuario.
+
+    Attributes:
+        password: (str): Contraseño del nuevo usuario
+    """
+    password: str

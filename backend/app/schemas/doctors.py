@@ -2,17 +2,27 @@ from pydantic import BaseModel
 from app.schemas.users import UserBase, Roles
 
 
-class AddSpeciality(BaseModel):
+class SpecialityBase(BaseModel):
     """
-    Modelo de datos para agregar una especialidad a un doctor.
+    Modelo base que representa una especialidad médica.
 
     Attributes:
-        num_document (str): Número de documento del doctor.
-        name (str): Nombre de la especialidad a agregar.
+        name (str): Nombre de la especialidad.
         description (str): Descripción detallada de la especialidad.
     """
-    num_document: str
     name: str
+
+
+class Speciality(SpecialityBase):
+    """
+    Modelo de datos para describir las especialidades
+
+    Inherits from:
+        SpecialityBase: Contiene los atributos comunes de una especialidad
+
+    Attributes:
+        description (str): Descripción detallada de la especialidad
+    """
     description: str
 
 

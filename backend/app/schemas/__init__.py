@@ -5,6 +5,7 @@ from app.schemas.users import (
     UserLogin,
     UserSearch,
     UserUpdate,
+    UserCreate,
     Roles
 )
 
@@ -14,7 +15,8 @@ from app.schemas.token import (
 )
 
 from app.schemas.doctors import (
-    AddSpeciality,
+    SpecialityBase,
+    Speciality,
     DoctorAll
 )
 
