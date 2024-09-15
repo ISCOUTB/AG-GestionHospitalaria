@@ -20,7 +20,7 @@ pip 24.2 from /usr/local/lib/python3.12/site-packages/pip (python 3.12)
 
 ## Ejecutar
 
-Lo primero que se tiene que realizar es instalar todas las librerias para así asegurar que todo se ejecute sin problemas, para eso, ver [aquí](#entorno-virtual).Una vez instaladas las librerias, es necesario ubicar la consola en esta carpeta, esto lo hacemos con el siguiente comando:
+Lo primero que se tiene que realizar es instalar todas las librerias para así asegurar que todo se ejecute sin problemas, para eso, ver [aquí](#entorno-virtual). Una vez instaladas las librerias, es necesario ubicar la consola en esta carpeta, esto lo hacemos con el siguiente comando:
 
 ``` bash
 ./GestionHospitalaria$ cd backend/
@@ -39,7 +39,7 @@ INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```
 
-Aquí yo estoy utilizando bash, puesto que mi sistema operativo es Ubuntu, pero la manera en que la que trabaja en Windows es igual, ya sea usando CMD o PowerShell, todo depende de la terminal que hayan escogido.
+Aquí yo estoy utilizando bash, puesto que mi sistema operativo es Ubuntu, pero la manera en que la que trabaja en Windows es igual, ya sea usando CMD o PowerShell, no depende de la terminal que tengan.
 
 ## Entorno virtual
 
