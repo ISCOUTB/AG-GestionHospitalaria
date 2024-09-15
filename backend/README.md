@@ -20,14 +20,14 @@ pip 24.2 from /usr/local/lib/python3.12/site-packages/pip (python 3.12)
 
 ## Ejecutar
 
-Lo primero que se debe hacer es ubicar la consola en esta carpeta, esto lo hacemos con el siguiente comando:
+Lo primero que se tiene que realizar es instalar todas las librerias para así asegurar que todo se ejecute sin problemas, para eso, ver [aquí](#entorno-virtual).Una vez instaladas las librerias, es necesario ubicar la consola en esta carpeta, esto lo hacemos con el siguiente comando:
 
 ``` bash
 ./GestionHospitalaria$ cd backend/
 ./GestionHospitalaria/backend$ 
 ```
 
-Ya una vez ubicados, dentro del archivo [main.py](./main.py) hay un apartado donde se está ejecutando con uvicorn la API. Entonces, la manera en la que se puede ejecutar ese archivo sin que haya problemas con las librerias es así:
+Ya una vez ubicados, dentro del archivo [main.py](./app/main.py) hay un apartado donde se está ejecutando con uvicorn la API. Entonces, la manera en la que se puede ejecutar ese archivo sin que haya problemas con las librerias es así:
 
 ``` bash
 ./GestionHospitalaria/backend$ python3 -m app.main
@@ -78,7 +78,7 @@ Una vez ubicados, podrán ejecutar el siguiente comando:
 ./GestionHospitalaria/backend$
 ```
 
-Aquí lo que se está creando es un entorno virtual de Python donde el nombre de la carpeta es `/.venv`, aunque el nombre la carpeta está en cada quién, recomiendo colocar esa misma porque es ese nombre quien sale en el [.gitignore](../.gitignore). Aun así, en caso de que quieran colocar otro nombre para la carpeta, pueden hacerlo sin problemas, solo recuerden actualizar el [.gitignore](../.gitignore)
+Aquí lo que se está creando es un entorno virtual de Python donde el nombre de la carpeta es `/.venv`, aunque el nombre la carpeta está en cada quién, recomiendo colocar esa misma porque es ese nombre quien sale en el [.gitignore](./.gitignore). Aun así, en caso de que quieran colocar otro nombre para la carpeta, pueden hacerlo sin problemas, solo recuerden actualizar el [.gitignore](./.gitignore)
 
 Ahora, para activar el entorno virtual sí depende del sistema operativo que se esté utilizando, al menos en bash se hace así
 
