@@ -54,9 +54,8 @@ def get_current_user(db: SessionDep, token: TokenDep) -> schemas.models.UserRole
 CurrentUser = Annotated[schemas.models.UserRoles, Depends(get_current_user)]
 
 
-def get_superuser(current_user: CurrentUser) -> schemas.models.UserRoles | None:
-    if current_user.num_document == settings.FIRST_SUPERUSER and \
-        verify_password(settings.FIRST_SUPERUSER_PASSWORD, current_user.password):
+def get_current_superuser(current_user: CurrentUser) -> schemas.models.UserRoles | None:
+    if current_user.num_document == settings.FIRST_SUPERUSER:
         return current_user
     
     raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
@@ -87,7 +86,16 @@ def get_current_patient(current_user: CurrentUser) -> schemas.models.UserRoles |
     return current_user
 
 
+def get_current_nonpatient(current_user: CurrentUser) -> schemas.models.UserRoles | None:
+    if current_user.rol == 'patient':
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
+                        detail="Usuario no autorizado")
+    
+    return current_user
+
+
 Admin = Annotated[schemas.models.UserRoles, Depends(get_current_admin)]
 Doctor = Annotated[schemas.models.UserRoles, Depends(get_current_doctor)]
 Patient = Annotated[schemas.models.UserRoles, Depends(get_current_patient)]
-SuperUser = Annotated[schemas.models.UserRoles, Depends(get_superuser)]  # Nada más existe un solo superuser
+SuperUser = Annotated[schemas.models.UserRoles, Depends(get_current_superuser)]  # Nada más existe un solo superuser
+NonPatient = Annotated[schemas.models.UserRoles, Depends(get_current_nonpatient)]

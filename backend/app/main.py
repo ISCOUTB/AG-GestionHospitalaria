@@ -20,6 +20,10 @@ app = FastAPI(
             "description": "Acceso al sistema"
         },
         {
+            "name": "users",
+            "description": "Acciones de todos los usuarios"
+        },
+        {
             "name": "admins",
             "description": "Acciones solo para administradores"
         },

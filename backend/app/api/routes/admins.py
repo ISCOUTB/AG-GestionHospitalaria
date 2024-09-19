@@ -131,7 +131,7 @@ async def get_patient(num_document: str, current_user: Admin, db: SessionDep, ac
     pass
 
 
-@router.get("/stats", summary="Get Statistics About Hospital    ")
+@router.get("/stats", summary="Get Statistics About Hospital")
 async def get_stats(current_user: Admin, db: SessionDep) -> list[float, float, float]:
     """
     Obtiene los indicadores estadísiticos del hospital.
@@ -159,10 +159,8 @@ async def create_admin(current_user: SuperUser, db: SessionDep, new_admin: schem
     """
     Crea un nuevo administrador en el sistema. Esta operación es únicamente reservada para el super usuario del sistema
 
-    Args:
-
-        new_admin (UserCreate): Información esencial del nuevo administrador
-
+    Args:  
+        new_admin (UserCreate): Información esencial del nuevo administrador  
     """
     pass
 
@@ -176,11 +174,9 @@ async def create_doctor(num_document: str,
     Agrega las especialidades dado el número documento del doctor. Antes de agregar las especialidades, la información 
     esencial del doctor tuvo que haber sido previamente creada. 
 
-    Args:
-
-        num_document (str): Número de documento del doctor
-
-        specialities (list[SpecialityBase]): Lista con el nombre de las especialidades que se le agregarán al doctor.
+    Args:  
+        num_document (str): Número de documento del doctor  
+        specialities (list[SpecialityBase]): Lista con el nombre de las especialidades que se le agregarán al doctor.  
     """
     pass
 
@@ -196,15 +192,29 @@ async def add_bed(current_user: Admin, db: SessionDep, room: schemas.BedBase) ->
 # Update
 
 @router.put("/users/{num_document}")
-async def update_user(num_document: str, current_user: Admin, db: SessionDep, updated_info: schemas.UserUpdate) -> schemas.models.UsersInfo:
+async def update_user(num_document: str, current_user: Admin, db: SessionDep, updated_info: schemas.UserBase) -> schemas.models.UsersInfo:
     """
-    Actualiza la información no esencial de cualquier usuario dentro del sistema.
+    Actualiza la información completa de cualquier usuario dentro del sistema que no sea un administrador.
 
-    Args:
+    Args:  
+        num_document (str): Número de documento del usuario a modifical  
+        updated_info (UserUpdate): Información que se quiere actualizar.  
+    """
+    pass
 
-        num_document (str): Número de documento del usuario a modifical
-    
-        updated_info (UserUpdate): Información que se quiere actualizar.
+
+@router.put("/{num_document}")
+async def update_admin(num_document: str, current_user: SuperUser, db: SessionDep, updated_info) -> schemas.models.UsersInfo:
+    """
+    Actualiza la información completa de cualquier usuario, incluyendo administradores
+    """
+    pass
+
+
+@router.put("/patient/{num_document}")
+async def update_patient(num_document: str, current_user: Admin, db: SessionDep, updated_info: schemas.ResponsablesInfo) -> schemas.models.PatientInfo:
+    """ 
+    Actualiza la información del responsable dado un determinado paciente
     """
     pass
 
@@ -217,11 +227,9 @@ async def delete_user(num_document: str, rol: Literal["doctor", "patient"], curr
     "Elimina" a un usuario dentro del sistema. En realidad, lo que se hace es colocar al usuario como inactivo
 
 
-    Args:
-
-        num_document (str): Número de documento del usuario que se va a "eliminar".
-
-        rol (Literal["doctor", "patient"]): Se especifica el rol el cual se va a "eliminar". Únicamente puede ser doctores o pacientes.
+    Args:  
+        num_document (str): Número de documento del usuario que se va a "eliminar".  
+        rol (Literal["doctor", "patient"]): Se especifica el rol el cual se va a "eliminar". Únicamente puede ser doctores o pacientes.  
     """
     pass
 
@@ -258,3 +266,4 @@ async def delete_bed(room: str, current_user: Admin, db: SessionDep) -> schemas.
     """
     Elimina una cama dentro del hospital que no esté en uso, especificando el cuarto donde esté
     """
+    pass

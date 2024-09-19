@@ -37,8 +37,6 @@ class DischargeHospitalization(BaseModel):
     Modelo de datos para registrar el alta hospitalaria de un paciente.
 
     Attributes:
-        id_patient (str): Identificación del paciente.
         last_day (date): Último día de hospitalización, por defecto la fecha actual.
     """
-    id_patient: str
     last_day: date = date.today()
