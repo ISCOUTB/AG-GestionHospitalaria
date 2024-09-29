@@ -5,6 +5,7 @@ from pydantic import (
     AnyUrl,
     BeforeValidator,
     PostgresDsn,
+    MongoDsn,
     computed_field
 )
 
@@ -73,7 +74,6 @@ class Settings(BaseSettings):
     FIRST_SUPERUSER: str
     FIRST_SUPERUSER_PASSWORD: str
 
-
     @computed_field
     @property
     def SQLALCHEMY_DATABASE_URI(self) -> PostgresDsn:
@@ -86,6 +86,23 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB
         )
     
+    MONGO_USERNAME: str
+    MONGO_PASSWORD: str
+    MONGO_DB: str
+    MONGO_HOST: str
+    MONGO_PORT: int
+
+    @computed_field
+    @property
+    def MONGO_URI(self) -> MongoDsn:
+        return MultiHostUrl.build(
+            scheme="mongodb",
+            username=self.MONGO_USERNAME,
+            password=self.MONGO_PASSWORD,
+            host=self.MONGO_HOST,
+            port=self.MONGO_PORT,
+            path=self.MONGO_DB
+        )
 
 settings = Settings()
 
