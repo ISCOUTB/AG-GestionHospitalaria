@@ -33,5 +33,4 @@ class PatientAll(UserBase, ResponsablesInfo):
     Attributes:
         rol (Roles): El rol del usuario, con valor predeterminado 'patient'.
     """
-
     rol: Roles = 'patient'

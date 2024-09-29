@@ -20,7 +20,7 @@ class Token(BaseModel):
 
     Attributes:
         access_token (str): El token de acceso en sí.
-        token_type (str): El tipo de token (generalmente 'Bearer').
+        token_type (str): El tipo de token (generalmente 'bearer').
     """
     access_token: str
     token_type: str

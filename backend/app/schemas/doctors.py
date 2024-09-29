@@ -8,7 +8,6 @@ class SpecialityBase(BaseModel):
 
     Attributes:
         name (str): Nombre de la especialidad.
-        description (str): Descripción detallada de la especialidad.
     """
     name: str
 
@@ -23,7 +22,7 @@ class Speciality(SpecialityBase):
     Attributes:
         description (str): Descripción detallada de la especialidad
     """
-    description: str
+    description: str | None = None
 
 
 class DoctorAll(UserBase):
@@ -34,8 +33,6 @@ class DoctorAll(UserBase):
         UserBase: Contiene los atributos comunes de un usuario.
 
     Attributes:
-        rol (Roles): El rol del usuario, con valor predeterminado 'doctor'.
-        specialities (list[str]): Lista de nombres de las especialidades del doctor.
+        specialities (list[SpecialityBase]): Lista de las especialidades del doctor.
     """
-    rol: Roles = 'doctor'
-    specialities: list[str]
+    specialities: list[SpecialityBase]

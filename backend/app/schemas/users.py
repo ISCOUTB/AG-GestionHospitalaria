@@ -52,9 +52,10 @@ class UserAll(UserBase):
         UserBase: Contiene los atributos comunes de un usuario.
 
     Attributes:
-        roles (list[Roles]): Lista de roles asociados al usuario.
+        roles (list[Roles, bool]): Lista de roles asociados al usuario junto a su
+            estado actual en cada rol.
     """
-    roles: list[Roles]
+    roles: list[tuple[Roles, bool]]
 
 
 class UserLogin(BaseModel):
@@ -99,14 +100,14 @@ class UserSearch(BaseModel):
     rol: Roles
 
 
-class UserCreate(UserBase):
+class UserCreate(User):
     """
     Modelo para crear un usuario en el sistema
 
     Inherits from:
-        UserBase: Contiene los atributos comunes de un usuario.
+        User: Contiene los atributos comunes de un usuario.
 
     Attributes:
-        password: (str): Contraseño del nuevo usuario
+        password (str): Contraseña del nuevo usuario
     """
     password: str

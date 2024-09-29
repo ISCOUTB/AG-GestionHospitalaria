@@ -48,7 +48,7 @@ class UserRoles(BaseModel):
     medical_consults_patient = relationship('MedicalConsults', uselist=True, foreign_keys='MedicalConsults.id_patient', back_populates='patient',
                                             passive_deletes=True, passive_updates=True)
     medical_consults_doctor = relationship('MedicalConsults', uselist=True, foreign_keys='MedicalConsults.id_doctor', back_populates='doctor',
-                                    passive_deletes=True, passive_updates=True)
+                                           passive_deletes=True, passive_updates=True)
     
     hospitalizations_patient = relationship('Hospitalizations', uselist=True, foreign_keys='Hospitalizations.id_patient', back_populates='patient',
                                             passive_deletes=True, passive_updates=True)

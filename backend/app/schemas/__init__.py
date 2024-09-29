@@ -27,14 +27,17 @@ from app.schemas.patient import (
 
 from app.schemas.beds import (
     BedBase,
+    BedAll,
     UseBed,
     VacateBed
 )
 
 from app.schemas.consults import (
-    RegisterConsult,
+    BaseAppointment,
+    Consultation,
     RegisterHospitalization,
-    DischargeHospitalization
+    DischargeHospitalization,
+    Hospitalization
 )
 
 import app.schemas.models as models
