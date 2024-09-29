@@ -10,9 +10,9 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.core.db import SessionLocal
-from app.core.security import verify_password
 
-from app import schemas, models
+from app import schemas
+from app.crud import crud_users
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f'{settings.API_V1_STR}/login/access-token'
@@ -47,8 +47,14 @@ def get_current_user(db: SessionDep, token: TokenDep) -> schemas.models.UserRole
     except (ValidationError, InvalidTokenError):
         raise credentials_exception
 
-    # Lógica para obtener al usuario
-    pass
+    user = crud_users.get_user_rol(num_document=token_data.number_document,
+                                   rol=token_data.rol,
+                                   db=db)
+    
+    if user is None:
+        raise credentials_exception
+
+    return schemas.models.UserRoles.model_validate(user)
 
 
 CurrentUser = Annotated[schemas.models.UserRoles, Depends(get_current_user)]
