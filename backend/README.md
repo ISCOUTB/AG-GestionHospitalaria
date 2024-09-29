@@ -13,7 +13,7 @@ Python 3.12.5
 
 O este (así sale en mi caso)
 
-``` bash
+```bash
 pip -V
 pip 24.2 from /usr/local/lib/python3.12/site-packages/pip (python 3.12)
 ```
@@ -22,19 +22,19 @@ pip 24.2 from /usr/local/lib/python3.12/site-packages/pip (python 3.12)
 
 Lo primero que se tiene que realizar es instalar todas las librerias para así asegurar que todo se ejecute sin problemas, para eso, ver [aquí](#entorno-virtual). Una vez instaladas las librerias, es necesario ubicar la consola en esta carpeta, esto lo hacemos con el siguiente comando:
 
-``` bash
+```bash
 ./GestionHospitalaria$ cd backend/
 ./GestionHospitalaria/backend$ 
 ```
 
-Ya una vez ubicados, dentro del archivo [main.py](./app/main.py) hay un apartado donde se está ejecutando con uvicorn la API. Entonces, la manera en la que se puede ejecutar ese archivo sin que haya problemas con las librerias es así:
+Ya una vez ubicados, dentro del archivo [main.py](./app/main.py) hay un apartado donde se está recopilando toda la API. Entonces, la manera en la que se puede ejecutar ese archivo sin que haya problemas con las librerias es así:
 
-``` bash
-./GestionHospitalaria/backend$ python3 -m app.main
+```bash
+./GestionHospitalaria/backend$ uvicorn app.main:app --host=0.0.0.0 --port=8001 --reload
 INFO:     Will watch for changes in these directories: ['./GestionHospitalaria/backend']
-INFO:     Uvicorn running on http://127.0.0.1:8000 (Press CTRL+C to quit)
-INFO:     Started reloader process [101373] using WatchFiles
-INFO:     Started server process [101375]
+INFO:     Uvicorn running on http://0.0.0.0:8001 (Press CTRL+C to quit)
+INFO:     Started reloader process [144894] using WatchFiles
+INFO:     Started server process [144896]
 INFO:     Waiting for application startup.
 INFO:     Application startup complete.
 ```

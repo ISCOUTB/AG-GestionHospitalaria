@@ -58,9 +58,3 @@ if settings.BACKEND_CORS_ORIGINS:
     )
 
 app.include_router(api_router, prefix=settings.API_V1_STR)
-
-
-if __name__ == '__main__':
-    import uvicorn
-
-    uvicorn.run("app.main:app", reload=True)
