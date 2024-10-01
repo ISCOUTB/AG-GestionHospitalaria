@@ -1,6 +1,6 @@
 import datetime
 
-from sqlalchemy import Column, Date, Integer, String, Boolean, ForeignKey
+from sqlalchemy import Column, Date, Integer, String, Boolean, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.core.db import BaseModel
@@ -13,7 +13,7 @@ class UsersInfo(BaseModel):
     type_document = Column(String, default=None, nullable=True)
     name = Column(String, default=None, nullable=True)
     surname = Column(String, default=None, nullable=True)
-    sex = Column(String, default=None, nullable=True)
+    sex = Column(String(1), default=None, nullable=True)
     birthday = Column(Date, default=None, nullable=True)
     address = Column(String, default=None, nullable=True)
     phone = Column(String, default=None, nullable=True)
@@ -32,6 +32,10 @@ class UserRoles(BaseModel):
     password = Column(String, nullable=False)
     is_active = Column(Boolean, default=True, nullable=False)
     inactivity = Column(Date, default=None, nullable=True)
+
+    __table_args__ = (
+        UniqueConstraint('num_document', 'rol', name='unique_users_rol'),
+    )
 
     users_info = relationship('UsersInfo', uselist=True, back_populates='user_roles',
                               passive_deletes=True, passive_updates=True)
