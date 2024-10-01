@@ -86,8 +86,8 @@ class Settings(BaseSettings):
             path=self.POSTGRES_DB
         )
     
-    MONGO_USERNAME: str
-    MONGO_PASSWORD: str
+    MONGO_INITDB_ROOT_USERNAME: str
+    MONGO_INITDB_ROOT_PASSWORD: str
     MONGO_DB: str
     MONGO_HOST: str
     MONGO_PORT: int
@@ -97,8 +97,8 @@ class Settings(BaseSettings):
     def MONGO_URI(self) -> MongoDsn:
         return MultiHostUrl.build(
             scheme="mongodb",
-            username=self.MONGO_USERNAME,
-            password=self.MONGO_PASSWORD,
+            username=self.MONGO_INITDB_ROOT_USERNAME,
+            password=self.MONGO_INITDB_ROOT_PASSWORD,
             host=self.MONGO_HOST,
             port=self.MONGO_PORT,
             path=self.MONGO_DB
