@@ -4,6 +4,7 @@ from fastapi import APIRouter, Depends, HTTPException, status, Body
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.api.deps import CurrentUser, SessionDep
+from app.core.config import settings
 from app.core.security import create_access_token
 
 from app import schemas
@@ -39,7 +40,7 @@ async def login_access_token(db: SessionDep,
         )
     
     access_token = create_access_token(number_document=user.num_document,
-                                       rol=user.rol)
+                                       rol=user.rol, expires_delta=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
 
     return schemas.Token(access_token=access_token, token_type="bearer")
 

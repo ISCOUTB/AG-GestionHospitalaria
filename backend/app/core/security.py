@@ -9,15 +9,14 @@ from app.schemas import Roles
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def create_access_token(number_document: str, rol: Roles, expires_delta: timedelta = timedelta(minutes=15)) -> str:
+def create_access_token(number_document: str, rol: Roles, expires_delta: timedelta) -> str:
     """
     Genera un token de acceso (JWT) para un usuario.
 
     Args:
         number_document (str): Número de documento del usuario.
         rol (str): Rol del usuario (ej. administrador, doctor).
-        expires_delta (timedelta, opcional): Duración del token antes de que expire. 
-            Por defecto es de 15 minutos.
+        expires_delta (datetime.timedelta): Duración del token antes de que expire.
 
     Returns:
         str: Token JWT generado.
