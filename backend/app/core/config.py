@@ -49,7 +49,7 @@ class Settings(BaseSettings):
 
     SECRET_KEY: str = secrets.token_urlsafe(int(getenv('NBYTES')))
     ALGORITHM: str
-    ACCESS_TOKEN_EXPIRE_MINUTES: int = int(getenv('ACCESS_TOKEN_EXPIRE_MINUTES'))
+    ACCESS_TOKEN_EXPIRE_MINUTES: int
     DOMAIN: str
     ENVIRONMENT: Literal["local", "staging", "production"]
 
