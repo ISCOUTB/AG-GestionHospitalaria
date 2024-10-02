@@ -49,7 +49,7 @@ class CRUDConsultatations(CRUDBase):
                 - 2: Doctor no existente.
         """
         # Realizar las validaciones
-        if type(out := self.__valid_basic_appointment(consultation_info)) == int:
+        if type(out := self.valid_basic_appointment(consultation_info)) == int:
             return out
 
         patient, doctor = out
@@ -67,4 +67,4 @@ class CRUDConsultatations(CRUDBase):
         return 0
 
 
-crud_consultations: CRUDConsultatations = CRUDConsultatations()
+crud_consultation: CRUDConsultatations = CRUDConsultatations()

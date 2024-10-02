@@ -1,3 +1,4 @@
+from typing import Literal
 
 from app import models, schemas
 from app.crud.crud_base import CRUDBase
@@ -24,14 +25,14 @@ class CRUDBeds(CRUDBase):
             return list(map(lambda bed: schemas.models.Beds.model_validate(bed), 
                             db.query(models.Beds).all()))
         
-        stmt = self.__join_beds()
+        stmt = self.join_beds()
         results = db.execute(stmt).all()
 
         return list(map(lambda row: schemas.BedAll(
             room=row[0], num_doc_patient=row[1], num_doc_doctor=row[2]
             ), results))
     
-    def add_bed(self, bed_info: schemas.BedBase, db: Session) -> int:
+    def add_bed(self, bed_info: schemas.BedBase, db: Session) -> Literal[0, 1]:
         """
         Agrega una nueva cama al hospital al hospital especificando el cuarto
 
@@ -52,7 +53,7 @@ class CRUDBeds(CRUDBase):
 
         return 0
     
-    def delete_bed(self, room: str, db: Session) -> int:
+    def delete_bed(self, room: str, db: Session) -> Literal[0, 1, 2]:
         """
         Elimina una cama dentro del hospital que no esté en uso, especificando el cuarto donde esté
 
@@ -83,4 +84,4 @@ class CRUDBeds(CRUDBase):
         return 0
 
 
-crud_beds: CRUDBeds = CRUDBeds()
+crud_bed: CRUDBeds = CRUDBeds()

@@ -1,8 +1,8 @@
 import datetime
+from typing import Literal
 
 from app import models, schemas
 from app.crud.crud_users import CRUDUsers
-
 
 from app.core.security import get_password_hash
 
@@ -12,7 +12,7 @@ from sqlalchemy.orm import Session
 
 
 class CRUDAdmins(CRUDUsers):
-    def create_user(self, new_user: schemas.UserCreate, db: Session, admins: bool = False) -> int:
+    def create_user(self, new_user: schemas.UserCreate, db: Session, admins: bool = False) -> Literal[0, 1, 2]:
         """
         Crea un nuevo usuario en el sistema. Esta operación es únicamente reservada para los administradores del sistema,
         y, en caso de querer agregar un administrador, solo lo podría realizar el superusuario.
@@ -80,14 +80,14 @@ class CRUDAdmins(CRUDUsers):
 
         return 0
 
-    def update_user(self, num_document: str, updated_info: schemas.UserBase, db: Session, admins: bool = False) -> int:
+    def update_user(self, user_search: schemas.UserSearch,
+                    updated_info: schemas.UserUpdateAll, db: Session, admins: bool = False) -> Literal[0, 1, 2, 3]:
         """
         Actualiza la información completa de cualquier usuario dentro del sistema sin importar su estado actual (activo o no).
 
         Args:
             num_document (str): Número de documento del usuario a modificar.
-            updated_info (UserUpdate): Información que se quiere actualizar. Si no se quiere actualizar el número de documento,
-                dejarlo como `''`.
+            updated_info (UserUpdateAll): Información que se quiere actualizar.
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
             admins (bool): Válida si se quiere actualizar la información de algún administrador.
 
@@ -98,7 +98,7 @@ class CRUDAdmins(CRUDUsers):
                 - 2: El usuario es administrador, no se puede editar. Solo aparece cuando `admins=False`.
                 - 3: Número de documento repetido.
         """
-        user: schemas.UserAll = self.get_user(num_document, db, rol=True, active=False)
+        user: schemas.UserAll = self.get_user(user_search.num_document, db, rol=True, active=False)
         
         if user is None:
             return 1
@@ -106,9 +106,10 @@ class CRUDAdmins(CRUDUsers):
         if not admins and 'admin' in list(map(lambda pair: pair[0], user.roles)):
             return 2
 
-        user_info: models.UsersInfo = db.query(models.UsersInfo).filter(models.UsersInfo.num_document == num_document).first()
+        user_info: models.UsersInfo = self.get_user_info(user_search.num_document, db)
+        user_rol: models.UserRoles = self.get_user_rol(user_search, db, False)
 
-        if updated_info.num_document:
+        if updated_info.num_document is not None:
             user_info.num_document = updated_info.num_document
         
         if updated_info.type_document is not None:
@@ -135,15 +136,19 @@ class CRUDAdmins(CRUDUsers):
         if updated_info.email is not None:
             user_info.email = updated_info.email
         
+        if updated_info.password is not None:
+            user_rol.password = updated_info.password
+
         try:
             db.commit()
             db.refresh(user_info)
+            db.refresh(user_rol)
         except sqlalchemy.exc.IntegrityError:
             return 3
         
         return 0
     
-    def delete_user(self, num_document: str, rol: schemas.Roles, db: Session, admin: bool = False) -> int:
+    def delete_user(self, user_search: schemas.UserSearch, db: Session, admin: bool = False) -> Literal[0, 1, 2, 3]:
         """
         "Elimina" a un usuario activo dentro del sistema. En realidad, lo que se hace es colocar al usuario como inactivo.
         En el caso de los pacientes que están en cama, no se pueden colocar como inactivos todavía.
@@ -161,16 +166,15 @@ class CRUDAdmins(CRUDUsers):
                 - 2: El usuario es administrador, no se puede eliminar. Solo aparece cuando `admin=False` y `rol='admin'`.
                 - 3: Paciente que está en cama
         """
-        if rol == 'admin' and not admin:
+        if user_search.rol == 'admin' and not admin:
             return 2
         
-        user_search: schemas.UserSearch = schemas.UserSearch(num_document=num_document, rol=rol)
         user: models.UserRoles | None = self.get_user_rol(user_search, db)
 
         if user is None:
             return 1
         
-        if rol == 'patient':
+        if user_search.rol == 'patient':
             stmt = select(models.BedsUsed.id_patient).where(user.id == models.BedsUsed.id_patient)
             if not db.execute(stmt):
                 return 3

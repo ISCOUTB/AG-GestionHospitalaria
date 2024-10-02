@@ -1,4 +1,4 @@
-import datetime
+from typing import Literal
 
 from app import models, schemas
 from app.crud.crud_base import CRUDBase
@@ -22,17 +22,17 @@ class CRUDDoctors(CRUDBase):
             schemas.DoctorAll: Retorna la información esencial y de las especialidades dado un doctor en particular.
             En caso de no encontrarlo, se retorna None
         """
-        stmt = self.__join_doctors(active).where(models.UsersInfo.num_document == num_document)
+        stmt = self.join_doctors(active).where(models.UsersInfo.num_document == num_document)
         query = db.execute(stmt).all()
         if not query:
             return None
         
-        userbase: schemas.UserBase = self.__create_user_base(query[0])
+        userbase: schemas.UserBase = self.create_user_base(query[0])
         specialities_list = list(map(lambda x: schemas.SpecialityBase(name=x[-1]), query))
 
         return schemas.DoctorAll(**userbase.model_dump(), specialities=specialities_list)
 
-    def get_all_doctors(self, db: Session, active: bool = True) -> list[schemas.DoctorAll]:
+    def get_doctors(self, db: Session, active: bool = True) -> list[schemas.DoctorAll]:
         """
         Obtiene la información de todos los doctores dentro del sistema
     
@@ -44,13 +44,13 @@ class CRUDDoctors(CRUDBase):
             list[schemas.DoctorAll]: Se retorna una lista con la información esencial de los doctores
             y sus especialidades (incluye subespecialidades).
         """
-        stmt = self.__join_doctors(active)
+        stmt = self.join_doctors(active)
         query = db.execute(stmt).all()
         results: list[schemas.DoctorAll] = []
         num_documents: set[str] = set(map(lambda row: row[0], query))
         for num_document in num_documents:
             data = list(filter(lambda row: row[0]==num_document, query))
-            userbase: schemas.UserBase = self.__create_user_base(data[0])
+            userbase: schemas.UserBase = self.create_user_base(data[0])
             specialities_list: list[str] = list(map(lambda x: schemas.SpecialityBase(name=x[-1]), data))
 
             results.append(schemas.DoctorAll(
@@ -72,13 +72,13 @@ class CRUDDoctors(CRUDBase):
         Returns:
             list[schemas.DoctorAll]: Retorna una lista con todos los doctores que tengan esa especialidad especificada.
         """
-        stmt = self.__join_doctors(active).where(models.Specialities.name == speciality)
+        stmt = self.join_doctors(active).where(models.Specialities.name == speciality)
         query = db.execute(stmt).all()
         num_documents = set(map(lambda row: row[0], query))
 
         return [self.get_doctor(num_document, db, active) for num_document in num_documents]
 
-    def get_all_specialities(self, db: Session) -> list[schemas.Speciality]:
+    def get_specialities(self, db: Session) -> list[schemas.Speciality]:
         """
         Obtiene todas las especialidades de los doctores activos dentro del hospital
 
@@ -102,7 +102,7 @@ class CRUDDoctors(CRUDBase):
             query
         ))
     
-    def add_doctor_speciality(self, num_document: str, db: Session, speciality: schemas.Speciality) -> int:
+    def add_doctor_speciality(self, num_document: str, db: Session, speciality: schemas.Speciality) -> Literal[0, 1, 2, 3]:
         """
         Agrega una especialidad dado el número documento del doctor. Antes de agregar las especialidades, la información 
         esencial del doctor tuvo que haber sido previamente creada. Además, el campo de `description` dentro de `speciality`
@@ -145,7 +145,7 @@ class CRUDDoctors(CRUDBase):
         
         return 0
     
-    def delete_speciality(self, num_document: str, speciality_name: schemas.SpecialityBase, db: Session) -> int:
+    def delete_speciality(self, num_document: str, speciality_name: schemas.SpecialityBase, db: Session) -> Literal[0, 1, 2, 3]:
         """
         Elimina la especialidad de un doctor (no importa su estado) especificando su número de documento.
 

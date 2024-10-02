@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, aliased
 
 
 class CRUDBase:
-    def __join_users(self, active: bool = True):
+    def join_users(self, active: bool = True):
         stmt = select(
             models.UsersInfo.num_document,
             models.UsersInfo.type_document,
@@ -24,7 +24,7 @@ class CRUDBase:
 
         return stmt
 
-    def __join_beds(self):
+    def join_beds(self):
         doctor = aliased(models.UserRoles)
         patient = aliased(models.UserRoles)
 
@@ -38,7 +38,7 @@ class CRUDBase:
 
         return stmt
 
-    def __create_user_base(self, data: list[any]) -> schemas.UserBase:
+    def create_user_base(self, data: list[any]) -> schemas.UserBase:
         return schemas.UserBase(
             num_document=data[0],
             type_document=data[1],
@@ -51,7 +51,7 @@ class CRUDBase:
             email=data[8]
         )
 
-    def __join_doctors(self, active: bool = True):
+    def join_doctors(self, active: bool = True):
         stmt = select(
             models.UsersInfo.num_document,
             models.UsersInfo.type_document,
@@ -73,7 +73,7 @@ class CRUDBase:
 
         return stmt
     
-    def __join_patients(self, active: bool = True):
+    def join_patients(self, active: bool = True):
         stmt = select(
             models.UsersInfo.num_document,
             models.UsersInfo.type_document,
@@ -98,7 +98,7 @@ class CRUDBase:
 
         return stmt.where(models.UserRoles.rol == 'patient')
     
-    def __create_patient_info(self, data: list[any]) -> schemas.ResponsablesInfo:
+    def create_patient_info(self, data: list[any]) -> schemas.ResponsablesInfo:
         return schemas.ResponsablesInfo(
             num_doc_responsable=data[0],
             type_doc_responsable=data[1],
@@ -108,7 +108,7 @@ class CRUDBase:
             relationship_responsable=data[5]
         )
 
-    def __valid_responsable_doc(self, patient_doc: str, responsable_doc: str, db: Session) -> int:
+    def valid_responsable_doc(self, patient_doc: str, responsable_doc: str, db: Session) -> int:
         """
         Válida que el número de documento de un responsable pueda ser utilizable
 
@@ -129,7 +129,7 @@ class CRUDBase:
 
         return 0
 
-    def __valid_basic_appointment(self, info: schemas.BaseAppointment, db: Session) -> int | tuple[models.UserRoles]:
+    def valid_basic_appointment(self, info: schemas.BaseAppointment, db: Session) -> int | tuple[models.UserRoles]:
         patient_search: schemas.UserSearch = schemas.UserSearch(
             num_document=info.num_doc_patient,
             rol='patient'
@@ -152,10 +152,10 @@ class CRUDBase:
     
     def get_user_rol(self, user_search: schemas.UserSearch, db: Session, active: bool = True) -> models.UserRoles | None:
         """
-        Obtiene directamente un instancia de la tabla de los roles de los usuarios
+        Obtiene directamente una instancia de un usuario de la tabla de los roles de los usuarios
 
         Args:
-            user_search: Información de usuario para buscar en la base de datos.
+            user_search (schemas.UserSearch): Información de usuario para buscar en la base de datos.
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
             active (bool): Limitación de querer solo un usuario que esté activo. Por defecto, `active=True`. 
         
@@ -167,3 +167,22 @@ class CRUDBase:
             conditions.append(models.UserRoles.is_active == True)
         
         return db.query(models.UserRoles).filter(*conditions).first()
+    
+    def get_user_info(self, num_document: str, db: Session) -> models.UsersInfo | None:
+        """
+        Obtiene directamente una instancia de un usuario dentro de la tabla con la información de los usuarios
+
+        Args:
+            num_document (str): Número de documento del usuario a buscar.
+            db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
+
+        Returns:
+            models.UsersInfo | None: Retorna una objeto `models.UsersInfo` si existe, en caso contrario retorna `None`.
+        """
+        return db.query(models.UsersInfo).filter(models.UsersInfo.num_document == num_document).first()
+
+
+if __name__ == '__main__':
+    crud_base = CRUDBase()
+
+    print(crud_base.join_users())

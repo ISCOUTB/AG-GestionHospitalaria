@@ -54,7 +54,7 @@ class CRUDHospitalizations(CRUDBase):
                 - 5: Paciente ya en cama
         """
         # Realizar las validaciones
-        if type(out := self.__valid_basic_appointment(hospitalization_info, db)) == int:
+        if type(out := self.valid_basic_appointment(hospitalization_info, db)) == int:
             return out
 
         patient, doctor = out
