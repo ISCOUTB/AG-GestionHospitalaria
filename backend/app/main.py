@@ -13,37 +13,7 @@ def custom_generate_unique_id(route: APIRoute) -> str:
 app = FastAPI(
     title=settings.PROJECT_NAME,
     openapi_url=f'{settings.API_V1_STR}/openapi.json',
-    generate_unique_id_function=custom_generate_unique_id,
-    openapi_tags=[
-        {
-            "name": "login",
-            "description": "Acceso al sistema"
-        },
-        {
-            "name": "users",
-            "description": "Acciones de todos los usuarios"
-        },
-        {
-            "name": "admins",
-            "description": "Acciones solo para administradores"
-        },
-        {
-            "name": "doctors",
-            "description": "Acciones solo para doctores"
-        },
-        {
-            "name": "patients",
-            "description": "Acciones solo para pacientes"
-        },
-        {
-            "name": "documents",
-            "description": "Acciones para los documentos médicos de los pacientes"
-        },
-        {
-            "name": "appointments",
-            "description": "Acciones sobre las citas médicas de los pacientes en el hospital. Incluye consultas normales y urgencias"
-        }
-    ]
+    generate_unique_id_function=custom_generate_unique_id
 )
 
 if settings.BACKEND_CORS_ORIGINS:
