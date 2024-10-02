@@ -7,12 +7,10 @@ from app.api.deps import (
     Admin
 )
 
-from app import models, schemas
+from app import schemas
+from app.crud import crud_consultation, crud_hospitalization
 
 router = APIRouter(prefix="/appointments")
-
-
-# GET
 
 
 @router.get("/")
@@ -21,11 +19,11 @@ async def root() -> dict:
 
 
 @router.get("/hospitalizations", tags=["admins"])
-async def get_hospitalizations(current_user: Admin, db: SessionDep) -> list[schemas.models.Hospitalizations]:
+async def get_hospitalizations(current_user: Admin, db: SessionDep) -> list[schemas.Hospitalizations]:
     """
     Devuelve una lista con el historial de hospitalizaciones
     """
-    pass
+    return crud_hospitalization.get_hospitalizations(db)
 
 
 @router.get("/consultations", tags=["admins"])
@@ -33,40 +31,71 @@ async def get_consultations(current_user: Admin, db: SessionDep) -> list[schemas
     """
     Devuelve una lista con el historial de consultas médicas
     """
-    pass
-
-
-# POST
+    return crud_consultation.get_consultations(db)
 
 
 @router.post("/hospitalizations")
 async def add_hospitalization(current_user: Doctor,
                               db: SessionDep,
-                              hospitalization: schemas.RegisterHospitalization) -> schemas.models.Hospitalizations:
+                              hospitalization_info: schemas.RegisterHospitalization) -> dict:
     """
     Agrega una nueva hospitalización
     """
-    pass
+    out = crud_hospitalization.add_hospitalization(hospitalization_info, db)
+
+    if out == 1:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Paciente no encontrado')
+    
+    if out == 2:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Doctor no encontrado')
+    
+    if out == 3:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Cama no encontrada')
+    
+    if out == 4:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
+                            detail='Paciente ya hospitalizado previamente')
+
+    return {'status': status.HTTP_201_CREATED, 'detail': 'Hospitalización agregada'}
 
 
 @router.post("/consultations")
 async def add_consultation(current_user: Doctor,
                            db: SessionDep,
-                           consultation: schemas.RegisterConsult) -> schemas.models.MedicalConsults:
+                           consultation_info: schemas.Consultation) -> dict:
     """
     Agrega una nueva consulta médica
     """
-    pass
+    out = crud_consultation.add_consultation(consultation_info, db)
+
+    if out == 1:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Paciente no encontrado')
+    
+    if out == 2:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Doctor no encontrado')
+
+    return {'status': status.HTTP_201_CREATED, 'detail': 'Consulta médica agregada'}
 
 
-# UPDATE
-
-@router.put("/hospitalizations/{id_patient}")
-async def discharge_hospitalization(id_patient: str,
-                                    current_user: Doctor,
-                                    db: SessionDep,
-                                    last_day: schemas.DischargeHospitalization) -> schemas.models.Hospitalizations:
+@router.put("/hospitalizations/{num_doc_patient}")
+async def discharge_hospitalization(num_doc_patient: str, current_user: Doctor,
+                                    db: SessionDep, last_day: schemas.DischargeHospitalization) -> dict:
     """
     Da el alta a un determinado paciente que esté actualmente hospitalizado
     """
-    pass
+    out = crud_hospitalization.discharge_hospitalization(num_doc_patient, last_day, db)
+
+    if out == 1:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
+                            detail='Paciente no encontrado')
+    
+    if out == 2:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
+                            detail='Mal formato de fecha')
+    
+    return {'status': status.HTTP_200_OK, 'detail': 'Paciente dado de alta del sistema'}
