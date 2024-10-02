@@ -5,6 +5,7 @@ from app.schemas.users import (
     UserLogin,
     UserSearch,
     UserUpdate,
+    UserUpdateAll,
     UserCreate,
     Roles
 )

@@ -88,6 +88,28 @@ class UserUpdate(BaseModel):
     email: str | None = None
 
 
+class UserUpdateAll(UserUpdate):
+    """
+    Modelo para actualizar los datos completos de un usuario
+
+    Inherits from:
+        UserUpdate: Contiene los atributos comunes para actualizar información de un usuario
+
+    Attributes:
+        num_document (str | None): Nuevo número de documento de identificación del usuario (opcional).
+        type_document (str | None): Nuevo tipo de documento (opcional).
+        name (str | None): Nuevo nombre del usuario (opcional).
+        surname (str | None): Nuevo apellido del usuario (opcional).
+        sex (str | None): Nuevo sexo del usuario (opcional).
+        birthday (datetime.date | None): Nueva fecha de nacimiento del usuario (opcional).
+    """
+    num_document: str | None = None
+    type_document: str | None = None
+    name: str | None = None
+    surname: str | None = None
+    sex: str | None = None
+    birthday: datetime.date | None = None
+
 class UserSearch(BaseModel):
     """
     Modelo para buscar un usuario en el sistema.
