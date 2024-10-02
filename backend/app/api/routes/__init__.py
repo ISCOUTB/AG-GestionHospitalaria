@@ -1,3 +1,4 @@
+import app.api.routes.beds as beds
 import app.api.routes.login as login
 import app.api.routes.users as users
 import app.api.routes.admins as admins
