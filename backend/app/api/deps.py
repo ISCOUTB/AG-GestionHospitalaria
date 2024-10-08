@@ -12,7 +12,7 @@ from app.core.config import settings
 from app.core.db import SessionLocal
 
 from app import schemas
-from app.crud import crud_users
+from app.crud import crud_user
 
 reusable_oauth2 = OAuth2PasswordBearer(
     tokenUrl=f'{settings.API_V1_STR}/login/access-token'
@@ -47,9 +47,12 @@ def get_current_user(db: SessionDep, token: TokenDep) -> schemas.models.UserRole
     except (ValidationError, InvalidTokenError):
         raise credentials_exception
 
-    user = crud_users.get_user_rol(num_document=token_data.number_document,
-                                   rol=token_data.rol,
-                                   db=db)
+    user_search = schemas.UserSearch(
+        num_document=token_data.number_document,
+        rol=token_data.rol
+    )
+
+    user = crud_user.get_user_rol(user_search, db)
     
     if user is None:
         raise credentials_exception
