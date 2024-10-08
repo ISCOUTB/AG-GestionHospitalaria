@@ -1,11 +1,11 @@
 set -e
 set -x
 
-# Let the DB start
+# Inicializar DB
 python3 -m app.backend_pre_start
 
-# # Run migrations
+# Correr migraciones
 python3 -m alembic upgrade head
 
-# # Create initial data in DB
+# Crear la información inicial a la DB
 python3 -m app.initial_data
