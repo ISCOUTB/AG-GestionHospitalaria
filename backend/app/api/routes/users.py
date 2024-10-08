@@ -1,6 +1,6 @@
 from typing import Literal
 
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import (
     SessionDep,
@@ -12,11 +12,6 @@ from app import schemas
 from app.crud import *
 
 router = APIRouter(prefix="/users")
-
-
-@router.get("/")
-async def root() -> dict:
-    return {"detail": "root/users", "status": status.HTTP_200_OK}
 
 
 @router.get("/info")
@@ -42,7 +37,7 @@ async def get_user(num_document: str, current_user: Admin, db: SessionDep,
     return crud_user.get_user(num_document, db, rol, active)
 
 
-@router.get("/all")
+@router.get("/")
 async def get_users(current_user: Admin, db: SessionDep, rol: bool = False,
                     active: bool = True) -> list[schemas.UserBase] | list[schemas.UserAll]:
     """
@@ -66,7 +61,7 @@ async def create_user(current_user: Admin, db: SessionDep, new_user: schemas.Use
         raise HTTPException(status_code=status.HTTP_409_CONFLICT,
                             detail='Administrador ya registrado en el sistema')
     
-    return {'status': status.HTTP_201_CREATED, 'detail': 'Administrador creado'}
+    return {'status': status.HTTP_201_CREATED, 'detail': 'Usuario creado'}
 
 
 @router.put("/{num_document}/{rol}")
