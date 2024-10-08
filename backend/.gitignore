@@ -3,3 +3,5 @@ __pycache__/
 .venv/
 
 **/prueba.py
+
+patient_docs/
