@@ -175,7 +175,7 @@ class CRUDDoctors(CRUDBase):
             return 2
 
         doctor_speciality: models.DoctorSpecialities | None = db.query(models.DoctorSpecialities).filter(
-            models.DoctorSpecialities.doctor_id == doctor.id and models.DoctorSpecialities.speciality_id == speciality.id
+            models.DoctorSpecialities.doctor_id == doctor.id, models.DoctorSpecialities.speciality_id == speciality.id
         ).first()
 
         if doctor_speciality is None:
