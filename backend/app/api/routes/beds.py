@@ -1,15 +1,15 @@
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 from app.api.deps import (
     SessionDep,
-    Admin,
-    SuperUser
+    Admin
 )
 
 from app import schemas
-from app.crud import *
+from app.api import exceptions
+from app.crud import crud_bed
 
 router = APIRouter(prefix="/beds")
 
@@ -35,8 +35,7 @@ async def add_bed(current_user: Admin, db: SessionDep, bed_info: schemas.BedBase
     out = crud_bed.add_bed(bed_info, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Cama en el cuarto ya especificado')
+        raise exceptions.room_already_with_bed
     
     return {'status': status.HTTP_201_CREATED, 'detail': 'Cama agregada perfectamente'}
 
@@ -49,11 +48,9 @@ async def delete_bed(room: str, current_user: Admin, db: SessionDep) -> schemas.
     out = crud_bed.delete_bed(room, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Cama no encontrada')
+        raise exceptions.bed_not_found
     
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Cama en uso')
+        raise exceptions.bed_already_used
     
     return {'status': status.HTTP_200_OK, 'detail': 'Cama eliminada de la habitación'}

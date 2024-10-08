@@ -2,7 +2,7 @@ from collections.abc import Generator
 from typing import Annotated
 
 import jwt
-from fastapi import Depends, HTTPException, status
+from fastapi import Depends
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
@@ -12,6 +12,7 @@ from app.core.config import settings
 from app.core.db import SessionLocal
 
 from app import schemas
+from app.api.exceptions import credentials_exception, unauthorized_exception
 from app.crud import crud_user
 
 reusable_oauth2 = OAuth2PasswordBearer(
@@ -32,12 +33,6 @@ TokenDep = Annotated[Session, Depends(reusable_oauth2)]
 
 
 def get_current_user(db: SessionDep, token: TokenDep) -> schemas.models.UserRoles:
-    credentials_exception = HTTPException(
-        status_code=status.HTTP_403_FORBIDDEN,
-        detail="No se pudieron validar las credenciales",
-        headers={"WWW-Authenticate": "bearer"}
-    )
-
     try:
         payload = jwt.decode(token, settings.SECRET_KEY, algorithms=[settings.ALGORITHM])
         token_data = schemas.TokenPayload(
@@ -67,38 +62,33 @@ def get_current_superuser(current_user: CurrentUser) -> schemas.models.UserRoles
     if current_user.num_document == settings.FIRST_SUPERUSER:
         return current_user
     
-    raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Usuario no autorizado")
+    raise unauthorized_exception
 
 
 def get_current_admin(current_user: CurrentUser) -> schemas.models.UserRoles | None:
     if current_user.rol != 'admin':
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                            detail="Usuario no autorizado")
+        raise unauthorized_exception
     
     return current_user
 
 
 def get_current_doctor(current_user: CurrentUser) -> schemas.models.UserRoles | None:
     if current_user.rol != 'doctor':
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Usuario no autorizado")
+        raise unauthorized_exception
     
     return current_user
 
 
 def get_current_patient(current_user: CurrentUser) -> schemas.models.UserRoles | None:
     if current_user.rol != 'patient':
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Usuario no autorizado")
+        raise unauthorized_exception
     
     return current_user
 
 
 def get_current_nonpatient(current_user: CurrentUser) -> schemas.models.UserRoles | None:
     if current_user.rol == 'patient':
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED,
-                        detail="Usuario no autorizado")
+        raise unauthorized_exception
     
     return current_user
 

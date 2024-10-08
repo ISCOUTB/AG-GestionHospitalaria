@@ -1,6 +1,6 @@
 from typing import Literal
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
 from app.api.deps import (
     SessionDep,
@@ -9,7 +9,8 @@ from app.api.deps import (
 )
 
 from app import schemas
-from app.crud import *
+from app.api import exceptions
+from app.crud import crud_user, crud_admin
 
 router = APIRouter(prefix="/users")
 
@@ -31,8 +32,7 @@ async def get_user(num_document: str, current_user: Admin, db: SessionDep,
     user = crud_user.get_user(num_document, db, rol, active)
 
     if user is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Usuario no encontrado')
+        raise exceptions.user_not_found
 
     return crud_user.get_user(num_document, db, rol, active)
 
@@ -54,12 +54,10 @@ async def create_user(current_user: Admin, db: SessionDep, new_user: schemas.Use
     out = crud_admin.create_user(new_user, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='No se pueden crear funciones con este endpoint')
+        raise exceptions.wrong_endpoint
 
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Administrador ya registrado en el sistema')
+        raise exceptions.user_found
     
     return {'status': status.HTTP_201_CREATED, 'detail': 'Usuario creado'}
 
@@ -75,16 +73,13 @@ async def update_user(num_document: str, rol: schemas.Roles,
     out = crud_admin.update_user(user_search, updated_info, db, False)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Usuario no encontrado')
+        raise exceptions.user_not_found
     
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='No tienes los permisos para editar a un administrador')
+        raise exceptions.non_superuser
 
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICTM,
-                            detail='Número de documento en uso')
+        raise exceptions.num_document_used
     
     return {'status': status.HTTP_200_OK, 'detail': 'Información del usuario actualizada'}
 
@@ -100,8 +95,7 @@ async def update_basic_user(current_user: CurrentUser, db: SessionDep,
     out = crud_user.update_basic_info(user_search, updated_info, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Usuario no encontrado')
+        raise exceptions.user_not_found
     
     return {'status': status.HTTP_200_OK, 'detail': 'Información del usuario actualizada'}
 
@@ -116,15 +110,12 @@ async def delete_user(num_document: str, rol: Literal["doctor", "patient"], curr
     out = crud_admin.delete_user(user_search, db, False)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Usuario no encontrado')
+        raise exceptions.user_not_found
     
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN,
-                            detail='No tienes los permisos para eliminar a un administrador')
+        raise exceptions.non_superuser
     
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='No se puede eliminar a un paciente que esté utilizado en una cama')
+        raise exceptions.patient_in_bed
 
     return {'status': status.HTTP_200_OK, 'detail': 'Usuario eliminado'}

@@ -7,7 +7,7 @@ from app.api.deps import (
 )
 
 from app import schemas
-from app.crud import *
+from app.crud import crud_admin
 
 router = APIRouter(prefix="/admin")
 

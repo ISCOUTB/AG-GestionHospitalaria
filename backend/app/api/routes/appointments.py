@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, File, UploadFile
+from fastapi import APIRouter, status, File, UploadFile
 from fastapi.responses import FileResponse
 
 from app.api.deps import (
@@ -9,6 +9,7 @@ from app.api.deps import (
 
 from app import schemas
 from app.crud import crud_consultation, crud_hospitalization
+from app.api import exceptions
 
 router = APIRouter(prefix="/appointments")
 
@@ -19,7 +20,7 @@ async def root() -> dict:
 
 
 @router.get("/hospitalizations", tags=["admins"])
-async def get_hospitalizations(current_user: Admin, db: SessionDep) -> list[schemas.Hospitalizations]:
+async def get_hospitalizations(current_user: Admin, db: SessionDep) -> list[schemas.Hospitalization]:
     """
     Devuelve una lista con el historial de hospitalizaciones
     """
@@ -44,20 +45,16 @@ async def add_hospitalization(current_user: Doctor,
     out = crud_hospitalization.add_hospitalization(hospitalization_info, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Paciente no encontrado')
+        raise exceptions.patient_not_found
     
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Doctor no encontrado')
+        raise exceptions.doctor_not_found
     
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Cama no encontrada')
+        raise exceptions.bed_not_found
     
     if out == 4:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Paciente ya hospitalizado previamente')
+        raise exceptions.patient_already_hospitalized
 
     return {'status': status.HTTP_201_CREATED, 'detail': 'Hospitalización agregada'}
 
@@ -72,12 +69,10 @@ async def add_consultation(current_user: Doctor,
     out = crud_consultation.add_consultation(consultation_info, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Paciente no encontrado')
+        raise exceptions.patient_not_found
     
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Doctor no encontrado')
+        raise exceptions.doctor_not_found
 
     return {'status': status.HTTP_201_CREATED, 'detail': 'Consulta médica agregada'}
 
@@ -91,11 +86,9 @@ async def discharge_hospitalization(num_doc_patient: str, current_user: Doctor,
     out = crud_hospitalization.discharge_hospitalization(num_doc_patient, last_day, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Paciente no encontrado')
+        raise exceptions.patient_not_found
     
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail='Mal formato de fecha')
+        raise exceptions.bad_date_formatting
     
     return {'status': status.HTTP_200_OK, 'detail': 'Paciente dado de alta del sistema'}

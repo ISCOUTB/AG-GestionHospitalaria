@@ -1,5 +1,3 @@
-# TODO: Definir si las acciones sobre los documentos sean solo para doctores, o si pueden incluir admins
-
 from typing import Annotated, Literal
 import os
 
