@@ -7,15 +7,14 @@ RUN apt-get update && \
 
 WORKDIR /app
 
-ENV PYTHONPATH=/app
-
-COPY ./requirements.txt /app/
-COPY ./scripts /app/scripts
-COPY ./alembic.ini /app/
-COPY ./app/ /app/app
+COPY ./requirements.txt .
+COPY ./scripts ./scripts
+COPY ./patient_docs ./patient_docs
+COPY ./alembic.ini .
+COPY ./app/ ./app
 
 RUN pip3 install -r requirements.txt
 
 EXPOSE 8001
 
-CMD ["uvicorn", "app.main:app", "--host=0.0.0.0","--port=8001", "--workers", "4"]
+CMD ["uvicorn", "app.main:app", "--host=0.0.0.0", "--port=8001"]
