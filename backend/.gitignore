@@ -1,7 +1,7 @@
 __pycache__/
 
-.env
-env/
+.venv/
 
-lib/
-lib64/
+**/prueba.py
+
+patient_docs/
