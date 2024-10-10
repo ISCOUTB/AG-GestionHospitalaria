@@ -1,6 +1,6 @@
 from app import schemas
 
-from app.crud import *
+from app.crud import crud_user, crud_admin
 
 from app.core.config import settings
 from app.core.db import SessionLocal

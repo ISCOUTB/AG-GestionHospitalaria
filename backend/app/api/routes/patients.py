@@ -8,7 +8,8 @@ from app.api.deps import (
 )
 
 from app import schemas
-from app.crud import *
+from app.api import exceptions
+from app.crud import crud_patient
 
 router = APIRouter(prefix="/patients")
 
@@ -49,8 +50,7 @@ async def get_patient(num_document: str, current_user: Admin, db: SessionDep, ac
     """
     patient = crud_patient.get_patient(num_document, db, active)
     if patient is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Paciente no encontrado')
+        raise exceptions.patient_not_found
 
     return patient
 
@@ -63,19 +63,15 @@ async def update_patient(num_document: str, current_user: Admin, db: SessionDep,
     out = crud_patient.update_patient(num_document, updated_info, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Paciente no encontrado')
+        raise exceptions.patient_not_found
     
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
-                            detail='Paciente no puede ser su propio responsable')
+        raise exceptions.patient_cannot_be_his_responsable
 
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Responsable no puede ser un paciente activo en el hospital')
+        raise exceptions.patient_cannot_be_responsable
 
     if out == 4:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Información previa del responsable no existente')
+        raise exceptions.responsable_not_found
     
     return {'status': status.HTTP_200_OK, 'detail': 'Información del responsable actualizada'}

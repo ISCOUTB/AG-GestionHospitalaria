@@ -1,3 +1,4 @@
+from datetime import timedelta
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status, Body
@@ -8,7 +9,7 @@ from app.core.config import settings
 from app.core.security import create_access_token
 
 from app import schemas
-from app.crud import crud_users
+from app.crud import crud_user
 
 router = APIRouter(prefix="/login")
 
@@ -26,12 +27,12 @@ async def login_access_token(db: SessionDep,
     Obtiene el token de acceso al sistema
     """
     user_login = schemas.UserLogin(
-        number_document=form_data.username,
+        num_document=form_data.username,
         password=form_data.password,
         rol=rol
     )
 
-    user = crud_users.authenticate_user(user_login, db)
+    user = crud_user.authenticate_user(user_login, db)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -39,8 +40,11 @@ async def login_access_token(db: SessionDep,
             headers={"WWW-Authenticate": "Bearer"}
         )
     
-    access_token = create_access_token(number_document=user.num_document,
-                                       rol=user.rol, expires_delta=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    access_token = create_access_token(
+        number_document=user.num_document,
+        rol=user.rol,
+        expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    )
 
     return schemas.Token(access_token=access_token, token_type="bearer")
 

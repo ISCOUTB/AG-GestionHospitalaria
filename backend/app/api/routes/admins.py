@@ -7,7 +7,8 @@ from app.api.deps import (
 )
 
 from app import schemas
-from app.crud import *
+from app.api import exceptions
+from app.crud import crud_admin
 
 router = APIRouter(prefix="/admin")
 
@@ -38,10 +39,9 @@ async def create_admin(current_user: SuperUser, db: SessionDep, new_admin: schem
     out = crud_admin.create_user(new_admin, db, True)
 
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Administrador ya registrado en el sistema')
+        raise exceptions.user_found
     
-    return {'status': status.HTTP_201_CREATED, 'detail': 'Administrador creado'}
+    return {'status': status.HTTP_201_CREATED, 'detail': 'Usuario creado'}
 
 
 @router.put("/{num_document}")
@@ -52,12 +52,10 @@ async def update_admin(num_document: str, current_user: SuperUser, db: SessionDe
     out = crud_admin.update_user(num_document, updated_info, db, True)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Usuario no encontrado')
+        raise exceptions.user_not_found
     
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICTM,
-                            detail='Número de documento en uso')
+        raise exceptions.num_document_used
     
     return {'status': status.HTTP_200_OK, 'detail': 'Información del usuario actualizada'}
 
@@ -72,11 +70,9 @@ async def delete_admin(num_document: str, current_user: SuperUser, db: SessionDe
     out = crud_admin.delete_user(num_document, 'admin', db, True)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Usuario no encontrado')
+        raise exceptions.user_not_found
     
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='No se puede eliminar a un paciente que esté utilizado en una cama')
+        raise exceptions.patient_in_bed
 
     return {'status': status.HTTP_200_OK, 'detail': 'Usuario eliminado'}

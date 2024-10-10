@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Body
+from fastapi import APIRouter, HTTPException, status
 
 from app.api.deps import (
     SessionDep,
@@ -6,7 +6,8 @@ from app.api.deps import (
 )
 
 from app import schemas
-from app.crud import *
+from app.api import exceptions
+from app.crud import crud_doctor
 
 router = APIRouter(prefix="/doctors")
 
@@ -32,8 +33,7 @@ async def get_doctor(num_document: str, current_user: Admin, db: SessionDep, act
     doctor = crud_doctor.get_doctor(num_document, db, active)
 
     if doctor is None:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Doctor no encontrado')
+        raise exceptions.doctor_not_found
 
     return doctor
 
@@ -65,16 +65,14 @@ async def add_doctor_speciality(num_document: str, current_user: Admin,
     out = crud_doctor.add_doctor_speciality(num_document, db, speciality)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Doctor no encontrado')
+        raise exceptions.doctor_not_found
     
     if out == 2:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST,
                             detail='Especialidad no encontrada. Provea una descripción para crearla')
 
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Relación existente entre el doctor y la especialidad')
+        raise exceptions.speciality_doctor_found
 
     return {'detail': 'Especialidad agregada al doctor', 'status': status.HTTP_201_CREATED}
 
@@ -88,15 +86,12 @@ async def delete_speciality(num_document: str, current_user: Admin, db: SessionD
     out = crud_doctor.delete_speciality(num_document, speciality, db)
 
     if out == 1:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Doctor no encontrado')
+        raise exceptions.doctor_not_found
 
     if out == 2:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND,
-                            detail='Especialidad no encontrada')
+        raise exceptions.speciality_not_found
     
     if out == 3:
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT,
-                            detail='Relación entre doctor y especialidad no existente')
+        raise exceptions.speciality_doctor_not_found
 
     return {'status': status.HTTP_200_OK, 'detail': 'Especialidad borrada del doctor'}

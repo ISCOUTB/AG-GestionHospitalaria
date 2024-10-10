@@ -1,6 +1,7 @@
 from fastapi import APIRouter
 
-from app.api.routes import *
+from app.api.routes import beds, login, users, admins, \
+doctors, patients, documents, appointments
 
 api_router = APIRouter()
 api_router.include_router(beds.router, tags=["beds"])
