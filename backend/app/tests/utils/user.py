@@ -20,6 +20,15 @@ def create_random_user(rol: Roles, db: Session, k: int) -> UserRoles:
     # Validar que se cree un nuevo usuario
     out = crud_admin.create_user(new_user, db, True)
     while out == 2:
+        num_document = random_document()
+        password = random_password(k)
+        
+        new_user = UserCreate(
+            num_document=num_document,
+            rol=rol,
+            password=password
+        )
+
         out = crud_admin.create_user(new_user, db, True)
 
     user_search = UserSearch(num_document=num_document, rol=rol)
