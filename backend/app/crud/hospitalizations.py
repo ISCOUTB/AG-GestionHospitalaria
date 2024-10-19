@@ -1,7 +1,7 @@
 import datetime
 
 from app import models, schemas
-from backend.app.crud.base import CRUDBase
+from app.crud.base import CRUDBase
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session, aliased

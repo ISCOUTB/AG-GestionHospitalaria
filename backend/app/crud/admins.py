@@ -2,7 +2,7 @@ import datetime
 from typing import Literal
 
 from app import models, schemas
-from backend.app.crud.users import CRUDUsers
+from app.crud.users import CRUDUsers
 
 from app.core.security import get_password_hash
 

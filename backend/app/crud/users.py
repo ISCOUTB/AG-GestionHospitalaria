@@ -1,5 +1,5 @@
 from app import models, schemas
-from backend.app.crud.base import CRUDBase
+from app.crud.base import CRUDBase
 
 from app.core.security import verify_password
 
@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 
 
 class CRUDUsers(CRUDBase):
-    def authenticate_user(self, user_login: schemas.UserLogin, db: Session) -> schemas.models.UserRoles:
+    def authenticate_user(self, user_login: schemas.UserLogin, db: Session) -> schemas.models.UserRoles | None:
         """ 
         Autentica que el usuario sí esté en la base de datos cuando se registre
 
