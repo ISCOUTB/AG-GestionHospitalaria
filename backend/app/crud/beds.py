@@ -1,7 +1,7 @@
 from typing import Literal
 
 from app import models, schemas
-from app.crud.crud_base import CRUDBase
+from backend.app.crud.base import CRUDBase
 
 import sqlalchemy.exc
 from sqlalchemy import select

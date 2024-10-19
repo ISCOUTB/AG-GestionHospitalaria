@@ -1,5 +1,5 @@
 from app import models, schemas
-from app.crud.crud_base import CRUDBase
+from backend.app.crud.base import CRUDBase
 
 from app.core.security import verify_password
 
