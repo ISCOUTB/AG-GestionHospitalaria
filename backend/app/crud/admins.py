@@ -137,7 +137,7 @@ class CRUDAdmins(CRUDUsers):
             user_info.email = updated_info.email
         
         if updated_info.password is not None:
-            user_rol.password = updated_info.password
+            user_rol.password = get_password_hash(updated_info.password)
 
         try:
             db.commit()

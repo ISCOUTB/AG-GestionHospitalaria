@@ -1,7 +1,7 @@
 from app import models, schemas
 from app.crud.base import CRUDBase
 
-from app.core.security import verify_password
+from app.core.security import verify_password, get_password_hash
 
 from sqlalchemy.orm import Session
 
@@ -118,7 +118,7 @@ class CRUDUsers(CRUDBase):
             return 1
         
         if updated_info.password is not None:
-            user_rol.password = updated_info.password
+            user_rol.password = get_password_hash(updated_info.password)
         
         if updated_info.address is not None:
             user_info.address = updated_info.address
