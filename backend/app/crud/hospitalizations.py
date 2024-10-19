@@ -1,4 +1,5 @@
 import datetime
+from typing import Literal
 
 from app import models, schemas
 from app.crud.base import CRUDBase
@@ -36,7 +37,7 @@ class CRUDHospitalizations(CRUDBase):
             entry_day=row[2], last_day=row[3]
         ), result))
     
-    def add_hospitalization(self, hospitalization_info: schemas.RegisterHospitalization, db: Session) -> int:
+    def add_hospitalization(self, hospitalization_info: schemas.RegisterHospitalization, db: Session) -> Literal[0, 1, 2, 3, 4, 5]:
         """
         Agrega una nueva hospitalización a la base de datos
 
@@ -85,7 +86,7 @@ class CRUDHospitalizations(CRUDBase):
         db.commit()
         return 0
     
-    def discharge_hospitalization(self, num_doc_patient: str, discharge_info: schemas.DischargeHospitalization, db: Session) -> int:
+    def discharge_hospitalization(self, num_doc_patient: str, discharge_info: schemas.DischargeHospitalization, db: Session) -> Literal[0, 1, 2]:
         """
         Da el alta a un determinado paciente que esté actualmente hospitalizado
 

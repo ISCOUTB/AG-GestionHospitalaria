@@ -1,3 +1,5 @@
+from typing import Literal
+
 from app import models, schemas
 from app.crud.base import CRUDBase
 
@@ -34,7 +36,7 @@ class CRUDConsultatations(CRUDBase):
             area=row[2], day=row[3]
         ), result))
     
-    def add_consultation(self, consultation_info: schemas.Consultation, db: Session) -> int:
+    def add_consultation(self, consultation_info: schemas.Consultation, db: Session) -> Literal[0, 1, 2]:
         """
         Agrega una nueva consulta médica a la base de datos
 
