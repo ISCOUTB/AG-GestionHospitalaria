@@ -1,3 +1,5 @@
+from typing import Literal
+
 from app import models, schemas
 
 from sqlalchemy import select
@@ -108,7 +110,7 @@ class CRUDBase:
             relationship_responsable=data[5]
         )
 
-    def valid_responsable_doc(self, patient_doc: str, responsable_doc: str, db: Session) -> int:
+    def valid_responsable_doc(self, patient_doc: str, responsable_doc: str, db: Session) -> Literal[0, 2, 3]:
         """
         Válida que el número de documento de un responsable pueda ser utilizable
 
