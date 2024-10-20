@@ -5,7 +5,7 @@ from app.crud.base import CRUDBase
 
 import sqlalchemy.exc
 from sqlalchemy import select
-from sqlalchemy.orm import Session, aliased
+from sqlalchemy.orm import Session
 
 
 class CRUDBeds(CRUDBase):
@@ -18,7 +18,7 @@ class CRUDBeds(CRUDBase):
             all (bool): Especifica si además quiere que se muestre la información acerca del uso de la cama.
                 Por defecto, `all=False`.
         Returns:
-            list: Retorna una lista de las camas, dependiendo del paramétro `all` se retornará una lista de `schemas.BedBase` (cuando `all=False`) o
+            list: Retorna una lista de las camas, dependiendo del paramétro `all` se retornará una lista de `schemas.models.Beds` (cuando `all=False`) o
                 `schemas.BedAll` (cuando `all=True`). 
         """
         if not all:
@@ -30,7 +30,7 @@ class CRUDBeds(CRUDBase):
 
         return list(map(lambda row: schemas.BedAll(
             room=row[0], num_doc_patient=row[1], num_doc_doctor=row[2]
-            ), results))
+        ), results))
     
     def add_bed(self, bed_info: schemas.BedBase, db: Session) -> Literal[0, 1]:
         """

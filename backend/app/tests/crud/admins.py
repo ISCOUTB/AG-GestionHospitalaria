@@ -5,20 +5,18 @@ from app.core.security import verify_password
 
 from app.tests.utils.utils import random_document, random_password
 from app.tests.utils.user import create_random_user
-from app.tests.utils.patient import create_random_patient
-from app.tests.utils.doctor import create_doctor_info
-from app.tests.utils.bed import create_random_bed
+from app.tests.utils.hospitalizations import create_random_hospitalization
 
 from app import schemas
-from app.crud import crud_admin, crud_hospitalization
+from app.crud import crud_admin
 
 
 def test_create_user(db: Session) -> None:
     rol = 'admin'
     name, surname = 'Jhon', 'Doe'
     new_user = schemas.UserCreate(num_document=settings.FIRST_SUPERUSER,
-                          rol=rol,
-                          password=settings.FIRST_SUPERUSER_PASSWORD)
+                                  rol=rol,
+                                  password=settings.FIRST_SUPERUSER_PASSWORD)
 
     out = crud_admin.create_user(new_user, db)
     assert out == 1
@@ -175,21 +173,13 @@ def test_delete_user(db: Session) -> None:
     out = crud_admin.delete_user(user_search, db)
     assert out == 2
 
-    patient = create_random_patient(db)
-    doctor = create_doctor_info(db)
-    bed = create_random_bed(db)
+    hospitalization = create_random_hospitalization(db)
+    user_search = schemas.UserSearch(num_document=num_document, rol='patient')
 
-    hospitalization = schemas.RegisterHospitalization(
-        num_doc_doctor=doctor.num_document,
-        num_doc_patient=patient.num_document,
-        room=bed.room
-    )
-
-    crud_hospitalization.add_hospitalization(hospitalization, db)
     out = crud_admin.delete_user(user_search, db)
     assert out == 3
 
-    user_search = schemas.UserSearch(num_document=doctor.num_document, rol='doctor')
+    user_search = schemas.UserSearch(num_document=hospitalization.num_doc_doctor, rol='doctor')
     out = crud_admin.delete_user(user_search, db)
     assert out == 0
 
