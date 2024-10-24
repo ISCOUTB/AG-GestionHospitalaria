@@ -102,7 +102,7 @@ class CRUDHospitalizations(CRUDBase):
                 - 2: Mal formato de fecha. Aplica cuando la fecha es mayor que el día actual o menor a la fecha de hospitalización
         """
         hospitalization: models.Hospitalizations | None = db.query(models.Hospitalizations).filter(
-            models.Hospitalizations.id_patient == num_doc_patient
+            models.Hospitalizations.id_patient == num_doc_patient, models.Hospitalizations.last_day is None
         ).first()
 
         if hospitalization is None:
@@ -111,7 +111,13 @@ class CRUDHospitalizations(CRUDBase):
         if not hospitalization.entry_day <= discharge_info.last_day <= datetime.date.today():
             return 2
 
+        # Dar de alta al paciente actualizando la fecha
         hospitalization.last_day = discharge_info.last_day
+
+        # Eliminar cama
+        patient: models.UserRoles = db.query(models.UserRoles).filter(models.UserRoles.num_document == num_doc_patient).first()
+        bed_used: models.BedsUsed = db.query(models.BedsUsed).filter(models.BedsUsed.id_patient == patient.id)
+        db.delete(bed_used)
 
         db.commit()
         db.refresh(hospitalization)
