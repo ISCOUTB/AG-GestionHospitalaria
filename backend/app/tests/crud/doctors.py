@@ -2,13 +2,14 @@ from sqlalchemy.orm import Session
 
 from app.tests.utils.user import create_random_user
 from app.tests.utils.doctor import create_random_speciality, create_doctor_info, create_new_speciality
+from app.tests.utils.user import non_existent_document
 
 from app import schemas
 from app.crud import crud_doctor
 
 
 def test_get_doctor(db: Session) -> None:
-    doctor_in = crud_doctor.get_doctor('Nonexistent_document', db)
+    doctor_in = crud_doctor.get_doctor(non_existent_document, db)
     assert doctor_in is None
     
     doctor = create_doctor_info(db)
@@ -19,7 +20,7 @@ def test_get_doctor(db: Session) -> None:
 
 def test_add_doctor_speciality(db: Session) -> None:
     speciality = schemas.Speciality(name='')
-    out = crud_doctor.add_doctor_speciality('Nonexistent_document', speciality, db)
+    out = crud_doctor.add_doctor_speciality(non_existent_document, speciality, db)
     assert out == 1
 
     doctor = create_random_user('doctor', db, 10)
@@ -37,7 +38,7 @@ def test_add_doctor_speciality(db: Session) -> None:
 
 def test_delete_speciality(db: Session) -> None:
     speciality = schemas.SpecialityBase(name='')
-    out = crud_doctor.delete_speciality('Nonexistent_document', speciality, db)
+    out = crud_doctor.delete_speciality(non_existent_document, speciality, db)
     assert out == 1
 
     doctor = create_doctor_info(db)

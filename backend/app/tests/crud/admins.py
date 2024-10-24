@@ -6,6 +6,7 @@ from app.core.security import verify_password
 from app.tests.utils.utils import random_document, random_password
 from app.tests.utils.user import create_random_user
 from app.tests.utils.hospitalizations import create_random_hospitalization
+from app.tests.utils.user import non_existent_document
 
 from app import schemas
 from app.crud import crud_admin
@@ -75,7 +76,7 @@ def test_update_basic_info(db: Session) -> None:
     assert verify_password(new_password, user_rol_in.password)
     assert user_info_in.email == new_email
 
-    user_search = schemas.UserSearch(num_document='Nonexistent_document', rol=rol)
+    user_search = schemas.UserSearch(num_document=non_existent_document, rol=rol)
     updated_info = schemas.UserUpdate(password=new_password, email=new_email)
 
     out = crud_admin.update_basic_info(user_search, updated_info, db)
@@ -89,7 +90,7 @@ def test_update_user(db: Session) -> None:
     new_password = 'supersecure123'
     new_email = 'randomemail@test.com'
 
-    user_search = schemas.UserSearch(num_document='Nonexistent_document', rol=rol)
+    user_search = schemas.UserSearch(num_document=non_existent_document, rol=rol)
     updated_info = schemas.UserUpdateAll(password=new_password, num_document=settings.FIRST_SUPERUSER)
 
     out = crud_admin.update_user(user_search, updated_info, db)
@@ -157,7 +158,7 @@ def test_get_user(db: Session) -> None:
     user_in = crud_admin.get_user(num_document, db)
     assert user_in is None
 
-    user_in = crud_admin.get_user('Nonexistent_document', db)
+    user_in = crud_admin.get_user(non_existent_document, db)
     assert user_in is None
 
 
@@ -165,7 +166,7 @@ def test_delete_user(db: Session) -> None:
     rol = 'admin'
     num_document = settings.FIRST_SUPERUSER
     
-    user_search = schemas.UserSearch(num_document='Nonexistent_document', rol=rol)
+    user_search = schemas.UserSearch(num_document=non_existent_document, rol=rol)
     out = crud_admin.delete_user(user_search, db)
     assert out == 1
     

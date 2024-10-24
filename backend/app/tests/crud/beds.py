@@ -6,7 +6,7 @@ from app import schemas
 from app.crud import crud_bed
 
 from app.tests.utils.hospitalizations import create_random_hospitalization
-from app.tests.utils.bed import create_random_bed
+from app.tests.utils.bed import create_random_bed, non_existent_bed
 
 
 def test_add_bed(db: Session) -> None:
@@ -25,7 +25,7 @@ def test_delete_bed(db: Session) -> None:
     hospitalization = create_random_hospitalization(db)
     bed = create_random_bed(db)
 
-    out = crud_bed.delete_bed('Nonexistent_bed', db)
+    out = crud_bed.delete_bed(non_existent_bed, db)
     assert out == 1
 
     out = crud_bed.delete_bed(hospitalization.room, db)

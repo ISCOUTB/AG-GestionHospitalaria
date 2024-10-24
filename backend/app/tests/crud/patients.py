@@ -2,13 +2,14 @@ from sqlalchemy.orm import Session
 
 from app.tests.utils.user import create_random_user
 from app.tests.utils.patient import create_random_responsable, create_random_patient
+from app.tests.utils.user import non_existent_document
 
 from app import schemas
 from app.crud import crud_patient
 
 
 def test_get_patient(db: Session) -> None:
-    patient_in = crud_patient.get_patient('Nonexistent_document', db)
+    patient_in = crud_patient.get_patient(non_existent_document, db)
     assert patient_in is None
 
     patient = create_random_patient(db)
@@ -22,7 +23,7 @@ def test_add_responsable(db: Session) -> None:
     patient_eg = create_random_user('patient', db, 10)
     responsable = schemas.ResponsablesInfo()
 
-    out = crud_patient.add_responsable('Nonexistent_document', responsable, db)
+    out = crud_patient.add_responsable(non_existent_document, responsable, db)
     assert out == 1
 
     responsable = schemas.ResponsablesInfo(num_doc_responsable=user.num_document)
@@ -41,7 +42,7 @@ def test_add_responsable(db: Session) -> None:
 
 def test_update_patient(db: Session) -> None:
     updated_info = schemas.ResponsablesInfo()
-    out = crud_patient.update_patient('Nonexistent_document', updated_info, db)
+    out = crud_patient.update_patient(non_existent_document, updated_info, db)
     assert out == 1
 
     patient1 = create_random_patient(db)
@@ -66,7 +67,7 @@ def test_update_patient(db: Session) -> None:
 def test_delete_responsable(db: Session) -> None:
     patient = create_random_patient(db)
 
-    out = crud_patient.delete_responsable('Nonexistent_document', db)
+    out = crud_patient.delete_responsable(non_existent_document, db)
     assert out == 1
 
     out = crud_patient.delete_responsable(patient.num_document, db)
