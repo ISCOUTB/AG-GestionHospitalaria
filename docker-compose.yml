@@ -15,21 +15,6 @@ services:
       - '7001:5432'
     networks:
       - ag
-  
-  pgadmin:
-    image: dpage/pgadmin4:latest
-    depends_on:
-      - db
-    restart: unless-stopped
-    env_file:
-      - path: .env
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL?Variable not set}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD?Variable not set}
-    ports:
-      - 5050:80
-    networks:
-      - ag
 
   mongo:
     image: mongo:7.0
