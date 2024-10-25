@@ -75,7 +75,7 @@ class CRUDBeds(CRUDBase):
             return 1
         
         stmt = select(models.BedsUsed).where(models.BedsUsed.id_bed == bed.id)
-        if not db.execute(stmt).first():
+        if db.execute(stmt).first():
             return 2
         
         db.delete(bed)
