@@ -14,12 +14,7 @@ from app.crud import crud_bed
 router = APIRouter(prefix="/beds")
 
 
-@router.get("/")
-async def root() -> dict:
-    return {"detail": "root/beds", "status": status.HTTP_200_OK}
-
-
-@router.get("/beds", summary="Get Number All Beds")
+@router.get("/", summary="Get Number All Beds")
 async def get_beds(current_user: Admin, db: SessionDep, all: bool = False) -> list[schemas.models.Beds] | list[schemas.BedAll]:
     """
     Obtiene un listado con todas las camas del hospital
@@ -27,7 +22,7 @@ async def get_beds(current_user: Admin, db: SessionDep, all: bool = False) -> li
     return crud_bed.get_beds(db, all)
 
 
-@router.post("/beds/")
+@router.post("/")
 async def add_bed(current_user: Admin, db: SessionDep, bed_info: schemas.BedBase) -> dict:
     """
     Agrega una nueva cama al hospital al hospital especificando el cuarto
@@ -40,7 +35,7 @@ async def add_bed(current_user: Admin, db: SessionDep, bed_info: schemas.BedBase
     return {'status': status.HTTP_201_CREATED, 'detail': 'Cama agregada perfectamente'}
 
 
-@router.delete("/beds/{room}")
+@router.delete("/{room}")
 async def delete_bed(room: str, current_user: Admin, db: SessionDep) -> schemas.models.Beds:
     """
     Elimina una cama dentro del hospital que no esté en uso, especificando el cuarto donde esté

@@ -54,7 +54,7 @@ patient_not_found = HTTPException(
 
 bed_not_found = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
-    detail='Doctor no encontrado'
+    detail='Cama no encontrada'
 )
 
 speciality_not_found = HTTPException(
