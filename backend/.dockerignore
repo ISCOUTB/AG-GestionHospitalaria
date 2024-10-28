@@ -2,3 +2,5 @@ __pycache__
 .venv
 *.pyc
 **/prueba.py
+.mypy_cache
+.ruff_cache

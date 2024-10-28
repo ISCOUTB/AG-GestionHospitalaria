@@ -1,7 +1,7 @@
-__pycache__/
-
-.venv/
-
+__pycache__
+*.pyc
+.venv
 **/prueba.py
-
-patient_docs/
+patient_docs
+.mypy_cache
+.ruff_cache
