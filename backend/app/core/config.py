@@ -12,11 +12,6 @@ from pydantic import (
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-from os import getenv
-from dotenv import load_dotenv
-
-load_dotenv()
-
 
 def parse_cors(v: Any) -> list[str] | str:
     """
@@ -46,8 +41,12 @@ class Settings(BaseSettings):
     API_V1_STR: str
     STACK_NAME: str
     PROJECT_NAME: str
+    NBYTES: int
 
-    SECRET_KEY: str = secrets.token_urlsafe(int(getenv('NBYTES')))
+    @property
+    def SECRET_KEY(self) -> str:
+        return secrets.token_urlsafe(self.NBYTES)
+    
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
     DOMAIN: str

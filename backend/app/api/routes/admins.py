@@ -8,7 +8,7 @@ from app.api.deps import (
 router = APIRouter()
 
 @router.get("/stats", summary="Get Statistics About Hospital")
-async def get_stats(current_user: Admin, db: SessionDep) -> list[float, float, float]:
+async def get_stats(current_user: Admin, db: SessionDep) -> list[float]:
     """
     Obtiene los indicadores estadísiticos del hospital.
 
