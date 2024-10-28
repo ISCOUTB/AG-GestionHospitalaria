@@ -1,4 +1,3 @@
-import random
 
 from app import schemas
 

@@ -1,7 +1,6 @@
-from typing import Annotated, Literal
-import os
+from typing import Literal
 
-from fastapi import APIRouter, HTTPException, status, File, UploadFile
+from fastapi import APIRouter, status, File, UploadFile
 from fastapi.responses import FileResponse
 
 from app.api.deps import (
@@ -10,7 +9,6 @@ from app.api.deps import (
     Doctor
 )
 
-from app import models, schemas
 
 router = APIRouter(prefix="/documents")
 

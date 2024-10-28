@@ -9,7 +9,6 @@ from app.tests.utils.doctor import create_doctor_info
 from app.tests.utils.doctor import create_new_speciality
 from app.tests.utils.doctor import create_random_speciality
 
-from app import schemas
 
 from app.crud import crud_doctor
 

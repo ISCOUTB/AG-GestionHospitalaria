@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from app.schemas.users import UserBase, Roles
+from app.schemas.users import UserBase
 
 
 class SpecialityBase(BaseModel):
