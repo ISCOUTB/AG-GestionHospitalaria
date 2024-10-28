@@ -12,10 +12,10 @@ from app.crud import crud_hospitalization
 
 
 def test_add_hospitalization(db: Session) -> None:
-    hospitalization = create_random_hospitalization()
-    patient = create_random_patient()
-    doctor = create_doctor_info()
-    bed = create_random_bed()
+    hospitalization = create_random_hospitalization(db)
+    patient = create_random_patient(db)
+    doctor = create_doctor_info(db)
+    bed = create_random_bed(db)
 
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=non_existent_document,
@@ -73,8 +73,8 @@ def test_add_hospitalization(db: Session) -> None:
 
 
 def test_discharge_hospitalization(db: Session) -> None:
-    hospitalization: schemas.RegisterHospitalization = create_random_hospitalization()
-    patient = create_random_patient()
+    hospitalization: schemas.RegisterHospitalization = create_random_hospitalization(db)
+    patient = create_random_patient(db)
     discharge_info = schemas.DischargeHospitalization(
         last_day=datetime.date.today() + datetime.timedelta(days=10) 
     )
