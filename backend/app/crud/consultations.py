@@ -51,7 +51,7 @@ class CRUDConsultatations(CRUDBase):
                 - 2: Doctor no existente.
         """
         # Realizar las validaciones
-        if isinstance(out := self.valid_basic_appointment(consultation_info), int):
+        if isinstance(out := self.valid_basic_appointment(consultation_info, db), int):
             return out
 
         patient, doctor = out

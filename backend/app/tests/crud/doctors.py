@@ -20,7 +20,7 @@ def test_get_doctor(db: Session) -> None:
 
 def test_add_doctor_speciality(db: Session) -> None:
     speciality = schemas.Speciality(name='')
-    out = crud_doctor.add_doctor_speciality(non_existent_document, speciality, db)
+    out = crud_doctor.add_doctor_speciality(non_existent_document, db, speciality)
     assert out == 1
 
     doctor = create_random_user('doctor', db, 10)
