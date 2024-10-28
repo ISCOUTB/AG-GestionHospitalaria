@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 from fastapi.responses import FileResponse
 
 from app.api.deps import (
     SessionDep,
     Patient,
+    NonPatient,
     Admin
 )
 
@@ -12,11 +13,6 @@ from app.api import exceptions
 from app.crud import crud_patient
 
 router = APIRouter(prefix="/patients")
-
-
-@router.get("/")
-async def root() -> dict:
-    return {"detail": "root/patient", "status": status.HTTP_200_OK}
 
 
 @router.get("/documents")
@@ -28,14 +24,14 @@ async def get_documents(current_user: Patient, db: SessionDep) -> FileResponse:
 
 
 @router.get("/responsable")
-async def get_responsables(current_user: Patient, db: SessionDep) -> schemas.PatientAll:
+async def get_responsable(current_user: Patient, db: SessionDep) -> schemas.PatientAll:
     """
     Devuelve toda la información del paciente, incluyendo la de los responsables
     """
-    pass
+    return crud_patient.get_patient(current_user.num_document, db)
 
 
-@router.get("/all")
+@router.get("/")
 async def get_patients(current_user: Admin, db: SessionDep, active: bool = True) -> list[schemas.PatientAll]:
     """
     Obtiene todos los pacientes que están dentro del sistema 
@@ -44,7 +40,7 @@ async def get_patients(current_user: Admin, db: SessionDep, active: bool = True)
 
 
 @router.get("/{num_document}")
-async def get_patient(num_document: str, current_user: Admin, db: SessionDep, active: bool = True) -> schemas.PatientAll:
+async def get_patient(num_document: str, current_user: NonPatient, db: SessionDep, active: bool = True) -> schemas.PatientAll:
     """
     Obtiene toda la información de un paciente especificando su número de documento
     """
@@ -56,7 +52,7 @@ async def get_patient(num_document: str, current_user: Admin, db: SessionDep, ac
 
 
 @router.put("/{num_document}")
-async def update_patient(num_document: str, current_user: Admin, db: SessionDep, updated_info: schemas.ResponsablesInfo) -> dict:
+async def update_patient(num_document: str, current_user: NonPatient, db: SessionDep, updated_info: schemas.ResponsablesInfo) -> dict:
     """ 
     Actualiza la información del responsable dado un determinado paciente
     """
@@ -75,3 +71,19 @@ async def update_patient(num_document: str, current_user: Admin, db: SessionDep,
         raise exceptions.responsable_not_found
     
     return {'status': status.HTTP_200_OK, 'detail': 'Información del responsable actualizada'}
+
+
+@router.delete("/{num_document}")
+async def delete_responsable(num_document: str, current_user: NonPatient, db: SessionDep) -> dict:
+    """
+    Elimina la información del responsable de un paciente
+    """
+    out = crud_patient.delete_responsable(num_document, db)
+
+    if out == 1:
+        raise exceptions.patient_not_found
+    
+    if out == 2:
+        raise exceptions.responsable_not_found
+    
+    return {'status': status.HTTP_200_OK, 'detail': 'Información del responsable eliminada'}
