@@ -51,7 +51,7 @@ class CRUDDoctors(CRUDBase):
         for num_document in num_documents:
             data = list(filter(lambda row: row[0]==num_document, query))
             userbase: schemas.UserBase = self.create_user_base(data[0])
-            specialities_list: list[str] = list(map(lambda x: schemas.SpecialityBase(name=x[-1]), data))
+            specialities_list: list[schemas.SpecialityBase] = list(map(lambda x: schemas.SpecialityBase(name=x[-1]), data))
 
             results.append(schemas.DoctorAll(
                 **userbase.model_dump(),
@@ -125,7 +125,7 @@ class CRUDDoctors(CRUDBase):
         if doctor is None:
             return 1
         
-        current_specialities: list[schemas.Speciality] = self.get_all_specialities(db)
+        current_specialities: list[schemas.Speciality] = self.get_specialities(db)
         speciality_exists: bool = any(map(lambda x: x.name == speciality.name, current_specialities))
 
         if not speciality_exists and speciality.description is None:

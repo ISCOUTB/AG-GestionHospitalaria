@@ -67,7 +67,7 @@ async def create_user(current_user: Admin, db: SessionDep, new_user: schemas.Use
 
 @router.put("/{num_document}/{rol}")
 async def update_user(num_document: str, rol: schemas.Roles,
-                      current_user: Admin, db: SessionDep, updated_info: schemas.UserAll) -> dict:
+                      current_user: Admin, db: SessionDep, updated_info: schemas.UserUpdateAll) -> dict:
     """
     Actualiza la información completa de cualquier usuario dentro del sistema que no sea un administrador.
     """
@@ -92,7 +92,7 @@ async def update_user(num_document: str, rol: schemas.Roles,
 
 @router.put("/")
 async def update_basic_user(current_user: CurrentUser, db: SessionDep,
-                            updated_info: schemas.UserUpdate) -> schemas.models.UsersInfo:
+                            updated_info: schemas.UserUpdate) -> dict:
     """
     Modifica la información no esencial
     """
