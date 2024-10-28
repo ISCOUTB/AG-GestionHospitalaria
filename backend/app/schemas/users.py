@@ -52,7 +52,7 @@ class UserAll(UserBase):
         UserBase: Contiene los atributos comunes de un usuario.
 
     Attributes:
-        roles (list[Roles, bool]): Lista de roles asociados al usuario junto a su
+        roles (list[tuple[Roles, bool]]): Lista de roles asociados al usuario junto a su
             estado actual en cada rol.
     """
     roles: list[tuple[Roles, bool]]
