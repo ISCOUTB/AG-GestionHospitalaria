@@ -11,52 +11,58 @@ from app import schemas
 
 from app.crud import crud_patient
 
-endpoint = f'{settings.API_V1_STR}/patients'
+endpoint = f"{settings.API_V1_STR}/patients"
 
 
-def test_get_patient(client: TestClient, nonpatient_token: dict[str, str], db: Session) -> None:
+def test_get_patient(
+    client: TestClient, nonpatient_token: dict[str, str], db: Session
+) -> None:
     patient = create_random_patient(db)
-    
+
     response = client.get(
-        f'{endpoint}/{patient.num_document}',
-        headers=nonpatient_token
+        f"{endpoint}/{patient.num_document}", headers=nonpatient_token
     )
-    
+
     content = response.json()
 
-    assert patient.num_document == content['num_document']
-    assert patient.num_doc_responsable == content['num_doc_responsable']
+    assert patient.num_document == content["num_document"]
+    assert patient.num_doc_responsable == content["num_doc_responsable"]
 
 
-def test_get_patient_patient_not_found(client: TestClient, nonpatient_token: dict[str, str]) -> None:
+def test_get_patient_patient_not_found(
+    client: TestClient, nonpatient_token: dict[str, str]
+) -> None:
     response = client.get(
-        f'{endpoint}/{non_existent_document}',
-        headers=nonpatient_token
+        f"{endpoint}/{non_existent_document}", headers=nonpatient_token
     )
 
     assert response.status_code == 404
 
 
-def test_update_patient(client: TestClient, nonpatient_token: dict[str, str], db: Session) -> None:
+def test_update_patient(
+    client: TestClient, nonpatient_token: dict[str, str], db: Session
+) -> None:
     patient = create_random_patient(db)
-    
-    new_document = f'{patient.num_doc_responsable}New'
-    new_phone = 'NewPhone'
-    new_relationship = 'Parents'
-    new_responsable_info = schemas.ResponsablesInfo(num_doc_responsable=new_document,
-                                                    phone_responsable=new_phone,
-                                                    relationship_responsable=new_relationship)
+
+    new_document = f"{patient.num_doc_responsable}New"
+    new_phone = "NewPhone"
+    new_relationship = "Parents"
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=new_document,
+        phone_responsable=new_phone,
+        relationship_responsable=new_relationship,
+    )
 
     response = client.put(
-        f'{endpoint}/{patient.num_document}',
+        f"{endpoint}/{patient.num_document}",
         headers=nonpatient_token,
-        json=new_responsable_info.model_dump()
+        json=new_responsable_info.model_dump(),
     )
 
     content = response.json()
 
-    assert content['status'] == 200
-    assert content['detail'] == 'Información del responsable actualizada'
+    assert content["status"] == 200
+    assert content["detail"] == "Información del responsable actualizada"
 
     patient_in = crud_patient.get_patient(patient.num_document, db)
     assert patient_in.phone_responsable == new_phone
@@ -67,15 +73,16 @@ def test_update_patient(client: TestClient, nonpatient_token: dict[str, str], db
 def test_update_patient_patient_not_found(
     client: TestClient, nonpatient_token: dict[str, str]
 ) -> None:
-    new_phone = 'NewPhone'
-    new_relationship = 'Parents'
-    new_responsable_info = schemas.ResponsablesInfo(phone_responsable=new_phone,
-                                                    relationship_responsable=new_relationship)
-    
+    new_phone = "NewPhone"
+    new_relationship = "Parents"
+    new_responsable_info = schemas.ResponsablesInfo(
+        phone_responsable=new_phone, relationship_responsable=new_relationship
+    )
+
     response = client.put(
-        f'{endpoint}/{non_existent_document}',
+        f"{endpoint}/{non_existent_document}",
         headers=nonpatient_token,
-        json=new_responsable_info.model_dump()
+        json=new_responsable_info.model_dump(),
     )
 
     assert response.status_code == 404
@@ -85,12 +92,14 @@ def test_update_patient_patient_cannot_be_his_responsable(
     client: TestClient, nonpatient_token: dict[str, str], db: Session
 ) -> None:
     patient = create_random_patient(db)
-    new_responsable_info = schemas.ResponsablesInfo(num_doc_responsable=patient.num_document)
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=patient.num_document
+    )
 
     response = client.put(
-        f'{endpoint}/{patient.num_document}',
+        f"{endpoint}/{patient.num_document}",
         headers=nonpatient_token,
-        json=new_responsable_info.model_dump()
+        json=new_responsable_info.model_dump(),
     )
 
     assert response.status_code == 400
@@ -102,12 +111,14 @@ def test_update_patient_patient_cannot_be_responsable(
     patient1 = create_random_patient(db)
     patient2 = create_random_patient(db)
 
-    new_responsable_info = schemas.ResponsablesInfo(num_doc_responsable=patient2.num_document)
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=patient2.num_document
+    )
 
     response = client.put(
-        f'{endpoint}/{patient1.num_document}',
+        f"{endpoint}/{patient1.num_document}",
         headers=nonpatient_token,
-        json=new_responsable_info.model_dump()
+        json=new_responsable_info.model_dump(),
     )
 
     assert response.status_code == 409
@@ -116,30 +127,31 @@ def test_update_patient_patient_cannot_be_responsable(
 def test_update_patient_responsable_not_found(
     client: TestClient, nonpatient_token: dict[str, str], db: Session
 ) -> None:
-    patient = create_random_user('patient', db, 10)
+    patient = create_random_user("patient", db, 10)
     empty_responsable = schemas.ResponsablesInfo()
 
     response = client.put(
-        f'{endpoint}/{patient.num_document}',
+        f"{endpoint}/{patient.num_document}",
         headers=nonpatient_token,
-        json=empty_responsable.model_dump()
+        json=empty_responsable.model_dump(),
     )
 
     assert response.status_code == 404
 
 
-def test_delete_responsable(client: TestClient, nonpatient_token: dict[str, str], db: Session) -> None:
+def test_delete_responsable(
+    client: TestClient, nonpatient_token: dict[str, str], db: Session
+) -> None:
     patient = create_random_patient(db)
-    
+
     response = client.delete(
-        f'{endpoint}/{patient.num_document}',
-        headers=nonpatient_token
+        f"{endpoint}/{patient.num_document}", headers=nonpatient_token
     )
 
     content = response.json()
 
-    assert content['status'] == 200
-    assert content['detail'] == 'Información del responsable eliminada'
+    assert content["status"] == 200
+    assert content["detail"] == "Información del responsable eliminada"
 
     patient_in = crud_patient.get_patient(patient.num_document, db)
     assert patient.num_document == patient_in.num_document
@@ -150,8 +162,7 @@ def test_delete_responsable_patient_not_found(
     client: TestClient, nonpatient_token: dict[str, str]
 ) -> None:
     response = client.delete(
-        f'{endpoint}/{non_existent_document}',
-        headers=nonpatient_token
+        f"{endpoint}/{non_existent_document}", headers=nonpatient_token
     )
 
     assert response.status_code == 404
@@ -160,10 +171,9 @@ def test_delete_responsable_patient_not_found(
 def test_delete_responsable_responsable_not_found(
     client: TestClient, nonpatient_token: dict[str, str], db: Session
 ) -> None:
-    patient = create_random_user('patient', db, 10)
+    patient = create_random_user("patient", db, 10)
     response = client.delete(
-        f'{endpoint}/{patient.num_document}',
-        headers=nonpatient_token
+        f"{endpoint}/{patient.num_document}", headers=nonpatient_token
     )
 
     assert response.status_code == 404

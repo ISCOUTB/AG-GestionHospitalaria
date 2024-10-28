@@ -6,10 +6,11 @@ from app.crud import crud_bed
 from app.schemas import BedBase
 
 
-non_existent_bed = 'NonExistentBed'
+non_existent_bed = "NonExistentBed"
+
 
 def random_bed() -> BedBase:
-    room = f'random_bed{random.choice(range(100))}'
+    room = f"random_bed{random.choice(range(100))}"
     return BedBase(room=room)
 
 

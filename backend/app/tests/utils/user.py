@@ -7,17 +7,14 @@ from app.models import UserRoles
 from app.tests.utils.utils import random_document, random_password
 
 
-non_existent_document = 'NonExistentDocument'
+non_existent_document = "NonExistentDocument"
+
 
 def fill_random_user(rol: Roles, k: int) -> UserCreate:
     num_document = random_document()
     password = random_password(k)
-    
-    new_user = UserCreate(
-        num_document=num_document,
-        rol=rol,
-        password=password
-    )
+
+    new_user = UserCreate(num_document=num_document, rol=rol, password=password)
 
     return new_user
 

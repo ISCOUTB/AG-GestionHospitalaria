@@ -13,12 +13,12 @@ def create_random_responsable() -> ResponsablesInfo:
 
 
 def create_random_patient(db: Session, k: int = 10) -> PatientAll:
-    user = create_random_user('patient', db, k)
+    user = create_random_user("patient", db, k)
     responsable = create_random_responsable()
 
     out = crud_patient.add_responsable(user.num_document, responsable, db)
     while out != 0:
         responsable = create_random_responsable()
         out = crud_patient.add_responsable(user.num_document, responsable, db)
-    
+
     return crud_patient.get_patient(user.num_document, db)

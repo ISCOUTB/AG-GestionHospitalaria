@@ -9,10 +9,12 @@ from sqlalchemy.orm import Session
 
 
 class CRUDDoctors(CRUDBase):
-    def get_doctor(self, num_document: str, db: Session, active: bool = True) -> schemas.DoctorAll | None:
+    def get_doctor(
+        self, num_document: str, db: Session, active: bool = True
+    ) -> schemas.DoctorAll | None:
         """
         Obtiene la información esencial de un doctor en particular
-    
+
         Args:
             num_document (str): Número de documento del doctor que se desea encontrar.
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
@@ -22,24 +24,30 @@ class CRUDDoctors(CRUDBase):
             schemas.DoctorAll: Retorna la información esencial y de las especialidades dado un doctor en particular.
             En caso de no encontrarlo, se retorna None
         """
-        stmt = self.join_doctors(active).where(models.UsersInfo.num_document == num_document)
+        stmt = self.join_doctors(active).where(
+            models.UsersInfo.num_document == num_document
+        )
         query = db.execute(stmt).all()
         if not query:
             return None
-        
-        userbase: schemas.UserBase = self.create_user_base(query[0])
-        specialities_list = list(map(lambda x: schemas.SpecialityBase(name=x[-1]), query))
 
-        return schemas.DoctorAll(**userbase.model_dump(), specialities=specialities_list)
+        userbase: schemas.UserBase = self.create_user_base(query[0])
+        specialities_list = list(
+            map(lambda x: schemas.SpecialityBase(name=x[-1]), query)
+        )
+
+        return schemas.DoctorAll(
+            **userbase.model_dump(), specialities=specialities_list
+        )
 
     def get_doctors(self, db: Session, active: bool = True) -> list[schemas.DoctorAll]:
         """
         Obtiene la información de todos los doctores dentro del sistema
-    
+
         Args:
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
             active (bool): Filtro de solo los doctores activos dentro del hospital. Por defecto `active=True`.
-        
+
         Returns:
             list[schemas.DoctorAll]: Se retorna una lista con la información esencial de los doctores
             y sus especialidades (incluye subespecialidades).
@@ -49,21 +57,26 @@ class CRUDDoctors(CRUDBase):
         results: list[schemas.DoctorAll] = []
         num_documents: set[str] = set(map(lambda row: row[0], query))
         for num_document in num_documents:
-            data = list(filter(lambda row: row[0]==num_document, query))
+            data = list(filter(lambda row: row[0] == num_document, query))
             userbase: schemas.UserBase = self.create_user_base(data[0])
-            specialities_list: list[schemas.SpecialityBase] = list(map(lambda x: schemas.SpecialityBase(name=x[-1]), data))
+            specialities_list: list[schemas.SpecialityBase] = list(
+                map(lambda x: schemas.SpecialityBase(name=x[-1]), data)
+            )
 
-            results.append(schemas.DoctorAll(
-                **userbase.model_dump(),
-                specialities=specialities_list
-            ))
-        
+            results.append(
+                schemas.DoctorAll(
+                    **userbase.model_dump(), specialities=specialities_list
+                )
+            )
+
         return results
 
-    def get_speciality_doctor(self, speciality: str, db: Session, active: bool = True) -> list[schemas.DoctorAll]:
+    def get_speciality_doctor(
+        self, speciality: str, db: Session, active: bool = True
+    ) -> list[schemas.DoctorAll]:
         """
         Obtiene todos los doctores los cuales tengan una especialidad especifica
-        
+
         Args:
             speciality (str): Nombre de la especialidad por la que se quiere filtrar.
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
@@ -76,7 +89,9 @@ class CRUDDoctors(CRUDBase):
         query = db.execute(stmt).all()
         num_documents = set(map(lambda row: row[0], query))
 
-        return [self.get_doctor(num_document, db, active) for num_document in num_documents]
+        return [
+            self.get_doctor(num_document, db, active) for num_document in num_documents
+        ]
 
     def get_specialities(self, db: Session) -> list[schemas.Speciality]:
         """
@@ -84,27 +99,34 @@ class CRUDDoctors(CRUDBase):
 
         Args:
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
-        
+
         Returns:
             list[schemas.Speciality]: Retorna una lista con todas las especialidades que presentan los doctores activos dentro
             de la base de datos.
         """
-        stmt = select(
-            models.Specialities.name,
-            models.Specialities.description
-        ).join(models.DoctorSpecialities) \
-        .join(models.UserRoles).where(models.UserRoles.is_active == True)
+        stmt = (
+            select(models.Specialities.name, models.Specialities.description)
+            .join(models.DoctorSpecialities)
+            .join(models.UserRoles)
+            .where(models.UserRoles.is_active == True)
+        )
 
         query = set(db.execute(stmt).all())
-        
-        return list(map(
-            lambda speciality: schemas.Speciality(name=speciality[0], description=speciality[1]),
-            query
-        ))
-    
-    def add_doctor_speciality(self, num_document: str, db: Session, speciality: schemas.Speciality) -> Literal[0, 1, 2, 3]:
+
+        return list(
+            map(
+                lambda speciality: schemas.Speciality(
+                    name=speciality[0], description=speciality[1]
+                ),
+                query,
+            )
+        )
+
+    def add_doctor_speciality(
+        self, num_document: str, db: Session, speciality: schemas.Speciality
+    ) -> Literal[0, 1, 2, 3]:
         """
-        Agrega una especialidad dado el número documento del doctor. Antes de agregar las especialidades, la información 
+        Agrega una especialidad dado el número documento del doctor. Antes de agregar las especialidades, la información
         esencial del doctor tuvo que haber sido previamente creada. Además, el campo de `description` dentro de `speciality`
         no es necesario de agregar, únicamente cuando la especialidad no esté creada previamente en la base de datos
 
@@ -112,7 +134,7 @@ class CRUDDoctors(CRUDBase):
             num_document (str): Número de documento del doctor.
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
             speciality (Speciality): Especialidad que se le agregará al doctor.
-        
+
         Returns:
             int: Retorna un entero simbolizando el estado de la respuesta. Estos son los posibles estados de la respuesta:
                 - 0: Respuesta existosa
@@ -120,32 +142,49 @@ class CRUDDoctors(CRUDBase):
                 - 2: Especialidad no existente. Se debe completar el campo `description` dentro de `speciality`
                 - 3: Relación de especialidad y doctor ya existente.
         """
-        doctor_search: schemas.UserSearch = schemas.UserSearch(num_document=num_document, rol='doctor')
+        doctor_search: schemas.UserSearch = schemas.UserSearch(
+            num_document=num_document, rol="doctor"
+        )
         doctor: models.UserRoles | None = self.get_user_rol(doctor_search, db)
         if doctor is None:
             return 1
-        
+
         current_specialities: list[schemas.Speciality] = self.get_specialities(db)
-        speciality_exists: bool = any(map(lambda x: x.name == speciality.name, current_specialities))
+        speciality_exists: bool = any(
+            map(lambda x: x.name == speciality.name, current_specialities)
+        )
 
         if not speciality_exists and speciality.description is None:
             return 2
 
         if not speciality_exists:
-            db.add(models.Specialities(name=speciality.name, description=speciality.description))
+            db.add(
+                models.Specialities(
+                    name=speciality.name, description=speciality.description
+                )
+            )
 
-        speciality_id: int = db.execute(select(models.Specialities.id). \
-                                        where(models.Specialities.name == speciality.name)).first()
+        speciality_id: int = db.execute(
+            select(models.Specialities.id).where(
+                models.Specialities.name == speciality.name
+            )
+        ).first()
 
         try:
-            db.add(models.DoctorSpecialities(doctor_id=doctor.id, speciality_id=speciality_id))
+            db.add(
+                models.DoctorSpecialities(
+                    doctor_id=doctor.id, speciality_id=speciality_id
+                )
+            )
             db.commit()
         except sqlalchemy.exc.IntegrityError:
             return 3
-        
+
         return 0
-    
-    def delete_speciality(self, num_document: str, speciality_name: schemas.SpecialityBase, db: Session) -> Literal[0, 1, 2, 3]:
+
+    def delete_speciality(
+        self, num_document: str, speciality_name: schemas.SpecialityBase, db: Session
+    ) -> Literal[0, 1, 2, 3]:
         """
         Elimina la especialidad de un doctor (no importa su estado) especificando su número de documento.
 
@@ -161,26 +200,35 @@ class CRUDDoctors(CRUDBase):
                 - 2: Especialidad inexistente.
                 - 3: Relación inexistente.
         """
-        doctor_search: schemas.UserSearch = schemas.UserSearch(num_document=num_document, rol='doctor')
+        doctor_search: schemas.UserSearch = schemas.UserSearch(
+            num_document=num_document, rol="doctor"
+        )
         doctor: models.UserRoles | None = self.get_user_rol(doctor_search, db, False)
 
         if doctor is None:
             return 1
-        
-        speciality: models.Specialities | None = db.query(models.Specialities).filter(
-            models.Specialities.name == speciality_name.name
-        ).first()
+
+        speciality: models.Specialities | None = (
+            db.query(models.Specialities)
+            .filter(models.Specialities.name == speciality_name.name)
+            .first()
+        )
 
         if speciality is None:
             return 2
 
-        doctor_speciality: models.DoctorSpecialities | None = db.query(models.DoctorSpecialities).filter(
-            models.DoctorSpecialities.doctor_id == doctor.id, models.DoctorSpecialities.speciality_id == speciality.id
-        ).first()
+        doctor_speciality: models.DoctorSpecialities | None = (
+            db.query(models.DoctorSpecialities)
+            .filter(
+                models.DoctorSpecialities.doctor_id == doctor.id,
+                models.DoctorSpecialities.speciality_id == speciality.id,
+            )
+            .first()
+        )
 
         if doctor_speciality is None:
             return 3
-        
+
         db.delete(doctor_speciality)
         db.commit()
 

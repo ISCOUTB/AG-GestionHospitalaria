@@ -10,6 +10,7 @@ class TokenPayload(BaseModel):
         number_document (str): Número de documento del usuario.
         rol (Roles): Rol del usuario asociado al token.
     """
+
     number_document: str
     rol: Roles
 
@@ -22,5 +23,6 @@ class Token(BaseModel):
         access_token (str): El token de acceso en sí.
         token_type (str): El tipo de token (generalmente 'bearer').
     """
+
     access_token: str
     token_type: str

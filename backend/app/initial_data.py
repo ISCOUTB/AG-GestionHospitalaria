@@ -16,12 +16,12 @@ def init() -> None:
     finally:
         session.close()
 
-    
+
 def main() -> None:
     logger.info("Creando la información inicial")
     init()
     logger.info("Información inicial creada")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

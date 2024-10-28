@@ -8,6 +8,7 @@ class BedBase(BaseModel):
     Attributes:
         room (str): Número o nombre de la habitación donde se encuentra la cama.
     """
+
     room: str
 
 
@@ -18,13 +19,14 @@ class BedAll(BedBase):
 
     Inherits from:
         BedBase: Contiene la información esencial de la cama
-    
+
     Attributes:
         num_doc_patient (str | None): Número de documento del paciente que se encuentre en la cama.
             En caso de no haber, el valor es `None`.
         num_doc_doctor (str | None): Número de documento del doctor que ha hospitalizado al paciente.
             En caso de no haber, el valor es `None`.
     """
+
     num_doc_patient: str | None = None
     num_doc_doctor: str | None = None
 
@@ -40,6 +42,7 @@ class UseBed(BedBase):
         num_doc_doctor (str): Número de documento del doctor que utiliza la cama.
         num_doc_patient (str): Número de documento del paciente que ocupa la cama.
     """
+
     num_doc_doctor: str
     num_doc_patient: str
 
@@ -51,4 +54,5 @@ class VacateBed(BedBase):
     Inherits from:
         BedBase: Contiene la información básica sobre la cama.
     """
+
     pass

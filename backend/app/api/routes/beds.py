@@ -1,9 +1,6 @@
 from fastapi import APIRouter, status
 
-from app.api.deps import (
-    SessionDep,
-    Admin
-)
+from app.api.deps import SessionDep, Admin
 
 from app import schemas
 from app.api import exceptions
@@ -13,7 +10,9 @@ router = APIRouter(prefix="/beds")
 
 
 @router.get("/")
-async def get_beds(current_user: Admin, db: SessionDep, all: bool = False) -> list[schemas.models.Beds] | list[schemas.BedAll]:
+async def get_beds(
+    current_user: Admin, db: SessionDep, all: bool = False
+) -> list[schemas.models.Beds] | list[schemas.BedAll]:
     """
     Obtiene un listado con todas las camas del hospital
     """
@@ -21,7 +20,9 @@ async def get_beds(current_user: Admin, db: SessionDep, all: bool = False) -> li
 
 
 @router.post("/")
-async def add_bed(current_user: Admin, db: SessionDep, bed_info: schemas.BedBase) -> dict:
+async def add_bed(
+    current_user: Admin, db: SessionDep, bed_info: schemas.BedBase
+) -> dict:
     """
     Agrega una nueva cama al hospital al hospital especificando el cuarto
     """
@@ -29,8 +30,8 @@ async def add_bed(current_user: Admin, db: SessionDep, bed_info: schemas.BedBase
 
     if out == 1:
         raise exceptions.room_already_with_bed
-    
-    return {'status': status.HTTP_201_CREATED, 'detail': 'Cama agregada perfectamente'}
+
+    return {"status": status.HTTP_201_CREATED, "detail": "Cama agregada perfectamente"}
 
 
 @router.delete("/{room}")
@@ -42,8 +43,8 @@ async def delete_bed(room: str, current_user: Admin, db: SessionDep) -> dict:
 
     if out == 1:
         raise exceptions.bed_not_found
-    
+
     if out == 2:
         raise exceptions.bed_already_used
-    
-    return {'status': status.HTTP_200_OK, 'detail': 'Cama eliminada de la habitación'}
+
+    return {"status": status.HTTP_200_OK, "detail": "Cama eliminada de la habitación"}

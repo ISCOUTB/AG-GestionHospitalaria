@@ -9,7 +9,9 @@ from app.schemas import Roles
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
-def create_access_token(number_document: str, rol: Roles, expires_delta: timedelta) -> str:
+def create_access_token(
+    number_document: str, rol: Roles, expires_delta: timedelta
+) -> str:
     """
     Genera un token de acceso (JWT) para un usuario.
 
@@ -23,8 +25,10 @@ def create_access_token(number_document: str, rol: Roles, expires_delta: timedel
     """
     expire = datetime.now(timezone.utc) + expires_delta
     to_encode = {"exp": expire, "number_document": number_document, "rol": rol}
-    encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
-    
+    encoded_jwt = jwt.encode(
+        to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM
+    )
+
     return encoded_jwt
 
 

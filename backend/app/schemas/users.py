@@ -20,6 +20,7 @@ class UserBase(BaseModel):
         phone (str | None): Teléfono del usuario (opcional).
         email (str | None): Email del usuario (opcional).
     """
+
     num_document: str
     type_document: str | None = None
     name: str | None = None
@@ -41,6 +42,7 @@ class User(UserBase):
     Attributes:
         rol (Roles): Rol del usuario, que debe ser uno de los valores de 'Roles'.
     """
+
     rol: Roles
 
 
@@ -55,6 +57,7 @@ class UserAll(UserBase):
         roles (list[tuple[Roles, bool]]): Lista de roles asociados al usuario junto a su
             estado actual en cada rol.
     """
+
     roles: list[tuple[Roles, bool]]
 
 
@@ -67,6 +70,7 @@ class UserLogin(BaseModel):
         password (str): Contraseña para el acceso del usuario.
         rol (Roles): Rol del usuario al que se autentica.
     """
+
     num_document: str
     password: str
     rol: Roles
@@ -82,6 +86,7 @@ class UserUpdate(BaseModel):
         phone (str | None): Nuevo número de teléfono (opcional).
         email (str | None): Nuevo email (opcional)
     """
+
     password: str | None = None
     address: str | None = None
     phone: str | None = None
@@ -103,12 +108,14 @@ class UserUpdateAll(UserUpdate):
         sex (str | None): Nuevo sexo del usuario (opcional).
         birthday (datetime.date | None): Nueva fecha de nacimiento del usuario (opcional).
     """
+
     num_document: str | None = None
     type_document: str | None = None
     name: str | None = None
     surname: str | None = None
     sex: str | None = None
     birthday: datetime.date | None = None
+
 
 class UserSearch(BaseModel):
     """
@@ -118,6 +125,7 @@ class UserSearch(BaseModel):
         num_document (str): Número de documento del usuario.
         rol (Roles): Rol del usuario que se está buscando.
     """
+
     num_document: str
     rol: Roles
 
@@ -132,4 +140,5 @@ class UserCreate(User):
     Attributes:
         password (str): Contraseña del nuevo usuario
     """
+
     password: str

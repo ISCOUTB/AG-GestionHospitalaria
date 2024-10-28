@@ -10,6 +10,7 @@ class BaseAppointment(BaseModel):
         num_doc_patient (str): Número de documento del paciente.
         num_doc_doctor (str): Número de documento del doctor.
     """
+
     num_doc_patient: str
     num_doc_doctor: str
 
@@ -25,6 +26,7 @@ class Consultation(BaseAppointment):
         area (str): Área donde se realiza la consulta.
         day (datetime.date): Fecha de la consulta, por defecto la fecha actual.
     """
+
     area: str
     day: date = date.today()
 
@@ -40,6 +42,7 @@ class RegisterHospitalization(BaseAppointment):
         room (str): Cuarto donde estará el paciente hospitalizado
         entry_day (datetime.date): Fecha de ingreso al hospital, por defecto la fecha actual.
     """
+
     room: str
     entry_day: date = date.today()
 
@@ -51,6 +54,7 @@ class DischargeHospitalization(BaseModel):
     Attributes:
         last_day (datetime.date): Último día de hospitalización, por defecto la fecha actual.
     """
+
     last_day: date = date.today()
 
 
@@ -60,11 +64,12 @@ class Hospitalization(BaseAppointment):
 
     Inherits from:
         BaseAppointment: Contiene los atributos comunes para registrar una hospitalización
-    
+
     Attributes:
         entry_day (datetime.date): Fecha de ingreso al hospital.
         last_day (datetime.date | None): Última fecha del paciente en el hospital. Si `last_day=None`,
-            significa que aún no ha sido dado de alta el paciente. 
+            significa que aún no ha sido dado de alta el paciente.
     """
+
     entry_day: date
     last_day: date | None = None

@@ -15,7 +15,7 @@ def test_add_consultation(db: Session) -> None:
     new_consultation = schemas.Consultation(
         num_doc_doctor=non_existent_document,
         num_doc_patient=patient.num_document,
-        area='area1'
+        area="area1",
     )
 
     out = crud_consultation.add_consultation(new_consultation, db)
@@ -24,7 +24,7 @@ def test_add_consultation(db: Session) -> None:
     new_consultation = schemas.Consultation(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=non_existent_document,
-        area='area1'
+        area="area1",
     )
 
     out = crud_consultation.add_consultation(new_consultation, db)
@@ -33,7 +33,7 @@ def test_add_consultation(db: Session) -> None:
     new_consultation = schemas.Consultation(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=patient.num_document,
-        area='area1'
+        area="area1",
     )
 
     out = crud_consultation.add_consultation(new_consultation, db)

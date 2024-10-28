@@ -9,7 +9,9 @@ from sqlalchemy.orm import Session
 
 
 class CRUDBeds(CRUDBase):
-    def get_beds(self, db: Session, all: bool = False) -> list[schemas.models.Beds] | list[schemas.BedAll]:
+    def get_beds(
+        self, db: Session, all: bool = False
+    ) -> list[schemas.models.Beds] | list[schemas.BedAll]:
         """
         Obtiene un listado con todas las camas del hospital
 
@@ -19,19 +21,28 @@ class CRUDBeds(CRUDBase):
                 Por defecto, `all=False`.
         Returns:
             list: Retorna una lista de las camas, dependiendo del paramétro `all` se retornará una lista de `schemas.models.Beds` (cuando `all=False`) o
-                `schemas.BedAll` (cuando `all=True`). 
+                `schemas.BedAll` (cuando `all=True`).
         """
         if not all:
-            return list(map(lambda bed: schemas.models.Beds.model_validate(bed), 
-                            db.query(models.Beds).all()))
-        
+            return list(
+                map(
+                    lambda bed: schemas.models.Beds.model_validate(bed),
+                    db.query(models.Beds).all(),
+                )
+            )
+
         stmt = self.join_beds()
         results = db.execute(stmt).all()
 
-        return list(map(lambda row: schemas.BedAll(
-            room=row[0], num_doc_patient=row[1], num_doc_doctor=row[2]
-        ), results))
-    
+        return list(
+            map(
+                lambda row: schemas.BedAll(
+                    room=row[0], num_doc_patient=row[1], num_doc_doctor=row[2]
+                ),
+                results,
+            )
+        )
+
     def add_bed(self, bed_info: schemas.BedBase, db: Session) -> Literal[0, 1]:
         """
         Agrega una nueva cama al hospital al hospital especificando el cuarto
@@ -52,7 +63,7 @@ class CRUDBeds(CRUDBase):
             return 1
 
         return 0
-    
+
     def delete_bed(self, room: str, db: Session) -> Literal[0, 1, 2]:
         """
         Elimina una cama dentro del hospital que no esté en uso, especificando el cuarto donde esté
@@ -67,17 +78,17 @@ class CRUDBeds(CRUDBase):
                 - 1: Habitación inexistente.
                 - 2: Cama en uso.
         """
-        bed: models.Beds | None = db.query(models.Beds).filter(
-            models.Beds.room == room
-        ).first()
+        bed: models.Beds | None = (
+            db.query(models.Beds).filter(models.Beds.room == room).first()
+        )
 
         if bed is None:
             return 1
-        
+
         stmt = select(models.BedsUsed).where(models.BedsUsed.id_bed == bed.id)
         if db.execute(stmt).first():
             return 2
-        
+
         db.delete(bed)
         db.commit()
 

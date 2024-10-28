@@ -19,5 +19,5 @@ from app.api.exceptions.exceptions import (
     non_superuser,
     num_document_used,
     user_found,
-    patient_in_bed
+    patient_in_bed,
 )
