@@ -21,8 +21,7 @@ def create_new_speciality(db: Session) -> Speciality:
     number = random.choices(range(1000), k=3)
     speciality = Speciality(name=f'random_{number}')
 
-    while db.query(Specialities).filter(
-        Specialities.name == speciality.name).first() is not None:
+    while db.query(Specialities).filter(Specialities.name == speciality.name).first() is not None:
         speciality = create_new_speciality(db)
     
     return speciality
