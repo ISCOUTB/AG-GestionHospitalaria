@@ -13,11 +13,6 @@ router = APIRouter(prefix="/doctors")
 
 
 @router.get("/")
-async def root() -> dict:
-    return {"detail": "root/doctor", "status": status.HTTP_200_OK}
-
-
-@router.get("/all")
 async def get_doctors(current_user: Admin, db: SessionDep, active: bool = True) -> list[schemas.DoctorAll]:
     """
     Obtiene la información de todos los doctores dentro del sistema
@@ -54,9 +49,9 @@ async def get_speciality_doctor(speciality: str, current_user: Admin, db: Sessio
     return crud_doctor.get_speciality_doctor(speciality, db, active)
 
 
-@router.post("/doctors/{num_document}")
+@router.post("/{num_document}")
 async def add_doctor_speciality(num_document: str, current_user: Admin,
-                        db: SessionDep, speciality: schemas.Speciality) -> dict:
+                                db: SessionDep, speciality: schemas.Speciality) -> dict:
     """
     Agrega una especialidad dado el número documento del doctor. Antes de agregar las especialidades, la información 
     esencial del doctor tuvo que haber sido previamente creada. Además, el campo de `description` dentro de `speciality`
@@ -79,10 +74,11 @@ async def add_doctor_speciality(num_document: str, current_user: Admin,
 
 @router.delete("/{num_document}")
 async def delete_speciality(num_document: str, current_user: Admin, db: SessionDep,
-                            speciality: schemas.SpecialityBase) -> schemas.DoctorAll:
+                            speciality_name: str) -> schemas.DoctorAll:
     """
     Elimina la especialidad de un doctor especificando su número de documento.
     """
+    speciality = schemas.SpecialityBase(name=speciality_name)
     out = crud_doctor.delete_speciality(num_document, speciality, db)
 
     if out == 1:
