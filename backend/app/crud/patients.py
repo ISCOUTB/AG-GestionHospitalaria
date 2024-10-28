@@ -8,6 +8,27 @@ from sqlalchemy.orm import Session
 
 
 class CRUDPatients(CRUDBase):
+    def valid_responsable_doc(self, patient_doc: str, responsable_doc: str, db: Session) -> Literal[0, 2, 3]:
+        """
+        Válida que el número de documento de un responsable pueda ser utilizable
+
+        Returns:
+            int: Retorna un entero simbolizando el estado de la respuesta. Estos son los posibles estados de la respuesta:
+                - 0: Puede ser utilizado.
+                - 2: El paciente es su propio responsable. No se puede.
+                - 3: El responsable tiene el mismo documento que algun paciente activo dentro del hospital. No se puede
+        """
+        
+        if patient_doc == responsable_doc:
+            return 2
+        
+        if responsable_doc in list(map(
+            lambda patient: patient.num_document, self.get_patients(db)
+        )):
+            return 3
+
+        return 0
+    
     def get_patients(self, db: Session, active: bool = True) -> list[schemas.PatientAll]:
         """
         Obtiene todos los pacientes que están dentro del sistema 
@@ -74,7 +95,7 @@ class CRUDPatients(CRUDBase):
                 - 3: El responsable no puede tener el mismo documento que algun paciente activo dentro del hospital.
                 - 4: Información del responsable para ese paciente ya existente.
         """
-        valid_responsable: int = self.valid_responsable_doc(num_document, responsable_info.num_doc_responsable, db)
+        valid_responsable = self.valid_responsable_doc(num_document, responsable_info.num_doc_responsable, db)
         if valid_responsable != 0:
             return valid_responsable
 
@@ -86,7 +107,7 @@ class CRUDPatients(CRUDBase):
 
         responsable: models.PatientInfo = models.PatientInfo(
             patient_id=patient.id,
-            **responsable_info
+            **responsable_info.model_dump()
         )
 
         try:

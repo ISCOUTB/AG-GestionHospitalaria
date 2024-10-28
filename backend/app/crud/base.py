@@ -1,4 +1,4 @@
-from typing import Literal
+from typing import Literal, Any
 
 from app import models, schemas
 
@@ -40,7 +40,7 @@ class CRUDBase:
 
         return stmt
 
-    def create_user_base(self, data: list[any]) -> schemas.UserBase:
+    def create_user_base(self, data: list[Any]) -> schemas.UserBase:
         return schemas.UserBase(
             num_document=data[0],
             type_document=data[1],
@@ -100,7 +100,7 @@ class CRUDBase:
 
         return stmt.where(models.UserRoles.rol == 'patient')
     
-    def create_patient_info(self, data: list[any]) -> schemas.ResponsablesInfo:
+    def create_patient_info(self, data: list[Any]) -> schemas.ResponsablesInfo:
         return schemas.ResponsablesInfo(
             num_doc_responsable=data[0],
             type_doc_responsable=data[1],
@@ -110,28 +110,7 @@ class CRUDBase:
             relationship_responsable=data[5]
         )
 
-    def valid_responsable_doc(self, patient_doc: str, responsable_doc: str, db: Session) -> Literal[0, 2, 3]:
-        """
-        Válida que el número de documento de un responsable pueda ser utilizable
-
-        Returns:
-            int: Retorna un entero simbolizando el estado de la respuesta. Estos son los posibles estados de la respuesta:
-                - 0: Puede ser utilizado.
-                - 2: El paciente es su propio responsable. No se puede.
-                - 3: El responsable tiene el mismo documento que algun paciente activo dentro del hospital. No se puede
-        """
-        
-        if patient_doc == responsable_doc:
-            return 2
-        
-        if responsable_doc in list(map(
-            lambda patient: patient.num_document, self.get_all_patients(db)
-        )):
-            return 3
-
-        return 0
-
-    def valid_basic_appointment(self, info: schemas.BaseAppointment, db: Session) -> int | tuple[models.UserRoles]:
+    def valid_basic_appointment(self, info: schemas.BaseAppointment, db: Session) -> Literal[1, 2] | tuple[models.UserRoles]:
         patient_search: schemas.UserSearch = schemas.UserSearch(
             num_document=info.num_doc_patient,
             rol='patient'
