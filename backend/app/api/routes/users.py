@@ -1,5 +1,3 @@
-from typing import Literal
-
 from fastapi import APIRouter, status
 
 from app.api.deps import (
@@ -11,6 +9,7 @@ from app.api.deps import (
 from app import schemas
 from app.api import exceptions
 from app.crud import crud_user, crud_admin
+from app.core.config import settings
 
 router = APIRouter(prefix="/users")
 
@@ -34,7 +33,7 @@ async def get_user(num_document: str, current_user: Admin, db: SessionDep,
     if user is None:
         raise exceptions.user_not_found
 
-    return crud_user.get_user(num_document, db, rol, active)
+    return user
 
 
 @router.get("/")
@@ -51,10 +50,14 @@ async def create_user(current_user: Admin, db: SessionDep, new_user: schemas.Use
     """
     Crea un nuevo usuario dentro en el sistema. No se pueden crear nuevos administradores.
     """
-    out = crud_admin.create_user(new_user, db)
+    admins_bool = False
+    if current_user.num_document == settings.FIRST_SUPERUSER:
+        admins_bool = True
+
+    out = crud_admin.create_user(new_user, db, admins_bool)
 
     if out == 1:
-        raise exceptions.wrong_endpoint
+        raise exceptions.non_superuser
 
     if out == 2:
         raise exceptions.user_found
@@ -68,9 +71,12 @@ async def update_user(num_document: str, rol: schemas.Roles,
     """
     Actualiza la información completa de cualquier usuario dentro del sistema que no sea un administrador.
     """
-    user_search = schemas.UserSearch(num_document=num_document,
-                                                         rol=rol)
-    out = crud_admin.update_user(user_search, updated_info, db, False)
+    admins_bool = False
+    if current_user.num_document == settings.FIRST_SUPERUSER:
+        admins_bool = True
+
+    user_search = schemas.UserSearch(num_document=num_document, rol=rol)
+    out = crud_admin.update_user(user_search, updated_info, db, admins_bool)
 
     if out == 1:
         raise exceptions.user_not_found
@@ -88,7 +94,7 @@ async def update_user(num_document: str, rol: schemas.Roles,
 async def update_basic_user(current_user: CurrentUser, db: SessionDep,
                             updated_info: schemas.UserUpdate) -> schemas.models.UsersInfo:
     """
-    Modifica la información no esencial de para determinado usuario
+    Modifica la información no esencial
     """
     user_search: schemas.UserSearch = schemas.UserSearch(num_document=current_user.num_document,
                                                          rol=current_user.rol)
@@ -101,13 +107,17 @@ async def update_basic_user(current_user: CurrentUser, db: SessionDep,
 
 
 @router.delete("/{num_document}/{rol}")
-async def delete_user(num_document: str, rol: Literal["doctor", "patient"], current_user: Admin, db: SessionDep) -> dict:
+async def delete_user(num_document: str, rol: schemas.Roles, current_user: Admin, db: SessionDep) -> dict:
     """
     "Elimina" a un usuario activo dentro del sistema. En realidad, lo que se hace es colocar al usuario como inactivo.
     En el caso de los pacientes que están en cama, no se pueden colocar como inactivos todavía.
     """
+    admins_bool = False
+    if current_user.num_document == settings.FIRST_SUPERUSER:
+        admins_bool = True
+
     user_search: schemas.UserSearch = schemas.UserSearch(num_document=num_document, rol=rol)
-    out = crud_admin.delete_user(user_search, db, False)
+    out = crud_admin.delete_user(user_search, db, admins_bool)
 
     if out == 1:
         raise exceptions.user_not_found

@@ -58,13 +58,6 @@ def get_current_user(db: SessionDep, token: TokenDep) -> schemas.models.UserRole
 CurrentUser = Annotated[schemas.models.UserRoles, Depends(get_current_user)]
 
 
-def get_current_superuser(current_user: CurrentUser) -> schemas.models.UserRoles | None:
-    if current_user.num_document == settings.FIRST_SUPERUSER:
-        return current_user
-    
-    raise unauthorized_exception
-
-
 def get_current_admin(current_user: CurrentUser) -> schemas.models.UserRoles | None:
     if current_user.rol != 'admin':
         raise unauthorized_exception
@@ -96,5 +89,4 @@ def get_current_nonpatient(current_user: CurrentUser) -> schemas.models.UserRole
 Admin = Annotated[schemas.models.UserRoles, Depends(get_current_admin)]
 Doctor = Annotated[schemas.models.UserRoles, Depends(get_current_doctor)]
 Patient = Annotated[schemas.models.UserRoles, Depends(get_current_patient)]
-SuperUser = Annotated[schemas.models.UserRoles, Depends(get_current_superuser)]  # Nada más existe un solo superuser
 NonPatient = Annotated[schemas.models.UserRoles, Depends(get_current_nonpatient)]

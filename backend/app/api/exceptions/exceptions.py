@@ -32,11 +32,6 @@ non_superuser = HTTPException(
     detail='No tienes los permisos para manipular a un administrador'
 )
 
-wrong_endpoint = HTTPException(
-    status_code=status.HTTP_403_FORBIDDEN,
-    detail='No se pueden crear funciones con este endpoint'
-)
-
 user_not_found = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail='Usuario no encontrado'
