@@ -28,7 +28,11 @@ async def get_responsable(current_user: Patient, db: SessionDep) -> schemas.Pati
     """
     Devuelve toda la información del paciente, incluyendo la de los responsables
     """
-    return crud_patient.get_patient(current_user.num_document, db)
+    patient = crud_patient.get_patient(current_user.num_document, db)
+    if patient is None:
+        raise exceptions.patient_not_found
+
+    return patient
 
 
 @router.get("/")
