@@ -16,7 +16,6 @@ from app.api.exceptions.exceptions import (
     patient_cannot_be_responsable,
     responsable_not_found,
     user_not_found,
-    wrong_endpoint,
     non_superuser,
     num_document_used,
     user_found,
