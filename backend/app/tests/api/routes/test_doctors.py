@@ -187,7 +187,7 @@ def test_delete_speciality_speciality_doctor_not_found(
     client: TestClient, admin_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user('doctor', db, 10)
-    speciality = create_new_speciality(db)
+    speciality = create_doctor_info(db).specialities[0]
 
     response = client.delete(
         f'{endpoint}/{doctor.num_document}?speciality_name={speciality.name}',
