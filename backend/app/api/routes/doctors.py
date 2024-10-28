@@ -17,7 +17,7 @@ async def get_doctors(current_user: Admin, db: SessionDep, active: bool = True) 
     """
     Obtiene la información de todos los doctores dentro del sistema
     """
-    return crud_doctor.get_all_doctors(db, active)
+    return crud_doctor.get_doctors(db, active)
 
 
 @router.get("/{num_document}")
@@ -74,7 +74,7 @@ async def add_doctor_speciality(num_document: str, current_user: Admin,
 
 @router.delete("/{num_document}")
 async def delete_speciality(num_document: str, current_user: Admin, db: SessionDep,
-                            speciality_name: str) -> schemas.DoctorAll:
+                            speciality_name: str) -> dict:
     """
     Elimina la especialidad de un doctor especificando su número de documento.
     """
