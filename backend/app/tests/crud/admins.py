@@ -37,6 +37,7 @@ def test_create_user(db: Session) -> None:
     out = crud_admin.create_user(new_user, db, True)
     assert out == 0 or out == 2
     
+    user_search = schemas.UserSearch(num_document=num_document, rol=rol)
     # Verificar que los parametros que se tomaron estén bien definidos
     user_rol_in = crud_admin.get_user_rol(user_search, db)
     user_info_in = crud_admin.get_user_info(num_document, db)
@@ -47,7 +48,6 @@ def test_create_user(db: Session) -> None:
     assert user_info_in.surname == surname
 
     # Comprobar si se restaura el estado de actividad del usuario cuando se crea nuevamente
-    user_search = schemas.UserSearch(num_document=num_document, rol=rol)
     crud_admin.delete_user(user_search, db, True)
     
     user_rol_in = crud_admin.get_user_rol(user_search, db, False)

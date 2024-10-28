@@ -116,7 +116,7 @@ class CRUDHospitalizations(CRUDBase):
 
         # Eliminar cama
         patient: models.UserRoles = db.query(models.UserRoles).filter(models.UserRoles.num_document == num_doc_patient).first()
-        bed_used: models.BedsUsed = db.query(models.BedsUsed).filter(models.BedsUsed.id_patient == patient.id)
+        bed_used: models.BedsUsed = db.query(models.BedsUsed).filter(models.BedsUsed.id_patient == patient.id).first()
         db.delete(bed_used)
 
         db.commit()

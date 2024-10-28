@@ -23,7 +23,7 @@ def test_login_access_token(client: TestClient) -> None:
     assert token["access_token"]
 
 
-def test_login_access_token(client: TestClient) -> None:
+def test_login_access_token_user_incorrect(client: TestClient) -> None:
     login_data = schemas.UserLogin(
         num_document=settings.FIRST_SUPERUSER,
         rol='admin',
