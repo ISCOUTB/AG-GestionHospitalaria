@@ -14,11 +14,6 @@ from app.crud import crud_user
 router = APIRouter(prefix="/login")
 
 
-@router.get("/")
-async def root() -> dict:
-    return {"detail": "root/login", "status": status.HTTP_200_OK}
-
-
 @router.post("/access-token")
 async def login_access_token(db: SessionDep, 
                              form_data: Annotated[OAuth2PasswordRequestForm, Depends()], 

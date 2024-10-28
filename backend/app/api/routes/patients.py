@@ -52,7 +52,7 @@ async def get_patient(num_document: str, current_user: NonPatient, db: SessionDe
 
 
 @router.put("/{num_document}")
-async def update_patient(num_document: str, current_user: NonPatient, db: SessionDep, updated_info: schemas.ResponsablesInfo) -> dict:
+async def update_responsable(num_document: str, current_user: NonPatient, db: SessionDep, updated_info: schemas.ResponsablesInfo) -> dict:
     """ 
     Actualiza la información del responsable dado un determinado paciente
     """

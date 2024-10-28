@@ -1,5 +1,3 @@
-from typing import Literal
-
 from fastapi import APIRouter, status
 
 from app.api.deps import (
@@ -14,7 +12,7 @@ from app.crud import crud_bed
 router = APIRouter(prefix="/beds")
 
 
-@router.get("/", summary="Get Number All Beds")
+@router.get("/")
 async def get_beds(current_user: Admin, db: SessionDep, all: bool = False) -> list[schemas.models.Beds] | list[schemas.BedAll]:
     """
     Obtiene un listado con todas las camas del hospital
