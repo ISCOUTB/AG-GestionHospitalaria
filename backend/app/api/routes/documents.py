@@ -1,16 +1,10 @@
-from typing import Annotated, Literal
-import os
+from typing import Literal
 
-from fastapi import APIRouter, HTTPException, status, File, UploadFile
+from fastapi import APIRouter, status, File, UploadFile
 from fastapi.responses import FileResponse
 
-from app.api.deps import (
-    SessionDep,
-    Admin,
-    Doctor
-)
+from app.api.deps import SessionDep, Admin, Doctor
 
-from app import models, schemas
 
 router = APIRouter(prefix="/documents")
 
@@ -24,7 +18,9 @@ async def root() -> dict:
 
 
 @router.get("/all/{num_document}")
-async def get_all_documents(num_document: str, current_user: Doctor, db: SessionDep) -> FileResponse:
+async def get_all_documents(
+    num_document: str, current_user: Doctor, db: SessionDep
+) -> FileResponse:
     """
     Obtiene todos los documentos asociados a un paciente en un archivo .zip
     """
@@ -39,7 +35,9 @@ async def get_all(current_user: Doctor, db: SessionDep) -> FileResponse:
 
 
 @router.get("/histories/{num_document}", summary="Get Clinical History")
-async def get_history(num_document: str, current_user: Doctor, db: SessionDep) -> FileResponse:
+async def get_history(
+    num_document: str, current_user: Doctor, db: SessionDep
+) -> FileResponse:
     """
     Obtiene la historia clínica de un determinado paciente en un archivo .txt
     """
@@ -54,7 +52,9 @@ async def get_histories(current_user: Doctor, db: SessionDep) -> FileResponse:
 
 
 @router.get("/orders/{num_document}")
-async def get_order(num_document: str, current_user: Doctor, db: SessionDep) -> FileResponse:
+async def get_order(
+    num_document: str, current_user: Doctor, db: SessionDep
+) -> FileResponse:
     """
     Obtiene todas las órdenes médicas de un determinado paciente en un archivo .zip
     """
@@ -70,7 +70,9 @@ async def get_orders(current_user: Doctor, db: SessionDep) -> FileResponse:
 
 
 @router.get("/results/{num_document}")
-async def get_result(num_document: str, current_user: Doctor, db: SessionDep) -> FileResponse:
+async def get_result(
+    num_document: str, current_user: Doctor, db: SessionDep
+) -> FileResponse:
     """
     Obtiene todos los resultados de los examenes médicos para un determinado paciente en un archivo .zip
     """
@@ -98,11 +100,15 @@ async def update_history(num_document: str, current_user: Doctor, db: SessionDep
 
 # POST
 
+
 @router.post("/{num_document}")
-async def add_order(num_document: str,
-                    type: Literal["orders", "results"],
-                    current_user: Doctor, db: SessionDep,
-                    file: UploadFile = File(...)) -> FileResponse:
+async def add_order(
+    num_document: str,
+    type: Literal["orders", "results"],
+    current_user: Doctor,
+    db: SessionDep,
+    file: UploadFile = File(...),
+) -> FileResponse:
     """
     Agrega un documento médico (ya sea orden o resultados de un examen) a un determinado paciente
     """
@@ -113,7 +119,9 @@ async def add_order(num_document: str,
 
 
 @router.delete("/results/{num_document}")
-async def delete_file(num_document: str, filename: str, current_user: Admin, db: SessionDep):
+async def delete_file(
+    num_document: str, filename: str, current_user: Admin, db: SessionDep
+):
     """
     Elimina un archivo médico de un determinado paciente (no incluye la historia clínica)
     """

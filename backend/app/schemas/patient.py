@@ -14,6 +14,7 @@ class ResponsablesInfo(BaseModel):
         phone_responsable (str | None): Teléfono del responsable.
         relationship_responsable (str | None): Relación del responsable con el paciente.
     """
+
     num_doc_responsable: str | None = None
     type_doc_responsable: str | None = None
     name_responsable: str | None = None
@@ -33,4 +34,5 @@ class PatientAll(UserBase, ResponsablesInfo):
     Attributes:
         rol (Roles): El rol del usuario, con valor predeterminado 'patient'.
     """
-    rol: Roles = 'patient'
+
+    rol: Roles = "patient"

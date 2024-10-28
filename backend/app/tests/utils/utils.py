@@ -4,7 +4,7 @@ import string
 
 def random_document() -> str:
     list_numbers: list[int] = random.choices(range(0, 10), k=10)
-    return "".join(str(x) for x in list_numbers)
+    return "random_" + "".join(str(x) for x in list_numbers)
 
 
 def random_password(k: int) -> str:

@@ -10,16 +10,16 @@ from app.tests.utils.bed import create_random_bed, non_existent_bed
 
 
 def test_add_bed(db: Session) -> None:
-    room = f'random_{random.choice(range(100))}'
+    room = f"random_{random.choice(range(100))}"
     bed = schemas.BedBase(room=room)
-    
+
     # Suponiendo que la cama no exista
     out = crud_bed.add_bed(bed, db)
     assert out == 0
 
     out = crud_bed.add_bed(bed, db)
     assert out == 1
-    
+
 
 def test_delete_bed(db: Session) -> None:
     hospitalization = create_random_hospitalization(db)

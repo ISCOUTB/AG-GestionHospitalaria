@@ -19,8 +19,8 @@ def test_get_patient(db: Session) -> None:
 
 
 def test_add_responsable(db: Session) -> None:
-    user = create_random_user('patient', db, 10)
-    patient_eg = create_random_user('patient', db, 10)
+    user = create_random_user("patient", db, 10)
+    patient_eg = create_random_user("patient", db, 10)
     responsable = schemas.ResponsablesInfo()
 
     out = crud_patient.add_responsable(non_existent_document, responsable, db)
@@ -47,7 +47,7 @@ def test_update_patient(db: Session) -> None:
 
     patient1 = create_random_patient(db)
     patient2 = create_random_patient(db)
-    patient = create_random_user('patient', db, 10)
+    patient = create_random_user("patient", db, 10)
     responsable = schemas.ResponsablesInfo(num_doc_responsable=patient1.num_document)
 
     out = crud_patient.update_patient(patient1.num_document, responsable, db)

@@ -6,15 +6,20 @@ from app.crud import crud_bed
 from app.schemas import BedBase
 
 
-non_existent_bed = 'NonExistentBed'
+non_existent_bed = "NonExistentBed"
+
+
+def random_bed() -> BedBase:
+    room = f"random_bed{random.choice(range(100))}"
+    return BedBase(room=room)
+
 
 def create_random_bed(db: Session) -> BedBase:
-    room = f'random_bed{random.choice(range(100))}'
-    bed = BedBase(room=room)
+    bed = random_bed()
     out = crud_bed.add_bed(bed, db)
 
     while out == 1:
-        room = f'random_bed{random.choice(range(100))}'
+        bed = random_bed()
         out = crud_bed.add_bed(bed, db)
 
     return bed

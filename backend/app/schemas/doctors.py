@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from app.schemas.users import UserBase, Roles
+from app.schemas.users import UserBase
 
 
 class SpecialityBase(BaseModel):
@@ -9,6 +9,7 @@ class SpecialityBase(BaseModel):
     Attributes:
         name (str): Nombre de la especialidad.
     """
+
     name: str
 
 
@@ -22,6 +23,7 @@ class Speciality(SpecialityBase):
     Attributes:
         description (str): Descripción detallada de la especialidad
     """
+
     description: str | None = None
 
 
@@ -35,4 +37,5 @@ class DoctorAll(UserBase):
     Attributes:
         specialities (list[SpecialityBase]): Lista de las especialidades del doctor.
     """
+
     specialities: list[SpecialityBase]

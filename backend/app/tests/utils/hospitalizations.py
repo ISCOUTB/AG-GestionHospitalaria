@@ -1,5 +1,3 @@
-import random
-
 from app import schemas
 
 from sqlalchemy.orm import Session
@@ -19,7 +17,7 @@ def create_random_hospitalization(db: Session) -> schemas.RegisterHospitalizatio
     hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=patient.num_document,
-        room=bed.room
+        room=bed.room,
     )
 
     out = crud_hospitalization.add_hospitalization(hospitalization, db)

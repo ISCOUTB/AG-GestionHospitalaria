@@ -12,15 +12,15 @@ from app.crud import crud_hospitalization
 
 
 def test_add_hospitalization(db: Session) -> None:
-    hospitalization = create_random_hospitalization()
-    patient = create_random_patient()
-    doctor = create_doctor_info()
-    bed = create_random_bed()
+    hospitalization = create_random_hospitalization(db)
+    patient = create_random_patient(db)
+    doctor = create_doctor_info(db)
+    bed = create_random_bed(db)
 
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=non_existent_document,
         num_doc_patient=patient.num_document,
-        room=bed.room
+        room=bed.room,
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
@@ -29,7 +29,7 @@ def test_add_hospitalization(db: Session) -> None:
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=non_existent_document,
-        room=bed.room
+        room=bed.room,
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
@@ -38,7 +38,7 @@ def test_add_hospitalization(db: Session) -> None:
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=patient.num_document,
-        room=non_existent_bed
+        room=non_existent_bed,
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
@@ -47,7 +47,7 @@ def test_add_hospitalization(db: Session) -> None:
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=patient.num_document,
-        room=hospitalization.room
+        room=hospitalization.room,
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
@@ -56,7 +56,7 @@ def test_add_hospitalization(db: Session) -> None:
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=hospitalization.num_doc_patient,
-        room=bed.room
+        room=bed.room,
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
@@ -65,7 +65,7 @@ def test_add_hospitalization(db: Session) -> None:
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
         num_doc_patient=patient.num_document,
-        room=bed.room
+        room=bed.room,
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
@@ -73,44 +73,38 @@ def test_add_hospitalization(db: Session) -> None:
 
 
 def test_discharge_hospitalization(db: Session) -> None:
-    hospitalization: schemas.RegisterHospitalization = create_random_hospitalization()
-    patient = create_random_patient()
+    hospitalization: schemas.RegisterHospitalization = create_random_hospitalization(db)
+    patient = create_random_patient(db)
     discharge_info = schemas.DischargeHospitalization(
-        last_day=datetime.date.today() + datetime.timedelta(days=10) 
+        last_day=datetime.date.today() + datetime.timedelta(days=10)
     )
 
     out = crud_hospitalization.discharge_hospitalization(
-        num_doc_patient=patient.num_document,
-        discharge_info=discharge_info,
-        db=db
+        num_doc_patient=patient.num_document, discharge_info=discharge_info, db=db
     )
     assert out == 2
 
     discharge_info = schemas.DischargeHospitalization()
     out = crud_hospitalization.discharge_hospitalization(
-        num_doc_patient=non_existent_document,
-        discharge_info=discharge_info,
-        db=db
+        num_doc_patient=non_existent_document, discharge_info=discharge_info, db=db
     )
     assert out == 1
 
     out = crud_hospitalization.discharge_hospitalization(
-        num_doc_patient=patient.num_document,
-        discharge_info=discharge_info,
-        db=db
+        num_doc_patient=patient.num_document, discharge_info=discharge_info, db=db
     )
     assert out == 1
 
     out = crud_hospitalization.discharge_hospitalization(
         num_doc_patient=hospitalization.num_doc_patient,
         discharge_info=discharge_info,
-        db=db
+        db=db,
     )
     assert out == 0
 
     out = crud_hospitalization.discharge_hospitalization(
         num_doc_patient=hospitalization.num_doc_patient,
         discharge_info=discharge_info,
-        db=db
+        db=db,
     )
     assert out == 1
