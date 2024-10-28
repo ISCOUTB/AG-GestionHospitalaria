@@ -32,7 +32,7 @@ def create_doctor_info(db: Session, k: int = 10) -> DoctorAll:
     speciality = create_random_speciality()
 
     out = crud_doctor.add_doctor_speciality(user.num_document, db, speciality)
-    while out == 3:
+    while out in (1, 2):
         speciality = create_random_speciality()
         out = crud_doctor.add_doctor_speciality(user.num_document, db, speciality)
 
