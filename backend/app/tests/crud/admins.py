@@ -58,6 +58,8 @@ def test_create_user(db: Session) -> None:
     assert user_rol_in.is_active == False
 
     out = crud_admin.create_user(new_user, db, True)
+    assert out == 0
+    
     user_rol_in = crud_admin.get_user_rol(user_search, db, False)
     assert user_rol_in.is_active == True
 
@@ -90,7 +92,7 @@ def test_update_basic_info(db: Session) -> None:
 def test_update_user(db: Session) -> None:
     rol = "admin"
     num_document = create_random_user(rol, db, 10).num_document
-    new_document = "new_document"
+    new_document = random_document()
     new_password = "supersecure123"
     new_email = "randomemail@test.com"
 
@@ -109,7 +111,6 @@ def test_update_user(db: Session) -> None:
     out = crud_admin.update_user(user_search, updated_info, db, True)
     assert out == 3
 
-    new_document = random_document()
     updated_info = schemas.UserUpdateAll(
         password=new_password, num_document=new_document, email=new_email
     )
