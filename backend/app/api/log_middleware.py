@@ -7,7 +7,7 @@ from datetime import datetime
 from pymongo import MongoClient
 from app.core.config import settings
 
-client = MongoClient(settings.MONGO_URI)
+client = MongoClient(str(settings.MONGO_URI))
 db = client[settings.MONGO_DB]
 collection = db["api_logs"]  # Colección para los registros de la API
 

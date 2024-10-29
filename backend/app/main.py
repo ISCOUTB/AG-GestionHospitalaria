@@ -3,6 +3,7 @@ from fastapi.routing import APIRoute
 from starlette.middleware.cors import CORSMiddleware
 
 from app.api.main import api_router
+from app.api.log_middleware import LogMiddleware
 from app.core.config import settings
 
 
@@ -15,6 +16,8 @@ app = FastAPI(
     openapi_url=f"{settings.API_V1_STR}/openapi.json",
     generate_unique_id_function=custom_generate_unique_id,
 )
+
+# app.add_middleware(LogMiddleware)
 
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
