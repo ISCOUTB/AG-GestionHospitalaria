@@ -91,7 +91,6 @@ class Settings(BaseSettings):
             password=self.MONGO_INITDB_ROOT_PASSWORD,
             host=self.MONGO_HOST,
             port=self.MONGO_PORT,
-            path=self.MONGO_DB,
         )
 
 
