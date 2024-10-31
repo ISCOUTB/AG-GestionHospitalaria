@@ -4,3 +4,5 @@ __pycache__
 **/prueba.py
 .mypy_cache
 .ruff_cache
+.pytest_cache
+.coverage

@@ -5,3 +5,5 @@ __pycache__
 patient_docs
 .mypy_cache
 .ruff_cache
+.pytest_cache
+.coverage
