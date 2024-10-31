@@ -6,6 +6,10 @@ from pydantic import AnyUrl, BeforeValidator, PostgresDsn, MongoDsn, computed_fi
 from pydantic_core import MultiHostUrl
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
+from os import getenv
+from dotenv import load_dotenv
+
+load_dotenv()
 
 def parse_cors(v: Any) -> list[str] | str:
     """
@@ -37,9 +41,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     NBYTES: int
 
-    @property
-    def SECRET_KEY(self) -> str:
-        return secrets.token_urlsafe(self.NBYTES)
+    SECRET_KEY: str = secrets.token_urlsafe(int(getenv('NBYTES')))
 
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
@@ -96,7 +98,3 @@ class Settings(BaseSettings):
 
 
 settings = Settings()
-
-
-if __name__ == "__main__":
-    print(settings.model_dump())
