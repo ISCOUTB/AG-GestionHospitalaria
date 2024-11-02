@@ -1,8 +1,12 @@
 from collections.abc import Generator
-from typing import Annotated
+from typing import Annotated, Any
+from datetime import datetime
+
+from pymongo import MongoClient
+from app.core.config import settings
 
 import jwt
-from fastapi import Depends
+from fastapi import Depends, Request
 from fastapi.security import OAuth2PasswordBearer
 from jwt.exceptions import InvalidTokenError
 from pydantic import ValidationError
@@ -92,3 +96,28 @@ Admin = Annotated[schemas.models.UserRoles, Depends(get_current_admin)]
 Doctor = Annotated[schemas.models.UserRoles, Depends(get_current_doctor)]
 Patient = Annotated[schemas.models.UserRoles, Depends(get_current_patient)]
 NonPatient = Annotated[schemas.models.UserRoles, Depends(get_current_nonpatient)]
+
+client = MongoClient(str(settings.MONGO_URI))
+db = client[settings.MONGO_DB]
+collection = db["api_logs"]
+
+async def log_request(
+        request: Request,
+        response_status: int,
+        process_time: float,
+        body: dict[str, Any] | None,
+        username: str,
+        rol: schemas.Roles,
+) -> None:
+    log_data = {
+        "username": username,
+        "rol": rol,
+        "timestamp": datetime.now(),
+        "method": request.method,
+        "url": request.url.path,
+        "headers": dict(request.headers),
+        "body": body,
+        "process_time_ms": round(process_time * 1000, 2),
+        "status_code": response_status,
+    }
+    collection.insert_one(log_data)
