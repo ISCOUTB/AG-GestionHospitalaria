@@ -1,4 +1,5 @@
 import os
+import shutil
 from pathlib import Path
 
 from app import schemas
@@ -12,21 +13,32 @@ from typing import Literal
 
 
 class CRUDDocuments:
-    def get_file(self, num_document: str, filename: str) -> FileResponse:
+    def get_file(self, num_document: str, filename: str, kind: Literal[0, 1, 2] = 0) -> FileResponse:
         """
         Obtiene un archivo de un paciente dado su número de documento y nombre
 
         Args:
             num_document (str): Número de documento del paciente al que se quiere consultar
             filename (str): Nombre del archivo que se desea obtener
+            kind (Literal[0, 1, 2]): Indica qué tipo de archivo se desea obtener. Los valores posibles son: 
+                - 0: Archivo de la historia clínica del paciente.
+                - 1: Archivo de las órdenes médicas del paciente.
+                - 2: Archivo de los resultados médicos del paciente.
         
         Returns:
-            FileResponse: Retorna un archivo con el contenido del archivo solicitado
+            fastapi.responses.FileResponse: Retorna un archivo con el contenido del archivo solicitado
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if kind == 0:
+            filename = f'{patient_path}/{settings.HISTORY_FILENAME}'
+        elif kind == 1:
+            filename = f'{patient_path}/orders/{filename}'
+        else:
+            filename = f'{patient_path}/results/{filename}'
+
         return FileResponse(f'{patient_path}/{filename}')
 
-    def get_documents(self, num_document: str) -> schemas.Files:
+    def get_documents(self, num_document: str) -> schemas.AllFiles:
         """
         Obtiene todos los nombre de los documentos asociados a un paciente dado su número
         de documento
@@ -35,15 +47,19 @@ class CRUDDocuments:
             num_document (str): Número de documento del paciente al que se quiere consultar
         
         Returns:
-            schemas.Files: Retorna un listado de archivos con todos los documentos
+            schemas.AllFiles: Retorna un listado de archivos con todos los documentos
             asociados al paciente
         """
-        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         history = self.get_history(num_document)
         orders = self.get_orders(num_document)
         results = self.get_results(num_document)
         
-        return schemas.Files(history=history, orders=orders, results=results)
+        return schemas.AllFiles(
+            num_document=num_document,
+            history=history,
+            orders=orders,
+            results=results
+        )
 
     def get_history(self, num_document: str) -> str:
         """
@@ -74,33 +90,30 @@ class CRUDDocuments:
         
         return histories
 
-    def get_orders(self, num_document: str) -> list[str]:
+    def get_files(self, num_document: str, kind: schemas.kind_files) -> schemas.Files:
         """
-        Obtiene el nombre de todos los archivos de las ordenes médicas de un paciente dentro del hospital 
-        dado su número de documento
+        Obtiene el nombre de todos los archivos de un tipo de documento dentro del hospital 
+        dado su número de documento sin incluir el archivo de la historia clínica
 
         Args:
             num_document (str): Número de documento del paciente al que se quiere consultar
+            kind (Literal["orders", "results"]): Indica qué tipo de archivo se desea obtener. Los valores posibles son: 
+                - "orders": Archivo de las órdenes médicas del paciente.
+                - "results": Archivo de los resultados médicos del paciente.
         
         Returns:
-            list[str]: Retorna una lista con los nombres de los archivos de las ordenes médicas del paciente
+            list[str]: Retorna una lista con los nombres de los archivos del tipo de documento solicitado
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
-        return [file for file in os.listdir(f'{patient_path}/orders')]
+        if kind == 0:
+            filenames: list[str] = [file for file in os.listdir(f'{patient_path}/orders')]
+            kind = "orders"
 
-    def get_results(self, num_document: str) -> list[str]:
-        """
-        Obtiene el nombre de todos los archivos de los resultados médicos de un paciente dentro del hospital 
-        dado su número de documento
-
-        Args:
-            num_document (str): Número de documento del paciente al que se quiere consultar
+        else:
+            filenames: list[str] = [file for file in os.listdir(f'{patient_path}/results')]
+            kind = "results"
         
-        Returns:
-            ...: Retorna un zip con todos los resultados médicos del paciente
-        """
-        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
-        return [file for file in os.listdir(f'{patient_path}/results')]
+        return schemas.Files(num_document=num_document, filenames=filenames, kind=kind)
     
     def add_history(self, num_document: str) -> None:
         """
@@ -118,9 +131,11 @@ class CRUDDocuments:
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         Path(f'{patient_path}/{settings.HISTORY_FILENAME}').touch()
 
-    def update_history(self, num_document: str, history: UploadFile) -> Literal[0, 1]:
+    async def update_history(self, num_document: str, history: UploadFile) -> Literal[0, 1, 2]:
         """
-        Actualiza la historia clínica de un paciente
+        Actualiza la historia clínica de un paciente. Cuando se actualiza la historia clínica
+        se crea guarda la versión actualizada en el archivo 'history.txt' del paciente y la
+        versión anterior se guarda en la carpeta `./patient_docs/{num_document}/histories`.
 
         Args:
             num_document (str): Número de documento del paciente al que se le quiere actualizar
@@ -128,95 +143,87 @@ class CRUDDocuments:
             history (fastapi.UploadFile): Archivo actualizado con la historia clínica del paciente
         
         Returns:
-            int: Retorna un número entero simbolizando el estado de la respuesta. Estos son los
+            typing.Literal[0, 1, 2]: Retorna un número entero simbolizando el estado de la respuesta. Estos son los
+            los posibles resultados:
+                - 0: Resultado exitoso.
+                - 1: Error guardando el historial de la historia clínica.
+                - 2: Error al actualizar la historia clínica.
+        """
+        # Mover archivo de la historia clínica en los historiales del paciente
+        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        history_path: str = f"{patient_path}/histories"
+        history_filename: str = f'{patient_path}/{settings.HISTORY_FILENAME}'
+        update_filename: str = f'{history_path}/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
+        
+        try:
+            shutil.copyfile(history_filename, update_filename)
+        except Exception as e:
+            print(f'Copiar archivo en {update_filename} falló: {repr(e)}')
+            return 1
+        
+        # Actualizar archivo de la historia clínica del paciente
+        try:
+            with open(history_filename, 'wb') as f:
+                content = await history.read()
+                f.write(content)
+        except Exception as e:
+            print(f'Actualizar archivo de la historia clínica del paciente falló: {repr(e)}')
+            return 2
+        
+        return 0
+    
+    async def add_file(self, num_document: str, kind: schemas.kind_files, file: UploadFile) -> Literal[0, 1]:
+        """
+        Agrega un archivo de una orden médica o resultado médico a un determinado paciente
+
+        Args:
+            num_document (str): Número de documento del paciente al que se le quiere actualizar
+            la historia clínica
+            kind (Literal["orders", "results"]): Indica qué tipo de archivo se desea agregar. Los valores posibles son: 
+                - "orders": Archivo de las órdenes médicas del paciente.
+                - "results": Archivo de los resultados médicos del paciente.
+            file (fastapi.UploadFile): Archivo del paciente
+        
+        Returns:
+            typing.Literal[0, 1]: Retorna un número entero simbolizando el estado de la respuesta. Estos son los
             los posibles resultados:
                 - 0: Resultado exitoso.
                 - 1: Error guardando el archivo.
         """
-        pass
-    
-    async def add_order(self, num_document: str, order: UploadFile) -> Literal[0, 1]:
-        """
-        Agrega una orden médica a un determinado paciente
-
-        Args:
-            num_document (str): Número de documento del paciente al que se le quiere actualizar
-            la historia clínica
-            order (fastapi.UploadFile): Archivo de la orden médica del paciente
-        
-        Returns:
-            int: Retorna un número entero simbolizando el estado de la respuesta. Estos son los
-            los posibles resultados:
-            - 0: Resultado exitoso.
-            - 1: Error guardando el archivo.
-        """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
-        order_path: str = f"{patient_path}/orders"
-        filename: str = f'{order_path}/{order.filename}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
-        
+        filename = f'{patient_path}/{kind}/{file.filename}'
+        filename += f'_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
+
         try:
             with open(filename, 'wb') as f:
-                content = await order.read()
+                content = await file.read()
                 f.write(content)
         except Exception as e:
-            print(repr(e))
+            print(f'Agregar archivo de {kind} del paciente falló: {repr(e)}')
             return 1
 
         return 0
 
-    async def add_result(self, num_document: str, result: UploadFile) -> Literal[0, 1]:
-        """
-        Agrega un resultado médico de un determinado paciente
-
-        Args:
-            num_document (str): Número de documento del paciente al que se le quiere actualizar
-            la historia clínica
-            order (fastapi.UploadFile): Archivo del resultado del examen médico del paciente
-        
-        Returns:
-            int: Retorna un número entero simbolizando el estado de la respuesta. Estos son los
-            los posibles resultados:
-            - 0: Resultado exitoso.
-            - 1: Error guardando el archivo.
-        """
-        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
-        result_path: str = f"{patient_path}/results"
-        filename: str = f'{result_path}/{result.filename}_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
-        
-        try:
-            with open(filename, 'wb') as f:
-                content = await result.read()
-                f.write(content)
-        except Exception as e:
-            print(repr(e))
-            return 1
-        
-        return 0
-
-    def delete_file(self, num_document: str, filename: str, order: bool = False):
+    def delete_file(self, num_document: str, filename: str, kind: schemas.kind_files) -> Literal[0, 1, 2]:
         """
         Elimina un archivo médico de un determinado paciente (no incluye la historia clínica)
 
         Args:
-            num_document (str): Número de documento del paciente al que se le quiere actualizar
-            la historia clínica
+            num_document (str): Número de documento del paciente
             filename (str): Nombre del archivo que se desea eliminar
-            order (bool): Indica si el archivo es de la orden médica o de resultados médicos
+            kind (typing.Literal["orders", "results"]): Indica qué tipo de archivo se desea eliminar. Los valores posibles son: 
+                - "orders": Archivo de las órdenes médicas del paciente.
+                - "results": Archivo de los resultados médicos del paciente.
 
         Returns:
-            int: Retorna un número entero simbolizando el estado de la respuesta. Estos son los
+            Literal[0, 1, 2]: Retorna un número entero simbolizando el estado de la respuesta. Estos son los
             los posibles resultados:
-            - 0: Resultado exitoso.
-            - 1: Archivo no encontrado.
-            - 2: Error desconocido borrando el archivo.
+                - 0: Resultado exitoso.
+                - 1: Archivo no encontrado.
+                - 2: Error desconocido borrando el archivo.
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
-        if order:
-            order_path: str = f"{patient_path}/orders"
-            filename: str = f'{order_path}/{filename}'
-        else:
-            result_path: str = f"{patient_path}/results"
-            filename: str = f'{result_path}/{filename}'
+        filename: str = f"{patient_path}/{kind}/{filename}"
         
         try:
             os.remove(filename)

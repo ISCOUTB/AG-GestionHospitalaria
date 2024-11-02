@@ -20,4 +20,8 @@ from app.api.exceptions.exceptions import (
     num_document_used,
     user_found,
     patient_in_bed,
+    failed_to_save_historial,
+    failed_to_save_file,
+    failed_to_delete_file,
+    failed_to_found_file,
 )

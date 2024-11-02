@@ -94,3 +94,23 @@ patient_in_bed = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="No se puede eliminar a un paciente que esté utilizado en una cama",
 )
+
+failed_to_save_historial = HTTPException(
+    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    detail="Error al guardar en el historial de historias clínicas",
+)
+
+failed_to_save_file = HTTPException(
+    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    detail="Error al guardar el archivo",
+)
+
+failed_to_delete_file = HTTPException(
+    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+    detail="Error al eliminar el archivo",
+)
+
+failed_to_found_file = HTTPException(
+    status_code=status.HTTP_404_NOT_FOUND,
+    detail="Archivo no encontrado",
+)
