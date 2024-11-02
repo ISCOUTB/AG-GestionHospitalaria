@@ -27,3 +27,5 @@ from app.schemas.consults import (
 )
 
 import app.schemas.models as models
+
+from app.schemas.documents import Files

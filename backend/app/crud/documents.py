@@ -1,25 +1,48 @@
 import os
 
+from app import schemas
+from app.core.config import settings
+
 from fastapi import UploadFile
+from fastapi.responses import FileResponse
 from typing import Literal
 
 
 class CRUDDocuments:
-    def get_documents(self, num_document: str) -> ...:
+    def get_file(self, num_document: str, filename: str) -> FileResponse:
         """
-        Obtiene todos los documentos asociados a un paciente dado su número 
+        Obtiene un archivo de un paciente dado su número de documento y nombre
+
+        Args:
+            num_document (str): Número de documento del paciente al que se quiere consultar
+            filename (str): Nombre del archivo que se desea obtener
+        
+        Returns:
+            FileResponse: Retorna un archivo con el contenido del archivo solicitado
+        """
+        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        return FileResponse(f'{patient_path}/{filename}')
+
+    def get_documents(self, num_document: str) -> schemas.Files:
+        """
+        Obtiene todos los nombre de los documentos asociados a un paciente dado su número
         de documento
 
         Args:
             num_document (str): Número de documento del paciente al que se quiere consultar
         
         Returns:
-            ...: Retorna un archivo zip con todos los documentos
-            asociados
+            schemas.Files: Retorna un listado de archivos con todos los documentos
+            asociados al paciente
         """
-        pass
+        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        history = self.get_history(num_document)
+        orders = self.get_orders(num_document)
+        results = self.get_results(num_document)
+        
+        return schemas.Files(history=history, orders=orders, results=results)
 
-    def get_history(self, num_document: str) -> ...:
+    def get_history(self, num_document: str) -> str:
         """
         Obtiene la historia clínica de un paciente dado su número de documento
 
@@ -27,38 +50,45 @@ class CRUDDocuments:
             num_document (str): Número de documento del paciente al que se quiere consultar
 
         Returns:
-            ...: Retorna el archivo correspondiente a la historia
-            clínical del paciente
+            str: Retorna el nombre del archivo correspondiente a la historia
+            clínica del paciente
         """
-        pass
+        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        return f"{patient_path}/{settings.HISTORY_FILENAME}"
 
-    def get_histories(self) -> ...:
+    def get_histories(self) -> list[str]:
         """
         Obtiene todas las historias clínicas de los pacientes dentro del hospital
 
         Returns:
-            ...: Retorna un zip con todos las historias clínicas
+            list[str]: Retorna una lista con todos las historias clínicas 
             de los pacientes dentro del hospital
         """
-        pass
+        histories: list[str] = []
+        for num_document in os.listdir(settings.PATIENT_DOCS_PATH):
+            patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+            histories.append(f"{patient_path}/{settings.HISTORY_FILENAME}")
+        
+        return histories
 
-    def get_orders(self, num_document: str) -> ...:
+    def get_orders(self, num_document: str) -> list[str]:
         """
-        Obtiene todas las ordenes médicas de un paciente dentro del hospital dado su número de
-        documento
+        Obtiene el nombre de todos los archivos de las ordenes médicas de un paciente dentro del hospital 
+        dado su número de documento
 
         Args:
             num_document (str): Número de documento del paciente al que se quiere consultar
         
         Returns:
-            ...: Retorna un zip con todas las ordenes médicas del paciente
+            list[str]: Retorna una lista con los nombres de los archivos de las ordenes médicas del paciente
         """
-        pass
+        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        return [file for file in os.listdir(f'{patient_path}/orders')]
 
-    def get_results(self, num_document: str) -> ...:
+    def get_results(self, num_document: str) -> list[str]:
         """
-        Obtiene todas los resultados médicos de un paciente dentro del hospital dado su número de
-        documento
+        Obtiene el nombre de todos los archivos de los resultados médicos de un paciente dentro del hospital 
+        dado su número de documento
 
         Args:
             num_document (str): Número de documento del paciente al que se quiere consultar
@@ -66,7 +96,8 @@ class CRUDDocuments:
         Returns:
             ...: Retorna un zip con todos los resultados médicos del paciente
         """
-        pass
+        patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        return [file for file in os.listdir(f'{patient_path}/results')]
     
     def add_history(self, num_document: str) -> None:
         """

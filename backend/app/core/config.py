@@ -95,5 +95,8 @@ class Settings(BaseSettings):
             port=self.MONGO_PORT,
         )
 
+    PATIENT_DOCS_PATH: str = './patient_docs'
+    HISTORY_FILENAME: str = 'history.txt'
+
 
 settings = Settings()
