@@ -30,13 +30,13 @@ class CRUDDocuments:
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         if kind == 0:
-            filename = f'{patient_path}/{settings.HISTORY_FILENAME}'
+            path: str = f'{patient_path}/{filename}'
         elif kind == 1:
-            filename = f'{patient_path}/orders/{filename}'
+            path: str = f'{patient_path}/orders/{filename}'
         else:
-            filename = f'{patient_path}/results/{filename}'
+            path: str = f'{patient_path}/results/{filename}'
 
-        return FileResponse(f'{patient_path}/{filename}')
+        return FileResponse(path, media_type="application/octet-stream", filename=filename)
 
     def get_documents(self, num_document: str) -> schemas.AllFiles:
         """
@@ -129,6 +129,10 @@ class CRUDDocuments:
             de ya existir, lo omite.
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        os.mkdir(patient_path)
+        os.mkdir(f'{patient_path}/histories')  # Agregar carpeta de historial de historias clínicas
+        os.mkdir(f'{patient_path}/orders')  # Agregar carpeta de ordenes médicas
+        os.mkdir(f'{patient_path}/results')  # Agregar carpeta de resultados médicos
         Path(f'{patient_path}/{settings.HISTORY_FILENAME}').touch()
 
     async def update_history(self, num_document: str, history: UploadFile) -> Literal[0, 1, 2]:

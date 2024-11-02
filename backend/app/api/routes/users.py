@@ -4,7 +4,7 @@ from app.api.deps import SessionDep, CurrentUser, Admin
 
 from app import schemas
 from app.api import exceptions
-from app.crud import crud_user, crud_admin
+from app.crud import crud_user, crud_admin, crud_document
 from app.core.config import settings
 
 router = APIRouter(prefix="/users")
@@ -65,6 +65,9 @@ async def create_user(
 
     if out == 2:
         raise exceptions.user_found
+    
+    if new_user.rol == "patient":
+        crud_document.add_history(new_user.num_document)
 
     return {"status": status.HTTP_201_CREATED, "detail": "Usuario creado"}
 

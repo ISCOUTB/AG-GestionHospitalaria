@@ -15,9 +15,7 @@ router = APIRouter(prefix="/documents")
 
 
 @router.get("/all/{num_document}")
-async def get_all_documents(
-    num_document: str, current_user: Doctor, 
-) -> schemas.AllFiles:
+async def get_all_documents(num_document: str, current_user: Doctor) -> schemas.AllFiles:
     """
     Obtiene todos los documentos asociados a un paciente
     """
@@ -25,7 +23,7 @@ async def get_all_documents(
 
 
 @router.get("/all/")
-async def get_all(current_user: Doctor, ) -> list[schemas.AllFiles]:
+async def get_all(current_user: Doctor) -> list[schemas.AllFiles]:
     """
     Obtiene todos los documentos de todos los pacientes en un archivo .zip
     """
@@ -45,7 +43,7 @@ async def get_history(num_document: str, current_user: Doctor) -> FileResponse:
 
 
 @router.get("/histories", summary="Get Clinical Histories")
-async def get_histories(current_user: Doctor, ) -> list[str]:
+async def get_histories(current_user: Doctor) -> list[str]:
     """
     Obtiene todas las historias clínicas de todos los pacientes
     """
@@ -89,7 +87,7 @@ async def update_history(num_document: str, current_user: Doctor, history: Uploa
     """
     Actualiza la historia clínica de un determinado paciente
     """
-    out = crud_document.update_history(num_document, history)
+    out = await crud_document.update_history(num_document, history)
 
     if out == 1:
         raise exceptions.failed_to_save_historial
@@ -109,7 +107,7 @@ async def add_file(
     """
     Agrega un documento médico (ya sea orden o resultados de un examen) a un determinado paciente
     """
-    out = crud_document.add_file(num_document, kind, file)
+    out = await crud_document.add_file(num_document, kind, file)
     if out == 1:
         raise exceptions.failed_to_save_order
     
