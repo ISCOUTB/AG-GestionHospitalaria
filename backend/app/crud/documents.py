@@ -90,7 +90,7 @@ class CRUDDocuments:
         
         return histories
 
-    def get_files(self, num_document: str, kind: schemas.kind_files) -> schemas.Files:
+    def get_files(self, num_document: str, kind: schemas.KindFiles) -> schemas.Files:
         """
         Obtiene el nombre de todos los archivos de un tipo de documento dentro del hospital 
         dado su número de documento sin incluir el archivo de la historia clínica
@@ -176,7 +176,7 @@ class CRUDDocuments:
         
         return 0
     
-    async def add_file(self, num_document: str, kind: schemas.kind_files, file: UploadFile) -> Literal[0, 1]:
+    async def add_file(self, num_document: str, kind: schemas.KindFiles, file: UploadFile) -> Literal[0, 1]:
         """
         Agrega un archivo de una orden médica o resultado médico a un determinado paciente
 
@@ -208,7 +208,7 @@ class CRUDDocuments:
 
         return 0
 
-    def delete_file(self, num_document: str, filename: str, kind: schemas.kind_files) -> Literal[0, 1, 2]:
+    def delete_file(self, num_document: str, filename: str, kind: schemas.KindFiles) -> Literal[0, 1, 2]:
         """
         Elimina un archivo médico de un determinado paciente (no incluye la historia clínica)
 

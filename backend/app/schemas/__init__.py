@@ -28,4 +28,4 @@ from app.schemas.consults import (
 
 import app.schemas.models as models
 
-from app.schemas.documents import AllFiles, Files, kind_files
+from app.schemas.documents import AllFiles, Files, KindFiles

@@ -2,7 +2,7 @@ from pydantic import BaseModel
 from typing import Literal
 
 
-kind_files = Literal["orders", "results"]
+KindFiles = Literal["orders", "results"]
 
 class AllFiles(BaseModel):
     """
@@ -33,4 +33,4 @@ class Files(BaseModel):
 
     num_document: str
     filenames: list[str]
-    kind: kind_files
+    kind: KindFiles
