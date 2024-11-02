@@ -1,3 +1,5 @@
+from typing import Literal
+
 from fastapi import APIRouter, status
 from fastapi.responses import FileResponse
 
@@ -5,17 +7,25 @@ from app.api.deps import SessionDep, Patient, NonPatient, Admin
 
 from app import schemas
 from app.api import exceptions
-from app.crud import crud_patient
+from app.crud import crud_patient, crud_document
 
 router = APIRouter(prefix="/patients")
 
 
 @router.get("/documents")
-async def get_documents(current_user: Patient, db: SessionDep) -> FileResponse:
+async def get_documents(current_user: Patient) -> schemas.AllFiles:
     """
-    Devuelve todos los documentos asociados a un determinado paciente en un archivo zip
+    Devuelve todos los documentos asociados del paciente
     """
-    pass
+    return crud_document.get_documents(current_user.num_document)
+
+
+@router.get("/documents/{filename}")
+async def download_document(filename: str, current_user: Patient, kind: Literal[0, 1, 2]) -> FileResponse:
+    """
+    Descarga el archivo deseado por el paciente
+    """
+    return crud_document.get_file(current_user.num_document, filename, kind)
 
 
 @router.get("/responsable")
