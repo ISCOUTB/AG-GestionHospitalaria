@@ -3,7 +3,7 @@ import os
 from fastapi import APIRouter, status, File, UploadFile
 from fastapi.responses import FileResponse
 
-from app.api.deps import Admin, Doctor
+from app.api.deps import Doctor, NonPatient
 from app.api import exceptions
 
 from app.core.config import settings
@@ -15,7 +15,7 @@ router = APIRouter(prefix="/documents")
 
 
 @router.get("/all/{num_document}")
-async def get_all_documents(num_document: str, current_user: Doctor) -> schemas.AllFiles:
+async def get_all_documents(num_document: str, current_user: NonPatient) -> schemas.AllFiles:
     """
     Obtiene todos los documentos asociados a un paciente
     """
@@ -23,7 +23,7 @@ async def get_all_documents(num_document: str, current_user: Doctor) -> schemas.
 
 
 @router.get("/all/")
-async def get_all(current_user: Doctor) -> list[schemas.AllFiles]:
+async def get_all(current_user: NonPatient) -> list[schemas.AllFiles]:
     """
     Obtiene todos los documentos de todos los pacientes en un archivo .zip
     """
@@ -35,14 +35,14 @@ async def get_all(current_user: Doctor) -> list[schemas.AllFiles]:
 
 
 @router.get("/histories/{num_document}", summary="Get Clinical History")
-async def get_history(num_document: str, current_user: Doctor) -> FileResponse:
+async def download_history(num_document: str, current_user: NonPatient) -> FileResponse:
     """
     Obtiene la historia clínica de un determinado paciente en un archivo .txt
     """
     return crud_document.get_file(num_document, settings.HISTORY_FILENAME)
 
 
-@router.get("/histories", summary="Get Clinical Histories")
+@router.get("/histories/", summary="Get Clinical Histories")
 async def get_histories(current_user: Doctor) -> list[str]:
     """
     Obtiene todas las historias clínicas de todos los pacientes
@@ -51,7 +51,7 @@ async def get_histories(current_user: Doctor) -> list[str]:
 
 
 @router.get("/orders/{num_document}")
-async def get_order(num_document: str, current_user: Doctor) -> list[str]:
+async def get_orders(num_document: str, current_user: NonPatient) -> list[str]:
     """
     Obtiene todas las órdenes médicas de un determinado paciente
     """
@@ -59,7 +59,7 @@ async def get_order(num_document: str, current_user: Doctor) -> list[str]:
 
 
 @router.get("/orders/{num_document}/{filename}")
-async def get_order(num_document: str, filename: str, current_user: Doctor) -> FileResponse:
+async def download_order(num_document: str, filename: str, current_user: Doctor) -> FileResponse:
     """
     Obtiene un archivo de una orden médica de un determinado paciente
     """
@@ -67,7 +67,7 @@ async def get_order(num_document: str, filename: str, current_user: Doctor) -> F
 
 
 @router.get("/results/{num_document}")
-async def get_result(num_document: str, current_user: Doctor) -> list[str]:
+async def get_results(num_document: str, current_user: Doctor) -> list[str]:
     """
     Obtiene todos los resultados de los examenes médicos para un determinado paciente
     """
@@ -75,7 +75,7 @@ async def get_result(num_document: str, current_user: Doctor) -> list[str]:
 
 
 @router.get("/results/{num_document}/{filename}")
-async def get_result(num_document: str, filename: str, current_user: Doctor) -> FileResponse:
+async def download_result(num_document: str, filename: str, current_user: NonPatient) -> FileResponse:
     """
     Obtiene un archivo de un resultado médico de un determinado paciente
     """
@@ -100,7 +100,7 @@ async def update_history(num_document: str, current_user: Doctor, history: Uploa
 @router.post("/{num_document}")
 async def add_file(
     num_document: str,
-    kind: schemas.kind_files,
+    kind: schemas.KindFiles,
     current_user: Doctor,
     file: UploadFile = File(...),
 ) -> dict:
@@ -115,7 +115,7 @@ async def add_file(
 
 @router.delete("/results/{num_document}")
 async def delete_file(
-    num_document: str, filename: str, current_user: Admin, kind: schemas.kind_files
+    num_document: str, filename: str, current_user: NonPatient, kind: schemas.KindFiles
 ):
     """
     Elimina un archivo médico de un determinado paciente (no incluye la historia clínica)
