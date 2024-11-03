@@ -25,7 +25,7 @@ async def login_access_token(
     """
     Obtiene el token de acceso al sistema
     """
-    user_data = [user.num_document, rol]
+    user_data = [form_data.username, rol]
 
     start_time = perf_counter()
     user_login = schemas.UserLogin(
