@@ -1,6 +1,6 @@
 from time import perf_counter
 
-from fastapi import APIRouter, status, Resquest
+from fastapi import APIRouter, status, Request
 
 from app.api.deps import SessionDep, Admin, log_request
 
@@ -13,7 +13,7 @@ router = APIRouter(prefix="/beds")
 
 @router.get("/")
 async def get_beds(
-    request: Resquest,
+    request: Request,
     current_user: Admin,
     db: SessionDep,
     all: bool = False
@@ -32,7 +32,7 @@ async def get_beds(
 
 @router.post("/")
 async def add_bed(
-    request: Resquest,
+    request: Request,
     current_user: Admin,
     db: SessionDep,
     bed_info: schemas.BedBase
@@ -58,7 +58,7 @@ async def add_bed(
 @router.delete("/{room}")
 async def delete_bed(
     room: str,
-    request: Resquest,
+    request: Request,
     current_user: Admin,
     db: SessionDep
 ) -> dict:
