@@ -13,7 +13,9 @@ router = APIRouter(prefix="/users")
 
 
 @router.get("/info")
-async def get_info(request: Request, current_user: CurrentUser, db: SessionDep) -> schemas.UserBase:
+async def get_info(
+    request: Request, current_user: CurrentUser, db: SessionDep
+) -> schemas.UserBase:
     """
     Obtiene toda la información del usuario
     """
@@ -57,7 +59,7 @@ async def get_users(
     current_user: Admin,
     db: SessionDep,
     rol: bool = False,
-    active: bool = True
+    active: bool = True,
 ) -> list[schemas.UserBase] | list[schemas.UserAll]:
     """
     Obtiene todos los usuarios dentro del sistema.
@@ -73,10 +75,7 @@ async def get_users(
 
 @router.post("/")
 async def create_user(
-    request: Request,
-    current_user: Admin,
-    db: SessionDep,
-    new_user: schemas.UserCreate
+    request: Request, current_user: Admin, db: SessionDep, new_user: schemas.UserCreate
 ) -> dict:
     """
     Crea un nuevo usuario dentro en el sistema. No se pueden crear nuevos administradores.
@@ -99,7 +98,7 @@ async def create_user(
         log_data = [process_time, body, current_user.num_document, current_user.rol]
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.user_found
-    
+
     if new_user.rol == "patient":
         crud_document.add_history(new_user.num_document)
 
@@ -155,7 +154,7 @@ async def update_basic_user(
     request: Request,
     current_user: CurrentUser,
     db: SessionDep,
-    updated_info: schemas.UserUpdate 
+    updated_info: schemas.UserUpdate,
 ) -> dict:
     """
     Modifica la información no esencial
@@ -186,7 +185,7 @@ async def delete_user(
     rol: schemas.Roles,
     request: Request,
     current_user: Admin,
-    db: SessionDep
+    db: SessionDep,
 ) -> dict:
     """
     "Elimina" a un usuario activo dentro del sistema. En realidad, lo que se hace es colocar al usuario como inactivo.

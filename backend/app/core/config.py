@@ -11,6 +11,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+
 def parse_cors(v: Any) -> list[str] | str:
     """
     Función para analizar los valores de CORS, que pueden venir en formato de cadena o lista.
@@ -41,7 +42,7 @@ class Settings(BaseSettings):
     PROJECT_NAME: str
     NBYTES: int
 
-    SECRET_KEY: str = secrets.token_urlsafe(int(getenv('NBYTES')))
+    SECRET_KEY: str = secrets.token_urlsafe(int(getenv("NBYTES")))
 
     ALGORITHM: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int
@@ -95,8 +96,8 @@ class Settings(BaseSettings):
             port=self.MONGO_PORT,
         )
 
-    PATIENT_DOCS_PATH: str = './patient_docs'
-    HISTORY_FILENAME: str = 'history.txt'
+    PATIENT_DOCS_PATH: str = "./patient_docs"
+    HISTORY_FILENAME: str = "history.txt"
 
 
 settings = Settings()

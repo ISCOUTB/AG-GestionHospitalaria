@@ -13,10 +13,7 @@ router = APIRouter(prefix="/beds")
 
 @router.get("/")
 async def get_beds(
-    request: Request,
-    current_user: Admin,
-    db: SessionDep,
-    all: bool = False
+    request: Request, current_user: Admin, db: SessionDep, all: bool = False
 ) -> list[schemas.models.Beds] | list[schemas.BedAll]:
     """
     Obtiene un listado con todas las camas del hospital
@@ -25,17 +22,14 @@ async def get_beds(
     beds = crud_bed.get_beds(db, all)
     process_time = perf_counter() - start_time
 
-    log_data = [process_time, None, current_user.num_document,current_user.rol]
+    log_data = [process_time, None, current_user.num_document, current_user.rol]
     await log_request(request, status.HTTP_200_OK, *log_data)
     return beds
 
 
 @router.post("/")
 async def add_bed(
-    request: Request,
-    current_user: Admin,
-    db: SessionDep,
-    bed_info: schemas.BedBase
+    request: Request, current_user: Admin, db: SessionDep, bed_info: schemas.BedBase
 ) -> dict:
     """
     Agrega una nueva cama al hospital al hospital especificando el cuarto
@@ -50,17 +44,14 @@ async def add_bed(
     if out == 1:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.room_already_with_bed
-    
+
     await log_request(request, status.HTTP_201_CREATED, *log_data)
     return {"status": status.HTTP_201_CREATED, "detail": "Cama agregada perfectamente"}
 
 
 @router.delete("/{room}")
 async def delete_bed(
-    room: str,
-    request: Request,
-    current_user: Admin,
-    db: SessionDep
+    room: str, request: Request, current_user: Admin, db: SessionDep
 ) -> dict:
     """
     Elimina una cama dentro del hospital que no esté en uso, especificando el cuarto donde esté
@@ -69,7 +60,7 @@ async def delete_bed(
     out = crud_bed.delete_bed(room, db)
     process_time = perf_counter() - start_time
 
-    log_data = [process_time, None, current_user.num_document,current_user.rol]
+    log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.bed_not_found

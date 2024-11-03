@@ -101,13 +101,14 @@ client = MongoClient(str(settings.MONGO_URI))
 db = client[settings.MONGO_DB]
 collection = db["api_logs"]
 
+
 async def log_request(
-        request: Request,
-        response_status: int,
-        process_time: float,
-        body: dict[str, Any] | None,
-        username: str,
-        rol: schemas.Roles,
+    request: Request,
+    response_status: int,
+    process_time: float,
+    body: dict[str, Any] | None,
+    username: str,
+    rol: schemas.Roles,
 ) -> None:
     log_data = {
         "username": username,

@@ -56,7 +56,9 @@ async def login_access_token(
 
 
 @router.get("/test-token")
-async def test_token(request: Request, current_user: CurrentUser) -> schemas.models.UserRoles:
+async def test_token(
+    request: Request, current_user: CurrentUser
+) -> schemas.models.UserRoles:
     """
     Probar el token de acceso
     """

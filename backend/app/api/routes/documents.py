@@ -17,9 +17,7 @@ router = APIRouter(prefix="/documents")
 
 @router.get("/all/{num_document}")
 async def get_all_documents(
-    num_document: str,
-    request: Request,
-    current_user: NonPatient
+    num_document: str, request: Request, current_user: NonPatient
 ) -> schemas.AllFiles:
     """
     Obtiene todos los documentos asociados a un paciente
@@ -51,9 +49,7 @@ async def get_all(request: Request, current_user: NonPatient) -> list[schemas.Al
 
 @router.get("/histories/{num_document}", summary="Get Clinical History")
 async def download_history(
-    num_document: str,
-    request: Request,
-    current_user: NonPatient
+    num_document: str, request: Request, current_user: NonPatient
 ) -> FileResponse:
     """
     Obtiene la historia clínica de un determinado paciente en un archivo .txt
@@ -82,7 +78,9 @@ async def get_histories(request: Request, current_user: Doctor) -> list[str]:
 
 
 @router.get("/orders/{num_document}")
-async def get_orders(num_document: str, request: Request, current_user: NonPatient) -> list[str]:
+async def get_orders(
+    num_document: str, request: Request, current_user: NonPatient
+) -> list[str]:
     """
     Obtiene todas las órdenes médicas de un determinado paciente
     """
@@ -97,10 +95,7 @@ async def get_orders(num_document: str, request: Request, current_user: NonPatie
 
 @router.get("/orders/{num_document}/{filename}")
 async def download_order(
-    num_document: str,
-    filename: str,
-    request: Request,
-    current_user: Doctor
+    num_document: str, filename: str, request: Request, current_user: Doctor
 ) -> FileResponse:
     """
     Obtiene un archivo de una orden médica de un determinado paciente
@@ -115,7 +110,9 @@ async def download_order(
 
 
 @router.get("/results/{num_document}")
-async def get_results(num_document: str, request: Request, current_user: Doctor) -> list[str]:
+async def get_results(
+    num_document: str, request: Request, current_user: Doctor
+) -> list[str]:
     """
     Obtiene todos los resultados de los examenes médicos para un determinado paciente
     """
@@ -130,10 +127,7 @@ async def get_results(num_document: str, request: Request, current_user: Doctor)
 
 @router.get("/results/{num_document}/{filename}")
 async def download_result(
-    num_document: str,
-    filename: str,
-    request: Request,
-    current_user: NonPatient
+    num_document: str, filename: str, request: Request, current_user: NonPatient
 ) -> FileResponse:
     """
     Obtiene un archivo de un resultado médico de un determinado paciente
@@ -152,8 +146,8 @@ async def update_history(
     num_document: str,
     request: Request,
     current_user: Doctor,
-    history: UploadFile = File(...)
-) -> dict: 
+    history: UploadFile = File(...),
+) -> dict:
     """
     Actualiza la historia clínica de un determinado paciente
     """
@@ -168,9 +162,12 @@ async def update_history(
     if out == 2:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_save_history
-    
+
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Historia clínica actualizada correctamente"}
+    return {
+        "status": status.HTTP_200_OK,
+        "detail": "Historia clínica actualizada correctamente",
+    }
 
 
 @router.post("/{num_document}")
@@ -192,9 +189,13 @@ async def add_file(
     if out == 1:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_save_order
-    
+
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {"status": status.HTTP_201_CREATED, "detail": "Archivo agregado correctamente"}
+    return {
+        "status": status.HTTP_201_CREATED,
+        "detail": "Archivo agregado correctamente",
+    }
+
 
 @router.delete("/results/{num_document}")
 async def delete_file(
@@ -202,7 +203,7 @@ async def delete_file(
     filename: str,
     kind: schemas.KindFiles,
     request: Request,
-    current_user: NonPatient
+    current_user: NonPatient,
 ):
     """
     Elimina un archivo médico de un determinado paciente (no incluye la historia clínica)
@@ -210,7 +211,7 @@ async def delete_file(
     start_time = perf_counter()
     out = crud_document.delete_file(num_document, filename, kind)
     process_time = perf_counter() - start_time
-    
+
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
@@ -218,6 +219,6 @@ async def delete_file(
     if out == 2:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_delete_file
-    
+
     await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Archivo eliminado correctamente"}

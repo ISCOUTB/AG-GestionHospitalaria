@@ -13,9 +13,7 @@ router = APIRouter(prefix="/hospitalizations")
 
 @router.get("/", tags=["admins"])
 async def get_hospitalizations(
-    request: Request,
-    current_user: Admin,
-    db: SessionDep
+    request: Request, current_user: Admin, db: SessionDep
 ) -> list[schemas.Hospitalization]:
     """
     Devuelve una lista con el historial de hospitalizaciones

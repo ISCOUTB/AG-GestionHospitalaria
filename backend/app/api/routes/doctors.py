@@ -21,7 +21,7 @@ async def get_doctors(
     start_time = perf_counter()
     doctors = crud_doctor.get_doctors(db, active)
     process_time = perf_counter() - start_time
-    
+
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     await log_request(request, status.HTTP_200_OK, *log_data)
     return doctors
@@ -33,7 +33,7 @@ async def get_doctor(
     num_document: str,
     current_user: Admin,
     db: SessionDep,
-    active: bool = True
+    active: bool = True,
 ) -> schemas.DoctorAll:
     """
     Obtiene la información esencial de un doctor en particular
@@ -46,7 +46,7 @@ async def get_doctor(
     if doctor is None:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
-    
+
     await log_request(request, status.HTTP_200_OK, *log_data)
     return doctor
 
@@ -73,7 +73,7 @@ async def get_speciality_doctor(
     speciality: str,
     current_user: Admin,
     db: SessionDep,
-    active: bool = True 
+    active: bool = True,
 ) -> list[schemas.DoctorAll]:
     """
     Obtiene todos los doctores los cuales tengan una especialidad especifica
@@ -132,7 +132,7 @@ async def delete_speciality(
     num_document: str,
     current_user: Admin,
     db: SessionDep,
-    speciality_name: str
+    speciality_name: str,
 ) -> dict:
     """
     Elimina la especialidad de un doctor especificando su número de documento.
