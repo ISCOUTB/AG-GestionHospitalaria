@@ -26,7 +26,7 @@ async def get_beds(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document,current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return beds
 
 
@@ -48,10 +48,10 @@ async def add_bed(
 
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.room_already_with_bed
     
-    log_request(request, status.HTTP_201_CREATED, *log_data)
+    await log_request(request, status.HTTP_201_CREATED, *log_data)
     return {"status": status.HTTP_201_CREATED, "detail": "Cama agregada perfectamente"}
 
 
@@ -71,12 +71,12 @@ async def delete_bed(
 
     log_data = [process_time, None, current_user.num_document,current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.bed_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.bed_already_used
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Cama eliminada de la habitación"}

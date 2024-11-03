@@ -22,7 +22,7 @@ async def get_info(request: Request, current_user: CurrentUser, db: SessionDep) 
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return info
 
 
@@ -44,10 +44,10 @@ async def get_user(
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if user is None:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.user_not_found
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return user
 
 
@@ -67,7 +67,7 @@ async def get_users(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return users
 
 
@@ -91,13 +91,13 @@ async def create_user(
     if out == 1:
         process_time = perf_counter() - start_time
         log_data = [process_time, body, current_user.num_document, current_user.rol]
-        log_request(request, status.HTTP_403_FORBIDDEN, *log_data)
+        await log_request(request, status.HTTP_403_FORBIDDEN, *log_data)
         raise exceptions.non_superuser
 
     if out == 2:
         process_time = perf_counter() - start_time
         log_data = [process_time, body, current_user.num_document, current_user.rol]
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.user_found
     
     if new_user.rol == "patient":
@@ -132,18 +132,18 @@ async def update_user(
 
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.user_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_403_FORBIDDEN, *log_data)
+        await log_request(request, status.HTTP_403_FORBIDDEN, *log_data)
         raise exceptions.non_superuser
 
     if out == 3:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.num_document_used
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {
         "status": status.HTTP_200_OK,
         "detail": "Información del usuario actualizada",
@@ -170,10 +170,10 @@ async def update_basic_user(
 
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.user_not_found
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {
         "status": status.HTTP_200_OK,
         "detail": "Información del usuario actualizada",
@@ -205,16 +205,16 @@ async def delete_user(
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.user_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_403_FORBIDDEN, *log_data)
+        await log_request(request, status.HTTP_403_FORBIDDEN, *log_data)
         raise exceptions.non_superuser
 
     if out == 3:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.patient_in_bed
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Usuario eliminado"}

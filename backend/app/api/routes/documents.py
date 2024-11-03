@@ -29,7 +29,7 @@ async def get_all_documents(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return documents
 
 
@@ -45,7 +45,7 @@ async def get_all(request: Request, current_user: NonPatient) -> list[schemas.Al
 
     process_time = perf_counter() - start_time
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return documents
 
 
@@ -63,7 +63,7 @@ async def download_history(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return file
 
 
@@ -77,7 +77,7 @@ async def get_histories(request: Request, current_user: Doctor) -> list[str]:
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return histories
 
 
@@ -91,7 +91,7 @@ async def get_orders(num_document: str, request: Request, current_user: NonPatie
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return orders
 
 
@@ -110,7 +110,7 @@ async def download_order(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return file
 
 
@@ -124,7 +124,7 @@ async def get_results(num_document: str, request: Request, current_user: Doctor)
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return results
 
 
@@ -143,7 +143,7 @@ async def download_result(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return file
 
 
@@ -163,13 +163,13 @@ async def update_history(
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
+        await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_save_historial
     if out == 2:
-        log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
+        await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_save_history
     
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Historia clínica actualizada correctamente"}
 
 
@@ -190,10 +190,10 @@ async def add_file(
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
+        await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_save_order
     
-    log_request(request, status.HTTP_201_CREATED, *log_data)
+    await log_request(request, status.HTTP_201_CREATED, *log_data)
     return {"status": status.HTTP_201_CREATED, "detail": "Archivo agregado correctamente"}
 
 @router.delete("/results/{num_document}")
@@ -213,11 +213,11 @@ async def delete_file(
     
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
+        await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_found_file
     if out == 2:
-        log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
+        await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_delete_file
     
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Archivo eliminado correctamente"}

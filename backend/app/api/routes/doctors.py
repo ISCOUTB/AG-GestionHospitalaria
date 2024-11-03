@@ -23,7 +23,7 @@ async def get_doctors(
     process_time = perf_counter() - start_time
     
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return doctors
 
 
@@ -47,7 +47,7 @@ async def get_doctor(
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
     
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return doctor
 
 
@@ -63,7 +63,7 @@ async def get_specialities(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return specialities
 
 
@@ -83,7 +83,7 @@ async def get_speciality_doctor(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return doctors
 
 
@@ -119,7 +119,7 @@ async def add_doctor_speciality(
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.speciality_doctor_found
 
-    log_request(request, status.HTTP_201_CREATED, *log_data)
+    await log_request(request, status.HTTP_201_CREATED, *log_data)
     return {
         "detail": "Especialidad agregada al doctor",
         "status": status.HTTP_201_CREATED,
@@ -144,16 +144,16 @@ async def delete_speciality(
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.speciality_not_found
 
     if out == 3:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.speciality_doctor_not_found
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Especialidad borrada del doctor"}

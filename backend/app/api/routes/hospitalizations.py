@@ -25,7 +25,7 @@ async def get_hospitalizations(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return hospitalizations
 
 
@@ -46,26 +46,26 @@ async def add_hospitalization(
     body = hospitalization_info.model_dump()
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
 
     if out == 3:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.bed_not_found
 
     if out == 4:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.bed_already_used
 
     if out == 5:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.patient_already_hospitalized
 
-    log_request(request, status.HTTP_201_CREATED, *log_data)
+    await log_request(request, status.HTTP_201_CREATED, *log_data)
     return {"status": status.HTTP_201_CREATED, "detail": "Hospitalización agregada"}
 
 
@@ -87,12 +87,12 @@ async def discharge_hospitalization(
     body = last_day.model_dump()
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_400_BAD_REQUEST, *log_data)
+        await log_request(request, status.HTTP_400_BAD_REQUEST, *log_data)
         raise exceptions.bad_date_formatting
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Paciente dado de alta del sistema"}

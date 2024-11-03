@@ -25,7 +25,7 @@ async def get_consultations(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return consultations
 
 
@@ -47,14 +47,14 @@ async def add_consultation(
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     if out == 1:
         process_time = perf_counter() - start_time
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
     if out == 2:
         process_time = perf_counter() - start_time
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
     
     process_time = perf_counter() - start_time
-    log_request(request, status.HTTP_201_CREATED, *log_data)
+    await log_request(request, status.HTTP_201_CREATED, *log_data)
     return {"status": status.HTTP_201_CREATED, "detail": "Consulta médica agregada"}

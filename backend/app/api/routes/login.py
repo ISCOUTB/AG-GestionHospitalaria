@@ -51,7 +51,7 @@ async def login_access_token(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, *user_data]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return schemas.Token(access_token=access_token, token_type="bearer")
 
 
@@ -61,5 +61,5 @@ async def test_token(request: Request, current_user: CurrentUser) -> schemas.mod
     Probar el token de acceso
     """
     log_data = [0.0, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return current_user

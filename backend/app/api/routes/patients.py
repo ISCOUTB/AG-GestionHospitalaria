@@ -23,7 +23,7 @@ async def get_documents(request: Request, current_user: Patient) -> schemas.AllF
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return documents
 
 
@@ -42,7 +42,7 @@ async def download_document(
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return file
 
 
@@ -61,10 +61,10 @@ async def get_responsable(
     
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if patient is None:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return patient
 
 
@@ -83,7 +83,7 @@ async def get_patients(
     process_time = perf_counter() - start_time
     
     log_data = [process_time, None, current_user.num_document, current_user.rol]
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return patients
 
 
@@ -104,7 +104,7 @@ async def get_patient(
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if patient is None:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
     return patient
@@ -128,22 +128,22 @@ async def update_responsable(
     body = updated_info.model_dump()
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_400_BAD_REQUEST, *log_data)
+        await log_request(request, status.HTTP_400_BAD_REQUEST, *log_data)
         raise exceptions.patient_cannot_be_his_responsable
 
     if out == 3:
-        log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.patient_cannot_be_responsable
 
     if out == 4:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.responsable_not_found
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {
         "status": status.HTTP_200_OK,
         "detail": "Información del responsable actualizada",
@@ -166,14 +166,14 @@ async def delete_responsable(
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if out == 1:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
     if out == 2:
-        log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.responsable_not_found
 
-    log_request(request, status.HTTP_200_OK, *log_data)
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return {
         "status": status.HTTP_200_OK,
         "detail": "Información del responsable eliminada",
