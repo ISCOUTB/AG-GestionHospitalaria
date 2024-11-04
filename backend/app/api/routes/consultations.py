@@ -27,13 +27,13 @@ async def get_consultations(
     return consultations
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def add_consultation(
     request: Request,
     current_user: Doctor,
     db: SessionDep,
     consultation_info: schemas.Consultation,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Agrega una nueva consulta médica
     """
@@ -55,4 +55,4 @@ async def add_consultation(
 
     process_time = perf_counter() - start_time
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {"status": status.HTTP_201_CREATED, "detail": "Consulta médica agregada"}
+    return schemas.ApiResponse(detail="Consulta médica agregada")

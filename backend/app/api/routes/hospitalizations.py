@@ -27,13 +27,13 @@ async def get_hospitalizations(
     return hospitalizations
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def add_hospitalization(
     request: Request,
     current_user: Doctor,
     db: SessionDep,
     hospitalization_info: schemas.RegisterHospitalization,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Agrega una nueva hospitalización
     """
@@ -64,7 +64,7 @@ async def add_hospitalization(
         raise exceptions.patient_already_hospitalized
 
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {"status": status.HTTP_201_CREATED, "detail": "Hospitalización agregada"}
+    return schemas.ApiResponse(detail="Hospitalización agregada")
 
 
 @router.put("/{num_doc_patient}")
@@ -93,4 +93,4 @@ async def discharge_hospitalization(
         raise exceptions.bad_date_formatting
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Paciente dado de alta del sistema"}
+    return schemas.ApiResponse(detail="Paciente dado de alta del sistema")

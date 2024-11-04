@@ -99,6 +99,7 @@ async def get_patient(
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return patient
 
 
@@ -109,7 +110,7 @@ async def update_responsable(
     current_user: NonPatient,
     db: SessionDep,
     updated_info: schemas.ResponsablesInfo,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Actualiza la información del responsable dado un determinado paciente
     """
@@ -136,16 +137,13 @@ async def update_responsable(
         raise exceptions.responsable_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {
-        "status": status.HTTP_200_OK,
-        "detail": "Información del responsable actualizada",
-    }
+    return schemas.ApiResponse(detail="Información del responsable actualizada")
 
 
 @router.delete("/{num_document}")
 async def delete_responsable(
     num_document: str, request: Request, current_user: NonPatient, db: SessionDep
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Elimina la información del responsable de un paciente
     """
@@ -163,7 +161,4 @@ async def delete_responsable(
         raise exceptions.responsable_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {
-        "status": status.HTTP_200_OK,
-        "detail": "Información del responsable eliminada",
-    }
+    return schemas.ApiResponse(detail="Información del responsable eliminada")

@@ -28,9 +28,9 @@ def test_create_user(
         f"{endpoint}/", headers=superuser_token, json=admin.model_dump()
     )
 
-    content = response.json()
+    assert response.status_code == 201
 
-    assert content["status"] == 201
+    content = response.json()
     assert content["detail"] == "Usuario creado"
 
     user_search = schemas.UserSearch(num_document=admin.num_document, rol="admin")
@@ -89,9 +89,9 @@ def test_update_user(
         json=updated_info.model_dump(),
     )
 
-    content = response.json()
+    assert response.status_code == 200
 
-    assert content["status"] == 200
+    content = response.json()
     assert content["detail"] == "Información del usuario actualizada"
 
     user_search = schemas.UserSearch(num_document=admin.num_document, rol="admin")
@@ -160,9 +160,9 @@ def test_delete_user(
         f"{endpoint}/{user.num_document}/{user.rol}", headers=superuser_token
     )
 
-    content = response.json()
+    assert response.status_code == 200
 
-    assert content["status"] == 200
+    content = response.json()
     assert content["detail"] == "Usuario eliminado"
 
     user_search = schemas.UserSearch(num_document=user.num_document, rol=user.rol)

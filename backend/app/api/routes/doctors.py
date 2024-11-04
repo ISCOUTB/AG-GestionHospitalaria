@@ -87,14 +87,14 @@ async def get_speciality_doctor(
     return doctors
 
 
-@router.post("/{num_document}")
+@router.post("/{num_document}", status_code=status.HTTP_201_CREATED)
 async def add_doctor_speciality(
     request: Request,
     num_document: str,
     current_user: Admin,
     db: SessionDep,
     speciality: schemas.Speciality,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Agrega una especialidad dado el número documento del doctor. Antes de agregar las especialidades, la información
     esencial del doctor tuvo que haber sido previamente creada. Además, el campo de `description` dentro de `speciality`
@@ -120,10 +120,7 @@ async def add_doctor_speciality(
         raise exceptions.speciality_doctor_found
 
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {
-        "detail": "Especialidad agregada al doctor",
-        "status": status.HTTP_201_CREATED,
-    }
+    return schemas.ApiResponse(detail="Especialidad agregada al doctor")
 
 
 @router.delete("/{num_document}")
@@ -133,7 +130,7 @@ async def delete_speciality(
     current_user: Admin,
     db: SessionDep,
     speciality_name: str,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Elimina la especialidad de un doctor especificando su número de documento.
     """
@@ -156,4 +153,4 @@ async def delete_speciality(
         raise exceptions.speciality_doctor_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Especialidad borrada del doctor"}
+    return schemas.ApiResponse(detail="Especialidad borrada del doctor")

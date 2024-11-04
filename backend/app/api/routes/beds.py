@@ -27,10 +27,10 @@ async def get_beds(
     return beds
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def add_bed(
     request: Request, current_user: Admin, db: SessionDep, bed_info: schemas.BedBase
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Agrega una nueva cama al hospital al hospital especificando el cuarto
     """
@@ -46,7 +46,7 @@ async def add_bed(
         raise exceptions.room_already_with_bed
 
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {"status": status.HTTP_201_CREATED, "detail": "Cama agregada perfectamente"}
+    return schemas.ApiResponse(detail="Cama agregada perfectamente")
 
 
 @router.delete("/{room}")
@@ -70,4 +70,4 @@ async def delete_bed(
         raise exceptions.bed_already_used
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Cama eliminada de la habitación"}
+    return schemas.ApiResponse(detail="Cama eliminada de la habitación")

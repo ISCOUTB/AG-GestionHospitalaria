@@ -73,10 +73,10 @@ async def get_users(
     return users
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def create_user(
     request: Request, current_user: Admin, db: SessionDep, new_user: schemas.UserCreate
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Crea un nuevo usuario dentro en el sistema. No se pueden crear nuevos administradores.
     """
@@ -104,7 +104,8 @@ async def create_user(
 
     process_time = perf_counter() - start_time
     log_data = [process_time, body, current_user.num_document, current_user.rol]
-    return {"status": status.HTTP_201_CREATED, "detail": "Usuario creado"}
+    await log_request(request, status.HTTP_201_CREATED, *log_data)
+    return schemas.ApiResponse(detail=f"Usuario creado")
 
 
 @router.put("/{num_document}/{rol}")
@@ -115,7 +116,7 @@ async def update_user(
     current_user: Admin,
     db: SessionDep,
     updated_info: schemas.UserUpdateAll,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Actualiza la información completa de cualquier usuario dentro del sistema que no sea un administrador.
     """
@@ -143,10 +144,7 @@ async def update_user(
         raise exceptions.num_document_used
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {
-        "status": status.HTTP_200_OK,
-        "detail": "Información del usuario actualizada",
-    }
+    return schemas.ApiResponse(detail="Información del usuario actualizada")
 
 
 @router.put("/")
@@ -155,7 +153,7 @@ async def update_basic_user(
     current_user: CurrentUser,
     db: SessionDep,
     updated_info: schemas.UserUpdate,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Modifica la información no esencial
     """
@@ -173,10 +171,7 @@ async def update_basic_user(
         raise exceptions.user_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {
-        "status": status.HTTP_200_OK,
-        "detail": "Información del usuario actualizada",
-    }
+    return {"detail": "Información del usuario actualizada"}
 
 
 @router.delete("/{num_document}/{rol}")
@@ -186,7 +181,7 @@ async def delete_user(
     request: Request,
     current_user: Admin,
     db: SessionDep,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     "Elimina" a un usuario activo dentro del sistema. En realidad, lo que se hace es colocar al usuario como inactivo.
     En el caso de los pacientes que están en cama, no se pueden colocar como inactivos todavía.
@@ -216,4 +211,4 @@ async def delete_user(
         raise exceptions.patient_in_bed
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Usuario eliminado"}
+    return {"detail": "Usuario eliminado"}

@@ -28,9 +28,9 @@ def test_add_consultation(
         f"{endpoint}/", headers=doctor_token, json=new_consultation.model_dump()
     )
 
-    content = response.json()
+    assert response.status_code == 201
 
-    assert content["status"] == 201
+    content = response.json()
     assert content["detail"] == "Consulta médica agregada"
 
 
