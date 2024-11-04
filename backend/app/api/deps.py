@@ -1,6 +1,6 @@
 from collections.abc import Generator
 from typing import Annotated, Any
-from datetime import datetime
+from datetime import datetime, date
 
 from pymongo import MongoClient
 from app.core.config import settings
@@ -110,6 +110,11 @@ async def log_request(
     username: str,
     rol: schemas.Roles,
 ) -> None:
+    if body is not None:
+        for key, value in body.items():
+            if isinstance(value, date):
+                body[key] = value.strftime("%Y-%m-%d")
+        
     log_data = {
         "username": username,
         "rol": rol,
