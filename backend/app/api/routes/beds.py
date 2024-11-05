@@ -52,7 +52,7 @@ async def add_bed(
 @router.delete("/{room}")
 async def delete_bed(
     room: str, request: Request, current_user: Admin, db: SessionDep
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Elimina una cama dentro del hospital que no esté en uso, especificando el cuarto donde esté
     """
