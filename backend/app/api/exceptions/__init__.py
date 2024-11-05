@@ -14,6 +14,7 @@ from app.api.exceptions.exceptions import (
     create_speciality,
     patient_cannot_be_his_responsable,
     patient_cannot_be_responsable,
+    patient_doctor_same_document,
     responsable_not_found,
     responsable_found,
     user_not_found,

@@ -125,7 +125,10 @@ class CRUDBase:
 
     def valid_basic_appointment(
         self, info: schemas.BaseAppointment, db: Session
-    ) -> Literal[1, 2] | tuple[models.UserRoles]:
+    ) -> Literal[1, 2, 3] | tuple[models.UserRoles]:
+        if info.num_doc_patient == info.num_doc_doctor:
+            return 3
+
         patient_search: schemas.UserSearch = schemas.UserSearch(
             num_document=info.num_doc_patient, rol="patient"
         )

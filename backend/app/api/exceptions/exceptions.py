@@ -87,6 +87,11 @@ patient_cannot_be_responsable = HTTPException(
     detail="Responsable no puede ser un paciente activo en el hospital",
 )
 
+patient_doctor_same_document = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="Paciente y doctor con el mismo documento",
+)
+
 num_document_used = HTTPException(
     status_code=status.HTTP_409_CONFLICT, detail="Número de documento en uso"
 )

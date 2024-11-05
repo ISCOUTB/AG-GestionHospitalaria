@@ -49,7 +49,7 @@ class CRUDHospitalizations(CRUDBase):
 
     def add_hospitalization(
         self, hospitalization_info: schemas.RegisterHospitalization, db: Session
-    ) -> Literal[0, 1, 2, 3, 4, 5]:
+    ) -> Literal[0, 1, 2, 3, 4, 5, 6]:
         """
         Agrega una nueva hospitalización a la base de datos
 
@@ -62,9 +62,10 @@ class CRUDHospitalizations(CRUDBase):
                 - 0: Resultado exitoso.
                 - 1: Paciente no existente.
                 - 2: Doctor no existente.
-                - 3: Cama no existente.
-                - 4: Cama en uso.
-                - 5: Paciente ya en cama
+                - 3: Paciente y doctor con el mismo documento
+                - 4: Cama no existente.
+                - 5: Cama en uso.
+                - 6: Paciente ya en cama
         """
         # Realizar las validaciones
         if isinstance(
@@ -82,10 +83,10 @@ class CRUDHospitalizations(CRUDBase):
         if bed is None:
             return 3
 
-        if bed in db.execute(select(models.BedsUsed.id_bed)).all():
+        if (bed.id,) in db.execute(select(models.BedsUsed.id_bed)).all():
             return 4
 
-        if patient.id in db.execute(select(models.BedsUsed.id_patient)).all():
+        if (patient.id,) in db.execute(select(models.BedsUsed.id_patient)).all():
             return 5
 
         # Ocupar la cama

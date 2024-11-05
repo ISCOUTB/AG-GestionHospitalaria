@@ -52,14 +52,18 @@ async def add_hospitalization(
         raise exceptions.doctor_not_found
 
     if out == 3:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.patient_doctor_same_document
+
+    if out == 4:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.bed_not_found
 
-    if out == 4:
+    if out == 5:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.bed_already_used
 
-    if out == 5:
+    if out == 6:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.patient_already_hospitalized
 

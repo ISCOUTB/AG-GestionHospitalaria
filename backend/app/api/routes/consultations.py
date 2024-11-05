@@ -1,3 +1,5 @@
+# TODO: Implementar eliminar consultas médicas por ID
+
 from time import perf_counter
 
 from fastapi import APIRouter, status, Request
@@ -52,6 +54,11 @@ async def add_consultation(
         process_time = perf_counter() - start_time
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
+    
+    if out == 3:
+        process_time = perf_counter() - start_time
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.patient_doctor_same_document
 
     process_time = perf_counter() - start_time
     await log_request(request, status.HTTP_201_CREATED, *log_data)
