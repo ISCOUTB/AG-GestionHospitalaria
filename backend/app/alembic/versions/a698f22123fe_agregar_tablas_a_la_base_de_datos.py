@@ -142,6 +142,7 @@ def upgrade() -> None:
         sa.Column("name", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column("description", sa.TEXT(), autoincrement=False, nullable=False),
         sa.PrimaryKeyConstraint("id", name="pk_specialities"),
+        sa.UniqueConstraint("name", name="specialities_name_key"),
         postgresql_ignore_search_path=False,
     )
     op.create_table(
