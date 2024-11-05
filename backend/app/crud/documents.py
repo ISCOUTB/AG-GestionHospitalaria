@@ -121,11 +121,6 @@ class CRUDDocuments:
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         if not os.path.isdir(patient_path):
             None
-        
-        if kind == 0:
-            kind = "orders"
-        else:
-            kind = "results"
 
         filenames: list[str] = [file for file in os.listdir(f"{patient_path}/{kind}")]
         return schemas.Files(num_document=num_document, filenames=filenames, kind=kind)
@@ -154,7 +149,7 @@ class CRUDDocuments:
 
     async def update_history(
         self, num_document: str, history: UploadFile
-    ) -> Literal[0, 1, 2]:
+    ) -> Literal[0, 1, 2, 3]:
         """
         Actualiza la historia clínica de un paciente. Cuando se actualiza la historia clínica
         se crea guarda la versión actualizada en el archivo 'history.txt' del paciente y la
@@ -181,7 +176,7 @@ class CRUDDocuments:
         history_path: str = f"{patient_path}/histories"
         history_filename: str = f"{patient_path}/{settings.HISTORY_FILENAME}"
         update_filename: str = (
-            f'{history_path}/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
+            f'{history_path}/{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}.txt'
         )
 
         try:
@@ -205,7 +200,7 @@ class CRUDDocuments:
 
     async def add_file(
         self, num_document: str, kind: schemas.KindFiles, file: UploadFile
-    ) -> Literal[0, 1]:
+    ) -> Literal[0, 1, 2]:
         """
         Agrega un archivo de una orden médica o resultado médico a un determinado paciente
 
@@ -227,8 +222,9 @@ class CRUDDocuments:
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         if not os.path.isdir(patient_path):
             return 2
-        filename = f"{patient_path}/{kind}/{file.filename}"
-        filename += f'_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
+        name, ext = os.path.splitext(file.filename)
+        filename = f"{patient_path}/{kind}/{name}"
+        filename += f'_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}{ext}'
 
         try:
             with open(filename, "wb") as f:
@@ -242,7 +238,7 @@ class CRUDDocuments:
 
     def delete_file(
         self, num_document: str, filename: str, kind: schemas.KindFiles
-    ) -> Literal[0, 1, 2]:
+    ) -> Literal[0, 1, 2, 3]:
         """
         Elimina un archivo médico de un determinado paciente (no incluye la historia clínica)
 

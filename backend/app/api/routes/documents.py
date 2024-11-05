@@ -71,7 +71,7 @@ async def download_history(
 
 
 @router.get("/histories/", summary="Get Clinical Histories")
-async def get_histories(request: Request, current_user: Doctor) -> list[str]:
+async def get_histories(request: Request, current_user: NonPatient) -> list[str]:
     """
     Obtiene todas las historias clínicas de todos los pacientes
     """
@@ -87,7 +87,7 @@ async def get_histories(request: Request, current_user: Doctor) -> list[str]:
 @router.get("/orders/{num_document}")
 async def get_orders(
     num_document: str, request: Request, current_user: NonPatient
-) -> list[str]:
+) -> schemas.Files:
     """
     Obtiene todas las órdenes médicas de un determinado paciente
     """
@@ -104,7 +104,7 @@ async def get_orders(
 
 @router.get("/orders/{num_document}/{filename}")
 async def download_order(
-    num_document: str, filename: str, request: Request, current_user: Doctor
+    num_document: str, filename: str, request: Request, current_user: NonPatient
 ) -> FileResponse:
     """
     Obtiene un archivo de una orden médica de un determinado paciente
@@ -122,8 +122,8 @@ async def download_order(
 
 @router.get("/results/{num_document}")
 async def get_results(
-    num_document: str, request: Request, current_user: Doctor
-) -> list[str]:
+    num_document: str, request: Request, current_user: NonPatient
+) -> schemas.Files:
     """
     Obtiene todos los resultados de los examenes médicos para un determinado paciente
     """
@@ -167,7 +167,8 @@ async def update_history(
     Actualiza la historia clínica de un determinado paciente
     """
     start_time = perf_counter()
-    if os.path.split(history.filename)[1] not in settings.ALLOWED_EXTENSIONS_HISTORY:
+    if os.path.splitext(history.filename)[1] not in settings.ALLOWED_EXTENSIONS_HISTORY:
+        print(1, history.filename)
         raise exceptions.file_extention_not_allowed
     
     out = await crud_document.update_history(num_document, history)
@@ -179,7 +180,7 @@ async def update_history(
         raise exceptions.failed_to_save_historial
     if out == 2:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
-        raise exceptions.failed_to_save_history
+        raise exceptions.failed_to_save_file
     if out == 3:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
@@ -188,7 +189,7 @@ async def update_history(
     return schemas.ApiResponse(detail="Historia clínica actualizada correctamente")
 
 
-@router.post("/{num_document}")
+@router.post("/{num_document}", status_code=status.HTTP_201_CREATED)
 async def add_file(
     num_document: str,
     kind: schemas.KindFiles,
@@ -203,7 +204,7 @@ async def add_file(
     allowed_extensions = settings.ALLOWED_EXTENSIONS_ORDERS if kind == "orders" \
         else settings.ALLOWED_EXTENSIONS_RESULTS
 
-    if os.path.split(file.filename)[1] not in allowed_extensions:
+    if os.path.splitext(file.filename)[1] not in allowed_extensions:
         raise exceptions.file_extention_not_allowed
 
     out = await crud_document.add_file(num_document, kind, file)
@@ -221,7 +222,7 @@ async def add_file(
     return schemas.ApiResponse(detail="Archivo agregado correctamente")
 
 
-@router.delete("/results/{num_document}")
+@router.delete("/{num_document}")
 async def delete_file(
     num_document: str,
     filename: str,

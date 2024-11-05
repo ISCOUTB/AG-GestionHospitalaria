@@ -26,4 +26,5 @@ from app.api.exceptions.exceptions import (
     failed_to_save_file,
     failed_to_delete_file,
     failed_to_found_file,
+    file_extention_not_allowed,
 )
