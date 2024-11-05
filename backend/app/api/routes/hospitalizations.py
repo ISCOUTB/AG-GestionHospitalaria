@@ -78,7 +78,7 @@ async def discharge_hospitalization(
     current_user: Doctor,
     db: SessionDep,
     last_day: schemas.DischargeHospitalization,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Da el alta a un determinado paciente que esté actualmente hospitalizado
     """
