@@ -4,7 +4,7 @@ from typing import Literal
 from app import models, schemas
 from app.crud.base import CRUDBase
 
-from sqlalchemy import select
+from sqlalchemy import select, null
 from sqlalchemy.orm import Session, aliased
 
 
@@ -125,11 +125,18 @@ class CRUDHospitalizations(CRUDBase):
                 - 1: Paciente hospitalizado no encontrado.
                 - 2: Mal formato de fecha. Aplica cuando la fecha es mayor que el día actual o menor a la fecha de hospitalización
         """
+        user_search: schemas.UserSearch = schemas.UserSearch(
+            num_document=num_doc_patient, rol="patient"
+        )
+        patient: models.UserRoles | None = self.get_user_rol(user_search, db)
+        if patient is None:
+            return 1
+
         hospitalization: models.Hospitalizations | None = (
             db.query(models.Hospitalizations)
             .filter(
-                models.Hospitalizations.id_patient == num_doc_patient,
-                models.Hospitalizations.last_day is None,
+                models.Hospitalizations.last_day.is_(null()),
+                models.Hospitalizations.id_patient == patient.id,
             )
             .first()
         )
@@ -147,17 +154,13 @@ class CRUDHospitalizations(CRUDBase):
         # Dar de alta al paciente actualizando la fecha
         hospitalization.last_day = discharge_info.last_day
 
-        # Eliminar cama
-        patient: models.UserRoles = (
-            db.query(models.UserRoles)
-            .filter(models.UserRoles.num_document == num_doc_patient)
-            .first()
-        )
+        # Eliminar cama del paciente
         bed_used: models.BedsUsed = (
             db.query(models.BedsUsed)
             .filter(models.BedsUsed.id_patient == patient.id)
             .first()
         )
+        print(bed_used)
         db.delete(bed_used)
 
         db.commit()
