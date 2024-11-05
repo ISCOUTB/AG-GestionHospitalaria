@@ -55,6 +55,11 @@ responsable_not_found = HTTPException(
     detail="Información previa del responsable no existente",
 )
 
+responsable_found = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="Información del responsable ya existente",
+)
+
 patient_already_hospitalized = HTTPException(
     status_code=status.HTTP_409_CONFLICT, detail="Paciente ya hospitalizado previamente"
 )
