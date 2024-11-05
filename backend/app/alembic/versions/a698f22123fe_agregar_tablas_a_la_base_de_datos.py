@@ -129,6 +129,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name="pk_beds_used"),
         sa.UniqueConstraint("id_bed", name="beds_used_id_bed_key"),
+        sa.UniqueConstraint("id_patient", name="beds_used_id_patient_key"),
     )
     op.create_table(
         "specialities",
