@@ -172,7 +172,7 @@ async def update_basic_user(
         raise exceptions.user_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"detail": "Información del usuario actualizada"}
+    return schemas.ApiResponse(detail="Información del usuario actualizada")
 
 
 @router.delete("/{num_document}/{rol}")
@@ -212,4 +212,4 @@ async def delete_user(
         raise exceptions.patient_in_bed
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"detail": "Usuario eliminado"}
+    return schemas.ApiResponse(detail="Usuario eliminado")
