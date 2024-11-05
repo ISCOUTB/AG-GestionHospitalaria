@@ -55,8 +55,8 @@ class CRUDDocuments:
             asociados al paciente
         """
         history = self.get_history(num_document)
-        orders = self.get_orders(num_document)
-        results = self.get_results(num_document)
+        orders = self.get_files(num_document, "orders").filenames
+        results = self.get_files(num_document, "results").filenames
 
         return schemas.AllFiles(
             num_document=num_document, history=history, orders=orders, results=results
