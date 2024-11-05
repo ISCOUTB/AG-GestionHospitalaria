@@ -165,6 +165,7 @@ def upgrade() -> None:
             ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name="pk_doctor_specialities"),
+        sa.UniqueConstraint("doctor_id", "speciality_id", name="unique_doctor_speciality"),
     )
     op.create_table(
         "hospitalizations",
