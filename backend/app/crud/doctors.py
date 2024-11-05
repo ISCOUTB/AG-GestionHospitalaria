@@ -164,16 +164,14 @@ class CRUDDoctors(CRUDBase):
                 )
             )
 
-        speciality_id: int = db.execute(
-            select(models.Specialities.id).where(
-                models.Specialities.name == speciality.name
-            )
-        ).first()
+        speciality: models.Specialities = db.query(
+            models.Specialities
+        ).filter(models.Specialities.name == speciality.name).first()
 
         try:
             db.add(
                 models.DoctorSpecialities(
-                    doctor_id=doctor.id, speciality_id=speciality_id
+                    doctor_id=doctor.id, speciality_id=speciality.id
                 )
             )
             db.commit()
