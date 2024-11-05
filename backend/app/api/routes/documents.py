@@ -162,7 +162,7 @@ async def update_history(
     request: Request,
     current_user: Doctor,
     history: UploadFile = File(...),
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Actualiza la historia clínica de un determinado paciente
     """
@@ -185,10 +185,7 @@ async def update_history(
         raise exceptions.patient_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {
-        "status": status.HTTP_200_OK,
-        "detail": "Historia clínica actualizada correctamente",
-    }
+    return schemas.ApiResponse(detail="Historia clínica actualizada correctamente")
 
 
 @router.post("/{num_document}")
@@ -198,7 +195,7 @@ async def add_file(
     request: Request,
     current_user: Doctor,
     file: UploadFile = File(...),
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Agrega un documento médico (ya sea orden o resultados de un examen) a un determinado paciente
     """
@@ -221,10 +218,7 @@ async def add_file(
         raise exceptions.patient_not_found
 
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {
-        "status": status.HTTP_201_CREATED,
-        "detail": "Archivo agregado correctamente",
-    }
+    return schemas.ApiResponse(detail="Archivo agregado correctamente")
 
 
 @router.delete("/results/{num_document}")
@@ -234,7 +228,7 @@ async def delete_file(
     kind: schemas.KindFiles,
     request: Request,
     current_user: NonPatient,
-):
+) -> schemas.ApiResponse:
     """
     Elimina un archivo médico de un determinado paciente (no incluye la historia clínica)
     """
@@ -254,4 +248,4 @@ async def delete_file(
         raise exceptions.patient_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Archivo eliminado correctamente"}
+    return schemas.ApiResponse(detail="Archivo eliminado correctamente")
