@@ -122,6 +122,7 @@ async def update_user(
     Actualiza la información completa de cualquier usuario dentro del sistema que no sea un administrador.
     """
     body = updated_info.model_dump()
+    del body["password"]
     start_time = perf_counter()
     admins_bool = False
     if current_user.num_document == settings.FIRST_SUPERUSER:
@@ -159,6 +160,7 @@ async def update_basic_user(
     Modifica la información no esencial
     """
     body = updated_info.model_dump()
+    del body["password"]
     start_time = perf_counter()
     user_search: schemas.UserSearch = schemas.UserSearch(
         num_document=current_user.num_document, rol=current_user.rol
