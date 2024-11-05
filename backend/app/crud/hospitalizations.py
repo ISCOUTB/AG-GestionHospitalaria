@@ -160,7 +160,6 @@ class CRUDHospitalizations(CRUDBase):
             .filter(models.BedsUsed.id_patient == patient.id)
             .first()
         )
-        print(bed_used)
         db.delete(bed_used)
 
         db.commit()
