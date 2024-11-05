@@ -12,15 +12,15 @@ from dotenv import load_dotenv
 load_dotenv()
 
 
-def parse_cors(v: Any) -> list[str] | str:
+def split_list(v: Any) -> list[str] | str:
     """
-    Función para analizar los valores de CORS, que pueden venir en formato de cadena o lista.
+    Función para dividir cadenas en una lista en formato de texto.
 
     Args:
-        v (Any): Valor que puede ser una cadena o lista de orígenes permitidos.
+        v (Any): Valor que puede ser una cadena o lista.
 
     Returns:
-        list[str] | str: Lista de orígenes permitidos, o la cadena original si ya es una lista o cadena.
+        list[str] | str: Lista o la cadena original si ya es una lista o cadena respectivamente.
 
     Raises:
         ValueError: Si el valor no es de tipo válido.
@@ -56,7 +56,7 @@ class Settings(BaseSettings):
             return f"http://{self.DOMAIN}"
         return f"https://{self.DOMAIN}"
 
-    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(parse_cors)]
+    BACKEND_CORS_ORIGINS: Annotated[list[AnyUrl] | str, BeforeValidator(split_list)]
 
     POSTGRES_SERVER: str
     POSTGRES_PORT: int
@@ -98,6 +98,10 @@ class Settings(BaseSettings):
 
     PATIENT_DOCS_PATH: str = "./patient_docs"
     HISTORY_FILENAME: str = "history.txt"
+
+    ALLOWED_EXTENSIONS_HISTORY: Annotated[list[str] | str, BeforeValidator(split_list)]
+    ALLOWED_EXTENSIONS_ORDERS: Annotated[list[str] | str, BeforeValidator(split_list)]
+    ALLOWED_EXTENSIONS_RESULTS: Annotated[list[str] | str, BeforeValidator(split_list)]
 
 
 settings = Settings()

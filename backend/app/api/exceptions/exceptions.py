@@ -124,3 +124,8 @@ failed_to_found_file = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="Archivo no encontrado",
 )
+
+file_extention_not_allowed = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="La extensión del archivo no está permitida",
+)
