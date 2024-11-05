@@ -74,11 +74,11 @@ class CRUDBase:
                 models.UserRoles.num_document == models.UsersInfo.num_document,
             )
             .join(models.DoctorSpecialities, isouter=True)
-            .join(models.Specialities)
-        )
-
+            .join(models.Specialities, isouter=True)
+        ).where(models.UserRoles.rol == "doctor")
+    
         if active:
-            stmt.where(models.UserRoles.is_active == True)
+            stmt = stmt.where(models.UserRoles.is_active == True)
 
         return stmt
 

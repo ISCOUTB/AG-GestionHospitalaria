@@ -32,9 +32,9 @@ class CRUDDoctors(CRUDBase):
             return None
 
         userbase: schemas.UserBase = self.create_user_base(query[0])
-        specialities_list = list(
-            map(lambda x: schemas.SpecialityBase(name=x[-1]), query)
-        )
+        specialities_list: list[schemas.SpecialityBase] = [
+            schemas.SpecialityBase(name=x[-1]) for x in query if x[-1]
+        ]
 
         return schemas.DoctorAll(
             **userbase.model_dump(), specialities=specialities_list
@@ -59,9 +59,9 @@ class CRUDDoctors(CRUDBase):
         for num_document in num_documents:
             data = list(filter(lambda row: row[0] == num_document, query))
             userbase: schemas.UserBase = self.create_user_base(data[0])
-            specialities_list: list[schemas.SpecialityBase] = list(
-                map(lambda x: schemas.SpecialityBase(name=x[-1]), data)
-            )
+            specialities_list: list[schemas.SpecialityBase] = [
+                schemas.SpecialityBase(name=x[-1]) for x in data if x[-1]
+            ]
 
             results.append(
                 schemas.DoctorAll(
