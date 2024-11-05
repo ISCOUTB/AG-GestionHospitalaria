@@ -29,12 +29,13 @@ async def get_documents(request: Request, current_user: Patient) -> schemas.AllF
 
 @router.get("/documents/{filename}")
 async def download_document(
-    filename: str, request: Request, current_user: Patient, kind: Literal[0, 1, 2]
+    filename: str, request: Request, current_user: Patient, kind: Literal["0", "1", "2"]
 ) -> FileResponse:
     """
     Descarga el archivo deseado por el paciente
     """
     start_time = perf_counter()
+    kind = int(kind)
     file = crud_document.get_file(current_user.num_document, filename, kind)
     process_time = perf_counter() - start_time
 
