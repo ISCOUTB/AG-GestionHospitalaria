@@ -81,6 +81,7 @@ async def create_user(
     Crea un nuevo usuario dentro en el sistema. No se pueden crear nuevos administradores.
     """
     body = new_user.model_dump()
+    del body["password"]
     start_time = perf_counter()
     admins_bool = False
     if current_user.num_document == settings.FIRST_SUPERUSER:
