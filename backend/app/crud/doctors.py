@@ -180,6 +180,35 @@ class CRUDDoctors(CRUDBase):
 
         return 0
 
+    def update_speciality(
+        self, updated_speciality: schemas.Speciality, db: Session
+    ) -> Literal[0, 1]:
+        """
+        Actualiza la descripción de una especialidad especificando su nombre
+
+        Args:
+            speciality (schemas.SpecialityBase): Especialidad que se quiere actualizar.
+            db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
+
+        Returns:
+            int: Retorna un entero simbolizando el estado de la respuesta. Estos son los posibles estados de la respuesta:
+                - 0: Respuesta existosa.
+                - 1: Especialidad no existe.
+        """
+        speciality: models.Specialities | None = db.query(models.Specialities) \
+            .filter(models.Specialities.name == updated_speciality.name) \
+            .first()
+
+        if speciality is None:
+            return 1
+        
+        speciality.description = updated_speciality.description
+        db.commit()
+        db.refresh(speciality)
+
+        return 0
+
+
     def delete_speciality(
         self, num_document: str, speciality_name: schemas.SpecialityBase, db: Session
     ) -> Literal[0, 1, 2, 3]:
