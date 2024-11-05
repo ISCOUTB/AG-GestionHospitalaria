@@ -30,6 +30,8 @@ async def get_api_historial(
     limit: int = -1,
     start_date: date | None = None,
     end_date: date | None = None,
+    method: str | None = None,
+    url: str | None = None,
 ) -> list[schemas.ApiHistorial]:
     """
     Obtiene el historial de la API guardadas en la base de datos en mongodb. 
@@ -47,6 +49,12 @@ async def get_api_historial(
         date_filter["$lte"] = datetime.combine(end_date, datetime.max.time())
 
     query = {"timestamp": date_filter} if date_filter else {}    
+
+    if method is not None:
+        query["method"] = method.upper()
+    if url is not None:
+        query["url"] = url
+
     documents = collection.find(query).limit(limit)
 
     result: list[schemas.ApiHistorial] = []
