@@ -24,6 +24,8 @@ async def get_all_documents(
     """
     start_time = perf_counter()
     documents = crud_document.get_documents(num_document)
+    if documents is None:
+        raise exceptions.patient_not_found
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
@@ -38,7 +40,10 @@ async def get_all(request: Request, current_user: NonPatient) -> list[schemas.Al
     """
     start_time = perf_counter()
     documents: list[schemas.AllFiles] = []
-    for num_document in os.listdir(settings.PATIENT_DOCS_PATH):
+    root_path = settings.PATIENT_DOCS_PATH
+    for num_document in os.listdir(root_path):
+        if not os.path.isdir(f"{root_path}/{num_document}"):
+            continue
         documents.append(crud_document.get_documents(num_document))
 
     process_time = perf_counter() - start_time
@@ -56,6 +61,8 @@ async def download_history(
     """
     start_time = perf_counter()
     file = crud_document.get_file(num_document, settings.HISTORY_FILENAME)
+    if file is None:
+        raise exceptions.patient_not_found
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
@@ -86,6 +93,8 @@ async def get_orders(
     """
     start_time = perf_counter()
     orders = crud_document.get_files(num_document, "orders")
+    if orders is None:
+        raise exceptions.patient_not_found
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
@@ -102,6 +111,8 @@ async def download_order(
     """
     start_time = perf_counter()
     file = crud_document.get_file(num_document, filename, 1)
+    if file is None:
+        raise exceptions.patient_not_found
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
@@ -118,6 +129,8 @@ async def get_results(
     """
     start_time = perf_counter()
     results = crud_document.get_files(num_document, "results")
+    if results is None:
+        raise exceptions.patient_not_found
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
@@ -134,6 +147,8 @@ async def download_result(
     """
     start_time = perf_counter()
     file = crud_document.get_file(num_document, filename, 2)
+    if file is None:
+        raise exceptions.patient_not_found
     process_time = perf_counter() - start_time
 
     log_data = [process_time, None, current_user.num_document, current_user.rol]
@@ -165,6 +180,9 @@ async def update_history(
     if out == 2:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_save_history
+    if out == 3:
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        raise exceptions.patient_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
     return {
@@ -198,6 +216,9 @@ async def add_file(
     if out == 1:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_save_order
+    if out == 2:
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        raise exceptions.patient_not_found
 
     await log_request(request, status.HTTP_201_CREATED, *log_data)
     return {
@@ -228,6 +249,9 @@ async def delete_file(
     if out == 2:
         await log_request(request, status.HTTP_500_INTERNAL_SERVER_ERROR, *log_data)
         raise exceptions.failed_to_delete_file
+    if out == 3:
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        raise exceptions.patient_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
     return {"status": status.HTTP_200_OK, "detail": "Archivo eliminado correctamente"}

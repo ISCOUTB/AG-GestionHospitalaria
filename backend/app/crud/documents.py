@@ -15,7 +15,7 @@ from typing import Literal
 class CRUDDocuments:
     def get_file(
         self, num_document: str, filename: str, kind: Literal[0, 1, 2] = 0
-    ) -> FileResponse:
+    ) -> FileResponse | None:
         """
         Obtiene un archivo de un paciente dado su número de documento y nombre
 
@@ -28,9 +28,13 @@ class CRUDDocuments:
                 - 2: Archivo de los resultados médicos del paciente.
 
         Returns:
-            fastapi.responses.FileResponse: Retorna un archivo con el contenido del archivo solicitado
+            fastapi.responses.FileResponse | None: Retorna un archivo con el contenido del archivo solicitado
+            o None si no existe el paciente
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if not os.path.isdir(patient_path):
+            return None
+
         if kind == 0:
             path: str = f"{patient_path}/{filename}"
         elif kind == 1:
@@ -42,7 +46,7 @@ class CRUDDocuments:
             path, media_type="application/octet-stream", filename=filename
         )
 
-    def get_documents(self, num_document: str) -> schemas.AllFiles:
+    def get_documents(self, num_document: str) -> schemas.AllFiles | None:
         """
         Obtiene todos los nombre de los documentos asociados a un paciente dado su número
         de documento
@@ -54,6 +58,9 @@ class CRUDDocuments:
             schemas.AllFiles: Retorna un listado de archivos con todos los documentos
             asociados al paciente
         """
+        if not os.path.isdir(f"{settings.PATIENT_DOCS_PATH}/{num_document}"):
+            return None
+        
         history = self.get_history(num_document)
         orders = self.get_files(num_document, "orders").filenames
         results = self.get_files(num_document, "results").filenames
@@ -62,7 +69,7 @@ class CRUDDocuments:
             num_document=num_document, history=history, orders=orders, results=results
         )
 
-    def get_history(self, num_document: str) -> str:
+    def get_history(self, num_document: str) -> str | None:
         """
         Obtiene la historia clínica de un paciente dado su número de documento
 
@@ -74,6 +81,9 @@ class CRUDDocuments:
             clínica del paciente
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if not os.path.isdir(patient_path):
+            return None
+        
         return f"{patient_path}/{settings.HISTORY_FILENAME}"
 
     def get_histories(self) -> list[str]:
@@ -87,11 +97,13 @@ class CRUDDocuments:
         histories: list[str] = []
         for num_document in os.listdir(settings.PATIENT_DOCS_PATH):
             patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+            if not os.path.isdir(patient_path):
+                continue
             histories.append(f"{patient_path}/{settings.HISTORY_FILENAME}")
 
         return histories
 
-    def get_files(self, num_document: str, kind: schemas.KindFiles) -> schemas.Files:
+    def get_files(self, num_document: str, kind: schemas.KindFiles) -> schemas.Files | None:
         """
         Obtiene el nombre de todos los archivos de un tipo de documento dentro del hospital
         dado su número de documento sin incluir el archivo de la historia clínica
@@ -103,9 +115,13 @@ class CRUDDocuments:
                 - "results": Archivo de los resultados médicos del paciente.
 
         Returns:
-            list[str]: Retorna una lista con los nombres de los archivos del tipo de documento solicitado
+            list[str] | None: Retorna una lista con los nombres de los archivos del tipo de documento solicitado
+            o None si no existe el paciente
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if not os.path.isdir(patient_path):
+            None
+        
         if kind == 0:
             kind = "orders"
         else:
@@ -155,9 +171,13 @@ class CRUDDocuments:
                 - 0: Resultado exitoso.
                 - 1: Error guardando el historial de la historia clínica.
                 - 2: Error al actualizar la historia clínica.
+                - 3: Paciente no encontrado.
         """
         # Mover archivo de la historia clínica en los historiales del paciente
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if not os.path.isdir(patient_path):
+            return 3
+
         history_path: str = f"{patient_path}/histories"
         history_filename: str = f"{patient_path}/{settings.HISTORY_FILENAME}"
         update_filename: str = (
@@ -202,8 +222,11 @@ class CRUDDocuments:
             los posibles resultados:
                 - 0: Resultado exitoso.
                 - 1: Error guardando el archivo.
+                - 2: Paciente no encontrado.
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if not os.path.isdir(patient_path):
+            return 2
         filename = f"{patient_path}/{kind}/{file.filename}"
         filename += f'_{datetime.now().strftime("%Y-%m-%d_%H-%M-%S")}'
 
@@ -236,8 +259,11 @@ class CRUDDocuments:
                 - 0: Resultado exitoso.
                 - 1: Archivo no encontrado.
                 - 2: Error desconocido borrando el archivo.
+                - 3: Paciente no encontrado.
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if not os.path.isdir(patient_path):
+            return 3
         filename: str = f"{patient_path}/{kind}/{filename}"
 
         try:
