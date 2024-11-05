@@ -80,10 +80,10 @@ def test_add_doctor_speciality(
 
     i = 0
     for speciality, response in zip((speciality1, speciality2), (response1, response2)):
-        content = response.json()
+        assert response.status_code == 201
 
+        content = response.json()
         assert content["detail"] == "Especialidad agregada al doctor"
-        assert content["status"] == 201
 
         doctor_in = crud_doctor.get_doctor(doctor.num_document, db)
 
@@ -148,9 +148,9 @@ def test_delete_speciality(
         headers=admin_token,
     )
 
-    content = response.json()
+    assert response.status_code == 200
 
-    assert content["status"] == 200
+    content = response.json()
     assert content["detail"] == "Especialidad borrada del doctor"
 
     doctor_in = crud_doctor.get_doctor(doctor.num_document, db)

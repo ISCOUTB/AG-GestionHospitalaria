@@ -55,6 +55,11 @@ responsable_not_found = HTTPException(
     detail="Información previa del responsable no existente",
 )
 
+responsable_found = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="Información del responsable ya existente",
+)
+
 patient_already_hospitalized = HTTPException(
     status_code=status.HTTP_409_CONFLICT, detail="Paciente ya hospitalizado previamente"
 )
@@ -80,6 +85,11 @@ speciality_doctor_found = HTTPException(
 patient_cannot_be_responsable = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="Responsable no puede ser un paciente activo en el hospital",
+)
+
+patient_doctor_same_document = HTTPException(
+    status_code=status.HTTP_409_CONFLICT,
+    detail="Paciente y doctor con el mismo documento",
 )
 
 num_document_used = HTTPException(
@@ -113,4 +123,9 @@ failed_to_delete_file = HTTPException(
 failed_to_found_file = HTTPException(
     status_code=status.HTTP_404_NOT_FOUND,
     detail="Archivo no encontrado",
+)
+
+file_extention_not_allowed = HTTPException(
+    status_code=status.HTTP_400_BAD_REQUEST,
+    detail="La extensión del archivo no está permitida",
 )

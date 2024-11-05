@@ -14,7 +14,9 @@ from app.api.exceptions.exceptions import (
     create_speciality,
     patient_cannot_be_his_responsable,
     patient_cannot_be_responsable,
+    patient_doctor_same_document,
     responsable_not_found,
+    responsable_found,
     user_not_found,
     non_superuser,
     num_document_used,
@@ -24,4 +26,5 @@ from app.api.exceptions.exceptions import (
     failed_to_save_file,
     failed_to_delete_file,
     failed_to_found_file,
+    file_extention_not_allowed,
 )

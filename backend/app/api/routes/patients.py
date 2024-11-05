@@ -29,15 +29,13 @@ async def get_documents(request: Request, current_user: Patient) -> schemas.AllF
 
 @router.get("/documents/{filename}")
 async def download_document(
-    filename: str,
-    request: Request,
-    current_user: Patient,
-    kind: Literal[0, 1, 2]
+    filename: str, request: Request, current_user: Patient, kind: Literal["0", "1", "2"]
 ) -> FileResponse:
     """
     Descarga el archivo deseado por el paciente
     """
     start_time = perf_counter()
+    kind = int(kind)
     file = crud_document.get_file(current_user.num_document, filename, kind)
     process_time = perf_counter() - start_time
 
@@ -47,10 +45,8 @@ async def download_document(
 
 
 @router.get("/responsable")
-async def get_responsable(
-    request: Request,
-    current_user: Patient,
-    db: SessionDep
+async def get_patient_info(
+    request: Request, current_user: Patient, db: SessionDep
 ) -> schemas.PatientAll:
     """
     Devuelve toda la información del paciente, incluyendo la de los responsables
@@ -58,7 +54,7 @@ async def get_responsable(
     start_time = perf_counter()
     patient = crud_patient.get_patient(current_user.num_document, db)
     process_time = perf_counter() - start_time
-    
+
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     if patient is None:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
@@ -70,10 +66,7 @@ async def get_responsable(
 
 @router.get("/")
 async def get_patients(
-    request: Request,
-    current_user: Admin,
-    db: SessionDep,
-    active: bool = True
+    request: Request, current_user: Admin, db: SessionDep, active: bool = True
 ) -> list[schemas.PatientAll]:
     """
     Obtiene todos los pacientes que están dentro del sistema
@@ -81,7 +74,7 @@ async def get_patients(
     start_time = perf_counter()
     patients = crud_patient.get_patients(db, active)
     process_time = perf_counter() - start_time
-    
+
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     await log_request(request, status.HTTP_200_OK, *log_data)
     return patients
@@ -93,7 +86,7 @@ async def get_patient(
     request: Request,
     current_user: NonPatient,
     db: SessionDep,
-    active: bool = True
+    active: bool = True,
 ) -> schemas.PatientAll:
     """
     Obtiene toda la información de un paciente especificando su número de documento
@@ -107,7 +100,45 @@ async def get_patient(
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.patient_not_found
 
+    await log_request(request, status.HTTP_200_OK, *log_data)
     return patient
+
+
+@router.post("/{num_document}", status_code=status.HTTP_201_CREATED)
+async def add_responsable(
+    num_document: str,
+    request: Request,
+    current_user: NonPatient,
+    db: SessionDep,
+    responsable_info: schemas.ResponsablesInfo,
+) -> schemas.ApiResponse:
+    """
+    Agrega información del responsable de un paciente
+    """
+    start_time = perf_counter()
+    out = crud_patient.add_responsable(num_document, responsable_info, db)
+    process_time = perf_counter() - start_time
+
+    body = responsable_info.model_dump()
+    log_data = [process_time, body, current_user.num_document, current_user.rol]
+    if out == 1:
+        await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
+        raise exceptions.patient_not_found
+
+    if out == 2:
+        await log_request(request, status.HTTP_400_BAD_REQUEST, *log_data)
+        raise exceptions.patient_cannot_be_his_responsable
+
+    if out == 3:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.patient_cannot_be_responsable
+
+    if out == 4:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.responsable_found
+
+    await log_request(request, status.HTTP_201_CREATED, *log_data)
+    return schemas.ApiResponse(detail="Información del responsable agregada")
 
 
 @router.put("/{num_document}")
@@ -117,7 +148,7 @@ async def update_responsable(
     current_user: NonPatient,
     db: SessionDep,
     updated_info: schemas.ResponsablesInfo,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Actualiza la información del responsable dado un determinado paciente
     """
@@ -144,19 +175,13 @@ async def update_responsable(
         raise exceptions.responsable_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {
-        "status": status.HTTP_200_OK,
-        "detail": "Información del responsable actualizada",
-    }
+    return schemas.ApiResponse(detail="Información del responsable actualizada")
 
 
 @router.delete("/{num_document}")
 async def delete_responsable(
-    num_document: str,
-    request: Request,
-    current_user: NonPatient,
-    db: SessionDep
-) -> dict:
+    num_document: str, request: Request, current_user: NonPatient, db: SessionDep
+) -> schemas.ApiResponse:
     """
     Elimina la información del responsable de un paciente
     """
@@ -174,7 +199,4 @@ async def delete_responsable(
         raise exceptions.responsable_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {
-        "status": status.HTTP_200_OK,
-        "detail": "Información del responsable eliminada",
-    }
+    return schemas.ApiResponse(detail="Información del responsable eliminada")

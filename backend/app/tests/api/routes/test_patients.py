@@ -59,9 +59,9 @@ def test_update_patient(
         json=new_responsable_info.model_dump(),
     )
 
-    content = response.json()
+    assert response.status_code == 200
 
-    assert content["status"] == 200
+    content = response.json()
     assert content["detail"] == "Información del responsable actualizada"
 
     patient_in = crud_patient.get_patient(patient.num_document, db)
@@ -148,9 +148,9 @@ def test_delete_responsable(
         f"{endpoint}/{patient.num_document}", headers=nonpatient_token
     )
 
-    content = response.json()
+    assert response.status_code == 200
 
-    assert content["status"] == 200
+    content = response.json()
     assert content["detail"] == "Información del responsable eliminada"
 
     patient_in = crud_patient.get_patient(patient.num_document, db)

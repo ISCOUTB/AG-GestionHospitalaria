@@ -21,7 +21,7 @@ async def get_doctors(
     start_time = perf_counter()
     doctors = crud_doctor.get_doctors(db, active)
     process_time = perf_counter() - start_time
-    
+
     log_data = [process_time, None, current_user.num_document, current_user.rol]
     await log_request(request, status.HTTP_200_OK, *log_data)
     return doctors
@@ -33,7 +33,7 @@ async def get_doctor(
     num_document: str,
     current_user: Admin,
     db: SessionDep,
-    active: bool = True
+    active: bool = True,
 ) -> schemas.DoctorAll:
     """
     Obtiene la información esencial de un doctor en particular
@@ -46,55 +46,19 @@ async def get_doctor(
     if doctor is None:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
-    
+
     await log_request(request, status.HTTP_200_OK, *log_data)
     return doctor
 
 
-@router.get("/specialities")
-async def get_specialities(
-    request: Request, current_user: Admin, db: SessionDep
-) -> list[schemas.Speciality]:
-    """
-    Obtiene todas las especialidades de los doctores activos dentro del hospital
-    """
-    start_time = perf_counter()
-    specialities = crud_doctor.get_specialities(db)
-    process_time = perf_counter() - start_time
-
-    log_data = [process_time, None, current_user.num_document, current_user.rol]
-    await log_request(request, status.HTTP_200_OK, *log_data)
-    return specialities
-
-
-@router.get("/specialities/{speciality}")
-async def get_speciality_doctor(
-    request: Request,
-    speciality: str,
-    current_user: Admin,
-    db: SessionDep,
-    active: bool = True 
-) -> list[schemas.DoctorAll]:
-    """
-    Obtiene todos los doctores los cuales tengan una especialidad especifica
-    """
-    start_time = perf_counter()
-    doctors = crud_doctor.get_speciality_doctor(speciality, db, active)
-    process_time = perf_counter() - start_time
-
-    log_data = [process_time, None, current_user.num_document, current_user.rol]
-    await log_request(request, status.HTTP_200_OK, *log_data)
-    return doctors
-
-
-@router.post("/{num_document}")
+@router.post("/{num_document}", status_code=status.HTTP_201_CREATED)
 async def add_doctor_speciality(
     request: Request,
     num_document: str,
     current_user: Admin,
     db: SessionDep,
     speciality: schemas.Speciality,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Agrega una especialidad dado el número documento del doctor. Antes de agregar las especialidades, la información
     esencial del doctor tuvo que haber sido previamente creada. Además, el campo de `description` dentro de `speciality`
@@ -120,10 +84,7 @@ async def add_doctor_speciality(
         raise exceptions.speciality_doctor_found
 
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {
-        "detail": "Especialidad agregada al doctor",
-        "status": status.HTTP_201_CREATED,
-    }
+    return schemas.ApiResponse(detail="Especialidad agregada al doctor")
 
 
 @router.delete("/{num_document}")
@@ -132,8 +93,8 @@ async def delete_speciality(
     num_document: str,
     current_user: Admin,
     db: SessionDep,
-    speciality_name: str
-) -> dict:
+    speciality_name: str,
+) -> schemas.ApiResponse:
     """
     Elimina la especialidad de un doctor especificando su número de documento.
     """
@@ -156,4 +117,4 @@ async def delete_speciality(
         raise exceptions.speciality_doctor_not_found
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Especialidad borrada del doctor"}
+    return schemas.ApiResponse(detail="Especialidad borrada del doctor")

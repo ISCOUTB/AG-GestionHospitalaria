@@ -13,9 +13,7 @@ router = APIRouter(prefix="/hospitalizations")
 
 @router.get("/", tags=["admins"])
 async def get_hospitalizations(
-    request: Request,
-    current_user: Admin,
-    db: SessionDep
+    request: Request, current_user: Admin, db: SessionDep
 ) -> list[schemas.Hospitalization]:
     """
     Devuelve una lista con el historial de hospitalizaciones
@@ -29,13 +27,13 @@ async def get_hospitalizations(
     return hospitalizations
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def add_hospitalization(
     request: Request,
     current_user: Doctor,
     db: SessionDep,
     hospitalization_info: schemas.RegisterHospitalization,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Agrega una nueva hospitalización
     """
@@ -54,19 +52,23 @@ async def add_hospitalization(
         raise exceptions.doctor_not_found
 
     if out == 3:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.patient_doctor_same_document
+
+    if out == 4:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.bed_not_found
 
-    if out == 4:
+    if out == 5:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.bed_already_used
 
-    if out == 5:
+    if out == 6:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.patient_already_hospitalized
 
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {"status": status.HTTP_201_CREATED, "detail": "Hospitalización agregada"}
+    return schemas.ApiResponse(detail="Hospitalización agregada")
 
 
 @router.put("/{num_doc_patient}")
@@ -76,7 +78,7 @@ async def discharge_hospitalization(
     current_user: Doctor,
     db: SessionDep,
     last_day: schemas.DischargeHospitalization,
-) -> dict:
+) -> schemas.ApiResponse:
     """
     Da el alta a un determinado paciente que esté actualmente hospitalizado
     """
@@ -95,4 +97,4 @@ async def discharge_hospitalization(
         raise exceptions.bad_date_formatting
 
     await log_request(request, status.HTTP_200_OK, *log_data)
-    return {"status": status.HTTP_200_OK, "detail": "Paciente dado de alta del sistema"}
+    return schemas.ApiResponse(detail="Paciente dado de alta del sistema")

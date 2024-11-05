@@ -48,7 +48,7 @@ class CRUDConsultatations(CRUDBase):
 
     def add_consultation(
         self, consultation_info: schemas.Consultation, db: Session
-    ) -> Literal[0, 1, 2]:
+    ) -> Literal[0, 1, 2, 3]:
         """
         Agrega una nueva consulta médica a la base de datos
 
@@ -61,6 +61,7 @@ class CRUDConsultatations(CRUDBase):
                 - 0: Resultado exitoso.
                 - 1: Paciente no existente.
                 - 2: Doctor no existente.
+                - 3: Paciente y doctor con el mismo documento
         """
         # Realizar las validaciones
         if isinstance(out := self.valid_basic_appointment(consultation_info, db), int):

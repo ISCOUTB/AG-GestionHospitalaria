@@ -129,6 +129,7 @@ def upgrade() -> None:
         ),
         sa.PrimaryKeyConstraint("id", name="pk_beds_used"),
         sa.UniqueConstraint("id_bed", name="beds_used_id_bed_key"),
+        sa.UniqueConstraint("id_patient", name="beds_used_id_patient_key"),
     )
     op.create_table(
         "specialities",
@@ -142,6 +143,7 @@ def upgrade() -> None:
         sa.Column("name", sa.TEXT(), autoincrement=False, nullable=False),
         sa.Column("description", sa.TEXT(), autoincrement=False, nullable=False),
         sa.PrimaryKeyConstraint("id", name="pk_specialities"),
+        sa.UniqueConstraint("name", name="specialities_name_key"),
         postgresql_ignore_search_path=False,
     )
     op.create_table(
@@ -164,6 +166,7 @@ def upgrade() -> None:
             ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name="pk_doctor_specialities"),
+        sa.UniqueConstraint("doctor_id", "speciality_id", name="unique_doctor_speciality"),
     )
     op.create_table(
         "hospitalizations",

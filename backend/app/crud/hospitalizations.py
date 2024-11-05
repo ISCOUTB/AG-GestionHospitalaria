@@ -4,7 +4,7 @@ from typing import Literal
 from app import models, schemas
 from app.crud.base import CRUDBase
 
-from sqlalchemy import select
+from sqlalchemy import select, null
 from sqlalchemy.orm import Session, aliased
 
 
@@ -49,7 +49,7 @@ class CRUDHospitalizations(CRUDBase):
 
     def add_hospitalization(
         self, hospitalization_info: schemas.RegisterHospitalization, db: Session
-    ) -> Literal[0, 1, 2, 3, 4, 5]:
+    ) -> Literal[0, 1, 2, 3, 4, 5, 6]:
         """
         Agrega una nueva hospitalización a la base de datos
 
@@ -62,9 +62,10 @@ class CRUDHospitalizations(CRUDBase):
                 - 0: Resultado exitoso.
                 - 1: Paciente no existente.
                 - 2: Doctor no existente.
-                - 3: Cama no existente.
-                - 4: Cama en uso.
-                - 5: Paciente ya en cama
+                - 3: Paciente y doctor con el mismo documento
+                - 4: Cama no existente.
+                - 5: Cama en uso.
+                - 6: Paciente ya en cama
         """
         # Realizar las validaciones
         if isinstance(
@@ -82,10 +83,10 @@ class CRUDHospitalizations(CRUDBase):
         if bed is None:
             return 3
 
-        if bed in db.execute(select(models.BedsUsed.id_bed)).all():
+        if (bed.id,) in db.execute(select(models.BedsUsed.id_bed)).all():
             return 4
 
-        if patient.id in db.execute(select(models.BedsUsed.id_patient)).all():
+        if (patient.id,) in db.execute(select(models.BedsUsed.id_patient)).all():
             return 5
 
         # Ocupar la cama
@@ -124,11 +125,18 @@ class CRUDHospitalizations(CRUDBase):
                 - 1: Paciente hospitalizado no encontrado.
                 - 2: Mal formato de fecha. Aplica cuando la fecha es mayor que el día actual o menor a la fecha de hospitalización
         """
+        user_search: schemas.UserSearch = schemas.UserSearch(
+            num_document=num_doc_patient, rol="patient"
+        )
+        patient: models.UserRoles | None = self.get_user_rol(user_search, db)
+        if patient is None:
+            return 1
+
         hospitalization: models.Hospitalizations | None = (
             db.query(models.Hospitalizations)
             .filter(
-                models.Hospitalizations.id_patient == num_doc_patient,
-                models.Hospitalizations.last_day is None,
+                models.Hospitalizations.last_day.is_(null()),
+                models.Hospitalizations.id_patient == patient.id,
             )
             .first()
         )
@@ -146,12 +154,7 @@ class CRUDHospitalizations(CRUDBase):
         # Dar de alta al paciente actualizando la fecha
         hospitalization.last_day = discharge_info.last_day
 
-        # Eliminar cama
-        patient: models.UserRoles = (
-            db.query(models.UserRoles)
-            .filter(models.UserRoles.num_document == num_doc_patient)
-            .first()
-        )
+        # Eliminar cama del paciente
         bed_used: models.BedsUsed = (
             db.query(models.BedsUsed)
             .filter(models.BedsUsed.id_patient == patient.id)

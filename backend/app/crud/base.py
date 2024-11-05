@@ -74,11 +74,11 @@ class CRUDBase:
                 models.UserRoles.num_document == models.UsersInfo.num_document,
             )
             .join(models.DoctorSpecialities, isouter=True)
-            .join(models.Specialities)
-        )
-
+            .join(models.Specialities, isouter=True)
+        ).where(models.UserRoles.rol == "doctor")
+    
         if active:
-            stmt.where(models.UserRoles.is_active == True)
+            stmt = stmt.where(models.UserRoles.is_active == True)
 
         return stmt
 
@@ -125,7 +125,10 @@ class CRUDBase:
 
     def valid_basic_appointment(
         self, info: schemas.BaseAppointment, db: Session
-    ) -> Literal[1, 2] | tuple[models.UserRoles]:
+    ) -> Literal[1, 2, 3] | tuple[models.UserRoles]:
+        if info.num_doc_patient == info.num_doc_doctor:
+            return 3
+
         patient_search: schemas.UserSearch = schemas.UserSearch(
             num_document=info.num_doc_patient, rol="patient"
         )

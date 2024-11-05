@@ -8,6 +8,7 @@ from app.api.routes import (
     doctors,
     patients,
     documents,
+    specialities,
     consultations,
     hospitalizations,
 )
@@ -20,5 +21,6 @@ api_router.include_router(admins.router, tags=["admins"])
 api_router.include_router(doctors.router, tags=["doctors"])
 api_router.include_router(patients.router, tags=["patients"])
 api_router.include_router(documents.router, tags=["documents"])
+api_router.include_router(specialities.router, tags=["specialities"])
 api_router.include_router(consultations.router, tags=["consultations"])
 api_router.include_router(hospitalizations.router, tags=["hospitalizations"])

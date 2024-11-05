@@ -34,8 +34,9 @@ def test_add_hospitalization(
         f"{endpoint}/", headers=doctor_token, json=hospitalization.model_dump()
     )
 
+    assert response.status_code == 201
+
     content = response.json()
-    assert content["status"] == 201
     assert content["detail"] == "Hospitalización agregada"
 
 
@@ -140,9 +141,9 @@ def test_discharge_hospitalization(
         json=discharge.model_dump(),
     )
 
-    content = response.json()
+    assert response.status_code == 200
 
-    assert content["status"] == 200
+    content = response.json()
     assert content["detail"] == "Paciente dado de alta del sistema"
 
 

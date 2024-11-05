@@ -1,6 +1,6 @@
 from collections.abc import Generator
 from typing import Annotated, Any
-from datetime import datetime
+from datetime import datetime, date
 
 from pymongo import MongoClient
 from app.core.config import settings
@@ -101,14 +101,20 @@ client = MongoClient(str(settings.MONGO_URI))
 db = client[settings.MONGO_DB]
 collection = db["api_logs"]
 
+
 async def log_request(
-        request: Request,
-        response_status: int,
-        process_time: float,
-        body: dict[str, Any] | None,
-        username: str,
-        rol: schemas.Roles,
+    request: Request,
+    response_status: int,
+    process_time: float,
+    body: dict[str, Any] | None,
+    username: str,
+    rol: schemas.Roles,
 ) -> None:
+    if body is not None:
+        for key, value in body.items():
+            if isinstance(value, date):
+                body[key] = value.strftime("%Y-%m-%d")
+        
     log_data = {
         "username": username,
         "rol": rol,

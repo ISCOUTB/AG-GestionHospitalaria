@@ -4,6 +4,7 @@ from typing import Literal
 
 KindFiles = Literal["orders", "results"]
 
+
 class AllFiles(BaseModel):
     """
     Listado de archivos de un paciente

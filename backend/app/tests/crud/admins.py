@@ -59,7 +59,7 @@ def test_create_user(db: Session) -> None:
 
     out = crud_admin.create_user(new_user, db, True)
     assert out == 0
-    
+
     user_rol_in = crud_admin.get_user_rol(user_search, db, False)
     assert user_rol_in.is_active == True
 

@@ -32,9 +32,9 @@ class CRUDDoctors(CRUDBase):
             return None
 
         userbase: schemas.UserBase = self.create_user_base(query[0])
-        specialities_list = list(
-            map(lambda x: schemas.SpecialityBase(name=x[-1]), query)
-        )
+        specialities_list: list[schemas.SpecialityBase] = [
+            schemas.SpecialityBase(name=x[-1]) for x in query if x[-1]
+        ]
 
         return schemas.DoctorAll(
             **userbase.model_dump(), specialities=specialities_list
@@ -59,9 +59,9 @@ class CRUDDoctors(CRUDBase):
         for num_document in num_documents:
             data = list(filter(lambda row: row[0] == num_document, query))
             userbase: schemas.UserBase = self.create_user_base(data[0])
-            specialities_list: list[schemas.SpecialityBase] = list(
-                map(lambda x: schemas.SpecialityBase(name=x[-1]), data)
-            )
+            specialities_list: list[schemas.SpecialityBase] = [
+                schemas.SpecialityBase(name=x[-1]) for x in data if x[-1]
+            ]
 
             results.append(
                 schemas.DoctorAll(
@@ -164,16 +164,14 @@ class CRUDDoctors(CRUDBase):
                 )
             )
 
-        speciality_id: int = db.execute(
-            select(models.Specialities.id).where(
-                models.Specialities.name == speciality.name
-            )
-        ).first()
+        speciality: models.Specialities = db.query(
+            models.Specialities
+        ).filter(models.Specialities.name == speciality.name).first()
 
         try:
             db.add(
                 models.DoctorSpecialities(
-                    doctor_id=doctor.id, speciality_id=speciality_id
+                    doctor_id=doctor.id, speciality_id=speciality.id
                 )
             )
             db.commit()
@@ -181,6 +179,35 @@ class CRUDDoctors(CRUDBase):
             return 3
 
         return 0
+
+    def update_speciality(
+        self, updated_speciality: schemas.Speciality, db: Session
+    ) -> Literal[0, 1]:
+        """
+        Actualiza la descripción de una especialidad especificando su nombre
+
+        Args:
+            speciality (schemas.SpecialityBase): Especialidad que se quiere actualizar.
+            db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
+
+        Returns:
+            int: Retorna un entero simbolizando el estado de la respuesta. Estos son los posibles estados de la respuesta:
+                - 0: Respuesta existosa.
+                - 1: Especialidad no existe.
+        """
+        speciality: models.Specialities | None = db.query(models.Specialities) \
+            .filter(models.Specialities.name == updated_speciality.name) \
+            .first()
+
+        if speciality is None:
+            return 1
+        
+        speciality.description = updated_speciality.description
+        db.commit()
+        db.refresh(speciality)
+
+        return 0
+
 
     def delete_speciality(
         self, num_document: str, speciality_name: schemas.SpecialityBase, db: Session

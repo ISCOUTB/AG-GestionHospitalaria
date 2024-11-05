@@ -15,9 +15,9 @@ def test_add_bed(client: TestClient, admin_token: dict[str, str]) -> None:
     bed = random_bed()
     response = client.post(f"{endpoint}/", headers=admin_token, json=bed.model_dump())
 
-    content = response.json()
+    assert response.status_code == 201
 
-    assert content["status"] == 201
+    content = response.json()
     assert content["detail"] == "Cama agregada perfectamente"
 
 

@@ -1,3 +1,5 @@
+# TODO: Implementar eliminar consultas médicas por ID
+
 from time import perf_counter
 
 from fastapi import APIRouter, status, Request
@@ -13,9 +15,7 @@ router = APIRouter(prefix="/consultations")
 
 @router.get("/", tags=["admins"])
 async def get_consultations(
-    request: Request,
-    current_user: Admin,
-    db: SessionDep 
+    request: Request, current_user: Admin, db: SessionDep
 ) -> list[schemas.Consultation]:
     """
     Devuelve una lista con el historial de consultas médicas
@@ -29,13 +29,13 @@ async def get_consultations(
     return consultations
 
 
-@router.post("/")
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def add_consultation(
     request: Request,
     current_user: Doctor,
     db: SessionDep,
-    consultation_info: schemas.Consultation 
-) -> dict:
+    consultation_info: schemas.Consultation,
+) -> schemas.ApiResponse:
     """
     Agrega una nueva consulta médica
     """
@@ -55,6 +55,11 @@ async def add_consultation(
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
     
+    if out == 3:
+        process_time = perf_counter() - start_time
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.patient_doctor_same_document
+
     process_time = perf_counter() - start_time
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return {"status": status.HTTP_201_CREATED, "detail": "Consulta médica agregada"}
+    return schemas.ApiResponse(detail="Consulta médica agregada")
