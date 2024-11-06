@@ -4,7 +4,7 @@ from sqlalchemy.orm import Session
 from app.core.config import settings
 
 from app.tests.utils.user import create_random_user
-from app.tests.utils.user import non_existent_document
+from app.tests.utils.user import non_existent_document, random_document
 from app.tests.utils.patient import create_random_patient
 
 from app import schemas
@@ -37,6 +37,97 @@ def test_get_patient_patient_not_found(
     )
 
     assert response.status_code == 404
+
+
+def test_add_responsable(
+        client: TestClient, nonpatient_token: dict[str, str], db: Session
+) -> None:
+    patient = create_random_user("patient", db, 10)
+
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=random_document(),
+    )
+
+    response = client.post(
+        f"{endpoint}/{patient.num_document}",
+        headers=nonpatient_token,
+        json=new_responsable_info.model_dump(),
+    )
+
+    assert response.status_code == 201
+
+    content = response.json()
+    assert content["detail"] == "Información del responsable agregada"
+
+
+def test_add_responsable_patient_not_found(
+    client: TestClient, nonpatient_token: dict[str, str]
+) -> None:
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=random_document(),
+    )
+
+    response = client.post(
+        f"{endpoint}/{non_existent_document}",
+        headers=nonpatient_token,
+        json=new_responsable_info.model_dump(),
+    )
+
+    assert response.status_code == 404
+
+
+def test_add_responsable_patient_cannot_be_his_responsable(
+    client: TestClient, nonpatient_token: dict[str, str], db: Session
+) -> None:
+    patient = create_random_user("patient", db, 10)
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=patient.num_document
+    )
+
+    response = client.post(
+        f"{endpoint}/{patient.num_document}",
+        headers=nonpatient_token,
+        json=new_responsable_info.model_dump(),
+    )
+
+    assert response.status_code == 400
+
+
+def test_add_responsable_patient_cannot_be_responsable(
+    client: TestClient, nonpatient_token: dict[str, str], db: Session
+) -> None:
+    patient1 = create_random_user("patient", db, 10)
+    patient2 = create_random_user("patient", db, 10)
+
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=patient2.num_document
+    )
+
+    response = client.post(
+        f"{endpoint}/{patient1.num_document}",
+        headers=nonpatient_token,
+        json=new_responsable_info.model_dump(),
+    )
+
+    assert response.status_code == 409
+
+
+def test_add_responsable_responsable_found(
+    client: TestClient, nonpatient_token: dict[str, str], db: Session
+) -> None:
+    patient = create_random_patient(db)
+
+    new_responsable_info = schemas.ResponsablesInfo(
+        num_doc_responsable=random_document()
+    )
+
+    response = client.post(
+        f"{endpoint}/{patient.num_document}",
+        headers=nonpatient_token,
+        json=new_responsable_info.model_dump(),
+    )
+
+    assert response.status_code == 409
 
 
 def test_update_patient(

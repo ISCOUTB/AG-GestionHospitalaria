@@ -203,22 +203,22 @@ def test_delete_user_patient_in_bed(
     assert response.status_code == 409
 
 
-def test_get_user(client: TestClient, admin_token: dict[str, str], db: Session) -> None:
+def test_get_user(client: TestClient, superuser_token: dict[str, str], db: Session) -> None:
     user = create_random_user("admin", db, 10)
 
     response = client.get(
-        f"{endpoint}/{user.num_document}?rol=true", headers=admin_token
+        f"{endpoint}/{user.num_document}?rol=true", headers=superuser_token
     )
 
     content = response.json()
 
     assert content["num_document"] == user.num_document
-    assert ("admin", True) in content["roles"]
+    assert ["admin", True] in content["roles"]
 
 
 def test_get_user_user_not_found(
-    client: TestClient, admin_token: dict[str, str]
+    client: TestClient, superuser_token: dict[str, str]
 ) -> None:
-    response = client.get(f"{endpoint}/{non_existent_document}", headers=admin_token)
+    response = client.get(f"{endpoint}/{non_existent_document}", headers=superuser_token)
 
     assert response.status_code == 404
