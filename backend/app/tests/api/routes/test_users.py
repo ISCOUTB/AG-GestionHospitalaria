@@ -213,7 +213,7 @@ def test_get_user(client: TestClient, superuser_token: dict[str, str], db: Sessi
     content = response.json()
 
     assert content["num_document"] == user.num_document
-    assert ("admin", True) in content["roles"]
+    assert ["admin", True] in content["roles"]
 
 
 def test_get_user_user_not_found(

@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.crud import crud_admin
-from app.schemas import UserCreate, UserSearch, Roles, UserLogin
+from app.schemas import UserCreate, UserSearch, Roles
 from app.models import UserRoles
 from app.core.config import settings
 from app.tests.utils.utils import random_document, random_password
@@ -34,33 +34,45 @@ def create_random_user(rol: Roles, db: Session, k: int) -> UserRoles:
 
 
 def get_non_superuser_token(client: TestClient, db: Session) -> dict[str, str]:
-    new_user = create_random_user("admin", db, 10)
-
-    login = UserLogin(
-        username=new_user.num_document,
-        password=new_user.password,
-        rol=new_user.rol,
+    new_user = UserCreate(
+        num_document=random_document(),
+        password=random_password(10),
+        rol="admin",
     )
 
-    response = client.post(f"{settings.API_V1_STR}/login/access-token", data=login.model_dump())
-    tokens = response.json()
-    access_token = tokens["access_token"]
-    headers = {"Authorization": f"Bearer {access_token}"}
+    crud_admin.create_user(new_user, db, True)
+
+    login_data = {
+        "username": new_user.num_document,
+        "password": new_user.password,
+        "rol": new_user.rol,
+    }
+
+    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+    tokens = r.json()
+    a_token = tokens["access_token"]
+    headers = {"Authorization": f"Bearer {a_token}"}
     return headers
 
 
 def get_doctor_token(client: TestClient, db: Session) -> dict[str, str]:
-    new_user = create_random_user("doctor", db, 10)
-
-    login = UserLogin(
-        username=new_user.num_document,
-        password=new_user.password,
-        rol=new_user.rol,
+    new_user = UserCreate(
+        num_document=random_document(),
+        password=random_password(10),
+        rol="doctor",
     )
 
-    response = client.post(f"{settings.API_V1_STR}/login/access-token", data=login.model_dump())
-    tokens = response.json()
-    access_token = tokens["access_token"]
-    headers = {"Authorization": f"Bearer {access_token}"}
+    crud_admin.create_user(new_user, db)
+
+    login_data = {
+        "username": new_user.num_document,
+        "password": new_user.password,
+        "rol": new_user.rol,
+    }
+
+    r = client.post(f"{settings.API_V1_STR}/login/access-token", data=login_data)
+    tokens = r.json()
+    a_token = tokens["access_token"]
+    headers = {"Authorization": f"Bearer {a_token}"}
     return headers
 

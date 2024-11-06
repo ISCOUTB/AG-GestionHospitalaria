@@ -2,11 +2,8 @@ import random
 import string
 
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 from app.core.config import settings
-from app.crud import crud_admin
-from app import schemas
 
 
 def random_document() -> str:
@@ -19,13 +16,13 @@ def random_password(k: int) -> str:
 
 
 def get_superuser_token(client: TestClient) -> dict[str, str]:
-    login = schemas.UserLogin(
-        username=settings.FIRST_SUPERUSER,
-        password=settings.FIRST_SUPERUSER_PASSWORD,
-        rol="admin",
-    )
+    login = {
+        "username": settings.FIRST_SUPERUSER,
+        "password": settings.FIRST_SUPERUSER_PASSWORD,
+        "rol": "admin",
+    }
 
-    response = client.post(f"{settings.API_V1_STR}/login/access-token", data=login.model_dump())
+    response = client.post(f"{settings.API_V1_STR}/login/access-token", data=login)
     tokens = response.json()
     access_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {access_token}"}
