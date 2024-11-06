@@ -5,10 +5,10 @@ from app.tests.utils.hospitalizations import create_random_hospitalization
 from app.tests.utils.patient import create_random_patient
 from app.tests.utils.doctor import create_doctor_info
 from app.tests.utils.bed import create_random_bed, non_existent_bed
-from app.tests.utils.user import non_existent_document
+from app.tests.utils.user import non_existent_document, random_document, random_password
 
 from app import schemas
-from app.crud import crud_hospitalization
+from app.crud import crud_hospitalization, crud_admin
 
 
 def test_add_hospitalization(db: Session) -> None:
@@ -41,8 +41,28 @@ def test_add_hospitalization(db: Session) -> None:
         room=non_existent_bed,
     )
 
+    document = random_document()
+    new_user = schemas.UserCreate(
+        num_document=document,
+        rol="patient",
+        password=random_password(10),
+    )
+    crud_admin.create_user(new_user, db)
+
+    new_user.rol = "doctor"
+    crud_admin.create_user(new_user, db)
+
+    new_hospitalization = schemas.RegisterHospitalization(
+        num_doc_doctor=document,
+        num_doc_patient=document,
+        room=bed.room,
+    )
+
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 3
+
+    out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
+    assert out == 4
 
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
@@ -51,7 +71,7 @@ def test_add_hospitalization(db: Session) -> None:
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
-    assert out == 4
+    assert out == 5
 
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,
@@ -60,7 +80,7 @@ def test_add_hospitalization(db: Session) -> None:
     )
 
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
-    assert out == 5
+    assert out == 6
 
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=doctor.num_document,

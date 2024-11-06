@@ -43,7 +43,7 @@ def test_delete_bed(
 
 
 def test_delete_bed_bed_not_found(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, admin_token: dict[str, str]
 ) -> None:
     response = client.delete(f"{endpoint}/{non_existent_bed}", headers=admin_token)
 

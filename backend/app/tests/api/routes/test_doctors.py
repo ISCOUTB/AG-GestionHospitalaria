@@ -144,7 +144,8 @@ def test_delete_speciality(
     speciality = doctor.specialities[0]
 
     response = client.delete(
-        f"{endpoint}/{doctor.num_document}?speciality_name={speciality.name}",
+        f"{endpoint}/{doctor.num_document}",
+        params={"speciality_name": speciality.name},
         headers=admin_token,
     )
 
@@ -164,7 +165,8 @@ def test_delete_speciality_doctor_not_found(
     speciality = create_new_speciality(db)
 
     response = client.delete(
-        f"{endpoint}/{non_existent_document}?speciality_name={speciality.name}",
+        f"{endpoint}/{non_existent_document}",
+        params={"speciality_name": speciality.name},
         headers=admin_token,
     )
 
@@ -178,7 +180,8 @@ def test_delete_speciality_speciality_not_found(
     speciality = create_random_speciality()
 
     response = client.delete(
-        f"{endpoint}/{doctor.num_document}?speciality_name={speciality.name}",
+        f"{endpoint}/{doctor.num_document}",
+        params={"speciality_name": speciality.name},
         headers=admin_token,
     )
 
@@ -192,7 +195,8 @@ def test_delete_speciality_speciality_doctor_not_found(
     speciality = create_doctor_info(db).specialities[0]
 
     response = client.delete(
-        f"{endpoint}/{doctor.num_document}?speciality_name={speciality.name}",
+        f"{endpoint}/{doctor.num_document}",
+        params={"speciality_name": speciality.name},
         headers=admin_token,
     )
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 
-from app.tests.utils.user import non_existent_document
+from app.tests.utils.user import non_existent_document, random_document, random_password
 from app.tests.utils.bed import non_existent_bed
 from app.tests.utils.bed import create_random_bed
 from app.tests.utils.doctor import create_doctor_info
@@ -13,6 +13,7 @@ from app.tests.utils.patient import create_random_patient
 from app.tests.utils.hospitalizations import create_random_hospitalization
 
 from app import schemas
+from app.crud import crud_admin
 
 endpoint = f"{settings.API_V1_STR}/hospitalizations"
 
@@ -95,6 +96,34 @@ def test_add_hospitalization_bed_not_found(
     )
 
     assert response.status_code == 404
+
+
+def test_add_hospitalization_patient_doctor_same_document(
+    client: TestClient, doctor_token: dict[str, str], db: Session
+) -> None:
+    document = random_document()
+    new_user = schemas.UserCreate(
+        num_document=document,
+        rol="patient",
+        password=random_password(10),
+    )
+    crud_admin.create_user(new_user, db)
+
+    new_user.rol = "doctor"
+    crud_admin.create_user(new_user, db)
+    bed = create_random_bed(db)
+
+    hospitalization = schemas.RegisterHospitalization(
+        num_doc_doctor=document,
+        num_doc_patient=document,
+        room=bed.room,
+    )
+
+    response = client.post(
+        f"{endpoint}/", headers=doctor_token, json=hospitalization.model_dump()
+    )
+
+    assert response.status_code == 409
 
 
 def test_add_hospitalization_bed_already_used(
