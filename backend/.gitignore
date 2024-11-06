@@ -7,3 +7,4 @@ patient_docs
 .ruff_cache
 .pytest_cache
 .coverage
+coverage.xml
