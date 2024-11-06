@@ -106,7 +106,7 @@ async def create_user(
     process_time = perf_counter() - start_time
     log_data = [process_time, body, current_user.num_document, current_user.rol]
     await log_request(request, status.HTTP_201_CREATED, *log_data)
-    return schemas.ApiResponse(detail=f"Usuario creado")
+    return schemas.ApiResponse(detail="Usuario creado")
 
 
 @router.put("/{num_document}/{rol}")

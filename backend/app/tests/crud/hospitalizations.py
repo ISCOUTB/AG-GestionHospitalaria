@@ -35,12 +35,6 @@ def test_add_hospitalization(db: Session) -> None:
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 1
 
-    new_hospitalization = schemas.RegisterHospitalization(
-        num_doc_doctor=doctor.num_document,
-        num_doc_patient=patient.num_document,
-        room=non_existent_bed,
-    )
-
     document = random_document()
     new_user = schemas.UserCreate(
         num_document=document,

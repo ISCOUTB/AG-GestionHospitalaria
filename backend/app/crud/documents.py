@@ -120,7 +120,7 @@ class CRUDDocuments:
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         if not os.path.isdir(patient_path):
-            None
+            return None
 
         filenames: list[str] = [file for file in os.listdir(f"{patient_path}/{kind}")]
         return schemas.Files(num_document=num_document, filenames=filenames, kind=kind)
