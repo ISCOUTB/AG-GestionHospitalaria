@@ -1,5 +1,3 @@
-# TODO: Implementar eliminar consultas médicas por ID
-
 from time import perf_counter
 
 from fastapi import APIRouter, status, Request
