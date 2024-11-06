@@ -16,11 +16,11 @@ endpoint = f"{settings.API_V1_STR}/doctors"
 
 
 def test_get_doctor(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user("doctor", db, 10)
 
-    response = client.get(f"{endpoint}/{doctor.num_document}", headers=admin_token)
+    response = client.get(f"{endpoint}/{doctor.num_document}", headers=superuser_token)
 
     content = response.json()
 
@@ -29,15 +29,15 @@ def test_get_doctor(
 
 
 def test_get_doctor_doctor_not_found(
-    client: TestClient, admin_token: dict[str, str]
+    client: TestClient, superuser_token: dict[str, str]
 ) -> None:
-    response = client.get(f"{endpoint}/{non_existent_document}", headers=admin_token)
+    response = client.get(f"{endpoint}/{non_existent_document}", headers=superuser_token)
 
     assert response.status_code == 404
 
 
 def test_get_speciality_doctor(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     speciality = create_new_speciality(db)
     doctor1 = create_random_user("doctor", db, 10)
@@ -48,7 +48,7 @@ def test_get_speciality_doctor(
     assert crud_doctor.add_doctor_speciality(doctor2.num_document, db, speciality) == 0
 
     response = client.get(
-        f"{endpoint}/specialities/{speciality.name}", headers=admin_token
+        f"{endpoint}/specialities/{speciality.name}", headers=superuser_token
     )
 
     content = response.json()
@@ -60,7 +60,7 @@ def test_get_speciality_doctor(
 
 
 def test_add_doctor_speciality(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user("doctor", db, 10)
     speciality1 = create_new_speciality(db)
@@ -68,13 +68,13 @@ def test_add_doctor_speciality(
 
     response1 = client.post(
         f"{endpoint}/{doctor.num_document}",
-        headers=admin_token,
+        headers=superuser_token,
         json={"name": speciality1.name, "description": None},
     )
 
     response2 = client.post(
         f"{endpoint}/{doctor.num_document}",
-        headers=admin_token,
+        headers=superuser_token,
         json=speciality2.model_dump(),
     )
 
@@ -94,13 +94,13 @@ def test_add_doctor_speciality(
 
 
 def test_add_doctor_speciality_doctor_not_found(
-    client: TestClient, admin_token: dict[str, str]
+    client: TestClient, superuser_token: dict[str, str]
 ) -> None:
     speciality = create_random_speciality()
 
     response = client.post(
         f"{endpoint}/{non_existent_document}",
-        headers=admin_token,
+        headers=superuser_token,
         json=speciality.model_dump(),
     )
 
@@ -108,14 +108,14 @@ def test_add_doctor_speciality_doctor_not_found(
 
 
 def test_add_doctor_speciality_speciality_not_found(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user("doctor", db, 10)
     speciality = create_random_speciality()
 
     response = client.post(
         f"{endpoint}/{doctor.num_document}",
-        headers=admin_token,
+        headers=superuser_token,
         json={"name": speciality.name, "description": None},
     )
 
@@ -123,14 +123,14 @@ def test_add_doctor_speciality_speciality_not_found(
 
 
 def test_add_doctor_speciality_speciality_doctor_found(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_doctor_info(db)
     speciality = doctor.specialities[0]
 
     response = client.post(
         f"{endpoint}/{doctor.num_document}",
-        headers=admin_token,
+        headers=superuser_token,
         json={"name": speciality.name, "description": None},
     )
 
@@ -138,7 +138,7 @@ def test_add_doctor_speciality_speciality_doctor_found(
 
 
 def test_delete_speciality(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_doctor_info(db)
     speciality = doctor.specialities[0]
@@ -146,7 +146,7 @@ def test_delete_speciality(
     response = client.delete(
         f"{endpoint}/{doctor.num_document}",
         params={"speciality_name": speciality.name},
-        headers=admin_token,
+        headers=superuser_token,
     )
 
     assert response.status_code == 200
@@ -160,21 +160,21 @@ def test_delete_speciality(
 
 
 def test_delete_speciality_doctor_not_found(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     speciality = create_new_speciality(db)
 
     response = client.delete(
         f"{endpoint}/{non_existent_document}",
         params={"speciality_name": speciality.name},
-        headers=admin_token,
+        headers=superuser_token,
     )
 
     assert response.status_code == 404
 
 
 def test_delete_speciality_speciality_not_found(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_doctor_info(db)
     speciality = create_random_speciality()
@@ -182,14 +182,14 @@ def test_delete_speciality_speciality_not_found(
     response = client.delete(
         f"{endpoint}/{doctor.num_document}",
         params={"speciality_name": speciality.name},
-        headers=admin_token,
+        headers=superuser_token,
     )
 
     assert response.status_code == 404
 
 
 def test_delete_speciality_speciality_doctor_not_found(
-    client: TestClient, admin_token: dict[str, str], db: Session
+    client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user("doctor", db, 10)
     speciality = create_doctor_info(db).specialities[0]
@@ -197,7 +197,7 @@ def test_delete_speciality_speciality_doctor_not_found(
     response = client.delete(
         f"{endpoint}/{doctor.num_document}",
         params={"speciality_name": speciality.name},
-        headers=admin_token,
+        headers=superuser_token,
     )
 
     assert response.status_code == 409

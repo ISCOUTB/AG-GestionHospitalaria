@@ -1,9 +1,10 @@
+from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 from app.crud import crud_admin
-
-from app.schemas import UserCreate, UserSearch, Roles
+from app.schemas import UserCreate, UserSearch, Roles, UserLogin
 from app.models import UserRoles
+from app.core.config import settings
 from app.tests.utils.utils import random_document, random_password
 
 
@@ -30,3 +31,36 @@ def create_random_user(rol: Roles, db: Session, k: int) -> UserRoles:
 
     user_search = UserSearch(num_document=new_user.num_document, rol=rol)
     return crud_admin.get_user_rol(user_search, db)
+
+
+def get_non_superuser_token(client: TestClient, db: Session) -> dict[str, str]:
+    new_user = create_random_user("admin", db, 10)
+
+    login = UserLogin(
+        username=new_user.num_document,
+        password=new_user.password,
+        rol=new_user.rol,
+    )
+
+    response = client.post(f"{settings.API_V1_STR}/login/access-token", data=login.model_dump())
+    tokens = response.json()
+    access_token = tokens["access_token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+    return headers
+
+
+def get_doctor_token(client: TestClient, db: Session) -> dict[str, str]:
+    new_user = create_random_user("doctor", db, 10)
+
+    login = UserLogin(
+        username=new_user.num_document,
+        password=new_user.password,
+        rol=new_user.rol,
+    )
+
+    response = client.post(f"{settings.API_V1_STR}/login/access-token", data=login.model_dump())
+    tokens = response.json()
+    access_token = tokens["access_token"]
+    headers = {"Authorization": f"Bearer {access_token}"}
+    return headers
+
