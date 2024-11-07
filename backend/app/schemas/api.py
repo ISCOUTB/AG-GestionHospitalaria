@@ -39,3 +39,20 @@ class ApiHistorial(BaseModel):
     body: dict[str, Any] | None
     process_time_ms: float
     status_code: int
+
+
+class Stats(BaseModel):
+    """
+    Clase para obtener los indicadores estadísticos del hospital.
+    
+    Attributes:
+        percent_occupation (float): Porcentaje de ocupación hospitalaria.
+        avg_stay (float): Promedio de estancia de los pacientes en el hospital.
+        admissions (float): Cantidad de admisiones y altas por día en promedio.
+        discharges (float): Cantidad de descargos y bajas por día en promedio.
+    """
+
+    percent_occupation: float
+    avg_stay: float
+    admissions: float
+    discharges: float

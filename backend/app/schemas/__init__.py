@@ -30,4 +30,4 @@ import app.schemas.models as models
 
 from app.schemas.documents import AllFiles, Files, KindFiles
 
-from app.schemas.api import ApiResponse, ApiHistorial
+from app.schemas.api import ApiResponse, ApiHistorial, Stats
