@@ -39,6 +39,8 @@ Dentro de [`docker-compose.yml`](./docker-compose.yml) se está utilizando las r
 docker network create ag
 ```
 
+Este comando se debe ejecutar una vez para crear la red `ag`, no hace falta volver a ejecutarlo si ya se ha creado.
+
 ### Terminación de líneas LF
 
 Se debe tener en cuenta sobre todo el sistema operativo que se está usando, puesto que, para el desarrollo del backend se está utilizando como sistema operativo Ubuntu, lo que implica que para sistemas basados en UNIX no hay ninguna diferencia en la ejecución de los comandos anteriores. No obstante, en Windows, se debe tener en cuenta el detalle de que los sistemas basados en UNIX tienen diferentes terminaciones de línea, con ayuda de editores de texto avanzados como Visual Studio Code, se puede solucionar este error tan fácilmente como cambiando la terminación de línea a LF en el archivo [`prestart.sh`](./backend/scripts/prestart.sh) principalmente, porque esto influye en la construcción de los contenedores, pero si llegan a ver errores ejecutando otros scripts, es posible que esté fallando por el mismo motivo.
