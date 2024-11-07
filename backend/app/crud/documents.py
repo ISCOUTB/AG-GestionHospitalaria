@@ -139,6 +139,9 @@ class CRUDDocuments:
             de ya existir, lo omite.
         """
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
+        if os.path.exists(patient_path):
+            return None
+        
         os.mkdir(patient_path)
         os.mkdir(
             f"{patient_path}/histories"
