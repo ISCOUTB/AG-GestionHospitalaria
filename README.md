@@ -15,3 +15,20 @@ Los datos que se le solicitarán a los pacientes son los siguiente:
 - Resultados de exámenes de laboratorio
 
 Los beneficios que se logran con dicha aplicación son tales como el acceso rápido a la información de los pacientes, mejor coordinación entre especialidades médicas, reducción del riesgo de pérdida de historias clínicas y toma de decisiones gerenciales basada en datos.
+
+## Docker
+
+Para ejecutar el proyecto se necesita tener instalado Docker previamente en el equipo. Una vez instalado, se puede ejecutar el siguiente comando para construir el contenedor:
+
+```bash
+docker compose build
+docker compose up
+```
+
+O en una sola línea:
+
+```bash
+docker compose up --build
+```
+
+Sin embargo, hay que tener en cuenta sobre todo el sistema operativo que se está usando. Puesto que, para el desarrollo del backend se está utilizando como sistema operativo Ubuntu, entonces para sistemas basados en UNIX no hay ninguna diferencia en la ejecución de los comandos anteriores. No obstante, en Windows, se debe tener en cuenta el detalle de que los sistemas basados en UNIX tienen diferentes terminaciones de línea, con ayuda de editores de texto avanzados como Visual Studio Code, se puede solucionar este error tan fácilmente como cambiando la terminación de línea a LF en el archivo [`prestart.sh`](./backend/scripts/prestart.sh).

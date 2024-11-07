@@ -11,7 +11,7 @@ router = APIRouter()
 
 
 @router.get("/stats", summary="Get Statistics About Hospital")
-async def get_stats(current_user: Admin, db: SessionDep) -> list[float]:
+async def get_stats(current_user: Admin, db: SessionDep) -> schemas.Stats:
     """
     Obtiene los indicadores estadísiticos del hospital.
 
