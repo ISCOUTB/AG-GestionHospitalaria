@@ -100,6 +100,18 @@ async def create_user(
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.user_found
 
+    if out == 3:
+        process_time = perf_counter() - start_time
+        log_data = [process_time, body, current_user.num_document, current_user.rol]
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.invalid_email
+
+    if out == 4:
+        process_time = perf_counter() - start_time
+        log_data = [process_time, body, current_user.num_document, current_user.rol]
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.existent_phone
+
     if new_user.rol == "patient":
         crud_document.add_history(new_user.num_document)
 
@@ -144,6 +156,14 @@ async def update_user(
     if out == 3:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.num_document_used
+    
+    if out == 4:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.invalid_email
+    
+    if out == 5:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.existent_phone
 
     await log_request(request, status.HTTP_200_OK, *log_data)
     return schemas.ApiResponse(detail="Información del usuario actualizada")
@@ -172,6 +192,14 @@ async def update_basic_user(
     if out == 1:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.user_not_found
+
+    if out == 2:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.invalid_email
+
+    if out == 3:
+        await log_request(request, status.HTTP_409_CONFLICT, *log_data)
+        raise exceptions.existent_phone
 
     await log_request(request, status.HTTP_200_OK, *log_data)
     return schemas.ApiResponse(detail="Información del usuario actualizada")

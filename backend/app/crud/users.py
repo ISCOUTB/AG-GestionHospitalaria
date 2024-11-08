@@ -1,3 +1,5 @@
+from typing import Literal
+
 from app import models, schemas
 from app.crud.base import CRUDBase
 
@@ -109,7 +111,7 @@ class CRUDUsers(CRUDBase):
         user_search: schemas.UserSearch,
         updated_info: schemas.UserUpdate,
         db: Session,
-    ) -> int:
+    ) -> Literal[0, 1, 2, 3]:
         """
         Actualiza la información no esencial de cualquier usuario dentro del sistema.
 
@@ -122,6 +124,8 @@ class CRUDUsers(CRUDBase):
             int: Retorna un entero simbolizando el estado de la respuesta. Los posibles estados de respuesta son:
                 - 0: Resultado exitoso.
                 - 1: Número de documento inexistente.
+                - 2: Email repetido.
+                - 3: Número de teléfono repetido.
         """
         user_info: models.UsersInfo | None = self.get_user_info(
             user_search.num_document, db
@@ -138,9 +142,13 @@ class CRUDUsers(CRUDBase):
             user_info.address = updated_info.address
 
         if updated_info.phone is not None:
+            if updated_info.phone != user_info.phone and not self.valid_phone(updated_info.phone, db):
+                return 3
             user_info.phone = updated_info.phone
 
         if updated_info.email is not None:
+            if updated_info.email != user_info.email and not self.valid_email(updated_info.email, db):
+                return 2
             user_info.email = updated_info.email
 
         db.commit()
