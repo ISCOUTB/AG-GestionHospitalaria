@@ -39,6 +39,7 @@ def upgrade() -> None:
         sa.Column("email", sa.TEXT(), autoincrement=False, nullable=True),
         sa.PrimaryKeyConstraint("num_document", name="pk_users_info"),
         sa.UniqueConstraint("email", name="users_info_unique_email"),
+        sa.UniqueConstraint("phone", name="users_info_unique_phone"),
     )
     op.create_table(
         "user_roles",

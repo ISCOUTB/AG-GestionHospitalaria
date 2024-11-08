@@ -14,7 +14,7 @@ class UsersInfo(BaseModel):
     sex = Column(String(1), default=None, nullable=True)
     birthday = Column(Date, default=None, nullable=True)
     address = Column(String, default=None, nullable=True)
-    phone = Column(String, default=None, nullable=True)
+    phone = Column(String, default=None, nullable=True, unique=True)
     email = Column(String, default=None, nullable=True, unique=True)
 
     user_roles = relationship(
