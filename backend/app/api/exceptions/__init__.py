@@ -22,7 +22,7 @@ from app.api.exceptions.exceptions import (
     num_document_used,
     user_found,
     patient_in_bed,
-    existent_email,
+    invalid_email,
     existent_phone,
     failed_to_save_historial,
     failed_to_save_file,
