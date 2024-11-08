@@ -1,3 +1,4 @@
+import re
 from typing import Literal, Any
 
 from app import models, schemas
@@ -186,9 +187,45 @@ class CRUDBase:
             .filter(models.UsersInfo.num_document == num_document)
             .first()
         )
+    
+    def valid_email(self, email: str, db: Session) -> bool:
+        """
+        Valida si el email es válido de utilizar en el sistema, incluyendo la existencia de un usuario con el mismo email
+        
+        Args:
+            email (str): Correo electrónico del usuario a validar.
+            db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
+        
+        Returns:
+            bool: Retorna `True` si el email es válido, en caso contrario retorna `False`.
+        """
+        # Validar que el email no esté repetido
+        stmt = select(models.UsersInfo.email).where(models.UsersInfo.email == email)
+        query = db.execute(stmt).all()
+        if query:
+            return False
 
+        # Valida que el email este bien escrito
+        if not re.match(r"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$", email):
+            return False
 
-if __name__ == "__main__":
-    crud_base = CRUDBase()
+        return True
+    
+    def valid_phone(self, phone: str, db: Session) -> bool:
+        """
+        Valida si el número de teléfono es válido de utilizar en el sistema
+        
+        Args:
+            phone (str): Número de teléfono del usuario a validar.
+            db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
+        
+        Returns:
+            bool: Retorna `True` si el número de teléfono es válido, en caso contrario retorna `False`.
+        """
+        # Validar que el número de teléfono no esté repetido
+        stmt = select(models.UsersInfo.phone).where(models.UsersInfo.phone == phone)
+        query = db.execute(stmt).all()
+        if query:
+            return False
 
-    print(crud_base.join_users())
+        return True

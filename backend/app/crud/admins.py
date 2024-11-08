@@ -16,7 +16,7 @@ from sqlalchemy.orm import Session
 class CRUDAdmins(CRUDUsers):
     def create_user(
         self, new_user: schemas.UserCreate, db: Session, admins: bool = False
-    ) -> Literal[0, 1, 2]:
+    ) -> Literal[0, 1, 2, 3, 4]:
         """
         Crea un nuevo usuario en el sistema. Esta operación es únicamente reservada para los administradores del sistema,
         y, en caso de querer agregar un administrador, solo lo podría realizar el superusuario.
@@ -35,6 +35,8 @@ class CRUDAdmins(CRUDUsers):
                 - 0: Respuesta existosa
                 - 1: El usuario es administrador, no se puede editar. Solo aparece cuando `admins=False`.
                 - 2: Usuario activo con mismo número de documento
+                - 3: Usuario con mismo email
+                - 4: Usuario con mismo número de teléfono
         """
         if not admins and new_user.rol == "admin":
             return 1
@@ -56,6 +58,12 @@ class CRUDAdmins(CRUDUsers):
                 phone=new_user.phone,
                 email=new_user.email,
             )
+
+            if new_user.email is not None and not self.valid_email(new_user.email, db):
+                return 3
+
+            if new_user.phone is not None and not self.valid_phone(new_user.phone, db):
+                return 4
 
             db.add(user_info)
 
@@ -94,7 +102,7 @@ class CRUDAdmins(CRUDUsers):
         updated_info: schemas.UserUpdateAll,
         db: Session,
         admins: bool = False,
-    ) -> Literal[0, 1, 2, 3]:
+    ) -> Literal[0, 1, 2, 3, 4, 5]:
         """
         Actualiza la información completa de cualquier usuario dentro del sistema sin importar su estado actual (activo o no).
 
@@ -110,6 +118,8 @@ class CRUDAdmins(CRUDUsers):
                 - 1: Número de documento inexistente.
                 - 2: El usuario es administrador, no se puede editar. Solo aparece cuando `admins=False`.
                 - 3: Número de documento repetido.
+                - 4: Email repetido.
+                - 5: Número de teléfono repetido.
         """
         user: schemas.UserAll = self.get_user(
             user_search.num_document, db, rol=True, active=False
@@ -146,9 +156,13 @@ class CRUDAdmins(CRUDUsers):
             user_info.address = updated_info.address
 
         if updated_info.phone is not None:
+            if updated_info.phone != user_info.phone and not self.valid_phone(updated_info.phone, db):
+                return 5
             user_info.phone = updated_info.phone
 
         if updated_info.email is not None:
+            if updated_info.email != user_info.email and not self.valid_email(updated_info.email, db):
+                return 4
             user_info.email = updated_info.email
 
         if updated_info.password is not None:
