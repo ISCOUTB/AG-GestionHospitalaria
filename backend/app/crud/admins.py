@@ -1,9 +1,11 @@
+import os
 import datetime
 from typing import Literal
 
 from app import models, schemas
 from app.crud.users import CRUDUsers
 
+from app.core.config import settings
 from app.core.security import get_password_hash
 
 import sqlalchemy.exc
@@ -158,6 +160,13 @@ class CRUDAdmins(CRUDUsers):
             db.refresh(user_rol)
         except sqlalchemy.exc.IntegrityError:
             return 3
+
+        if updated_info.num_document is not None and \
+            user_search.rol == "patient":
+            old_path = os.path.join(settings.PATIENT_DOCS_PATH, user_search.num_document)
+            new_path = os.path.join(settings.PATIENT_DOCS_PATH, updated_info.num_document)
+            os.rename(old_path, new_path)
+
 
         return 0
 
