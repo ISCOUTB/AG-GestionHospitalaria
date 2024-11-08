@@ -81,13 +81,13 @@ class CRUDHospitalizations(CRUDBase):
             .first()
         )
         if bed is None:
-            return 3
-
-        if (bed.id,) in db.execute(select(models.BedsUsed.id_bed)).all():
             return 4
 
-        if (patient.id,) in db.execute(select(models.BedsUsed.id_patient)).all():
+        if (bed.id,) in db.execute(select(models.BedsUsed.id_bed)).all():
             return 5
+
+        if (patient.id,) in db.execute(select(models.BedsUsed.id_patient)).all():
+            return 6
 
         # Ocupar la cama
         bed_used: models.BedsUsed = models.BedsUsed(
