@@ -105,12 +105,12 @@ patient_in_bed = HTTPException(
     detail="No se puede eliminar a un paciente que esté utilizado en una cama",
 )
 
-exitent_email = HTTPException(
+existent_email = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="El email ya existe en el sistema",
 )
 
-exitent_phone = HTTPException(
+existent_phone = HTTPException(
     status_code=status.HTTP_409_CONFLICT,
     detail="El número de teléfono ya existe en el sistema",
 )
