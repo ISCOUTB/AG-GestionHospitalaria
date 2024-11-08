@@ -6,12 +6,18 @@ from fastapi import APIRouter, Request, status
 from app.api.deps import SessionDep, Admin, collection, log_request
 
 from app import schemas
+from app.stats import (
+    get_percent_occupation,
+    get_avg_stay,
+    get_avg_admission,
+    get_avg_discharge,
+)
 
 router = APIRouter()
 
 
 @router.get("/stats", summary="Get Statistics About Hospital")
-async def get_stats(current_user: Admin, db: SessionDep) -> schemas.Stats:
+async def get_stats(request: Request, current_user: Admin, db: SessionDep) -> schemas.Stats:
     """
     Obtiene los indicadores estadísiticos del hospital.
 
@@ -20,7 +26,17 @@ async def get_stats(current_user: Admin, db: SessionDep) -> schemas.Stats:
         2. Promedios de estancia de los pacientes en el hospital.
         3. Cantidad de admisiones y altas por día.
     """
-    pass
+    start_time = perf_counter()
+    stats = schemas.Stats(
+        percent_occupation=get_percent_occupation(db),
+        avg_stay=get_avg_stay(db),
+        admissions=get_avg_admission(db),
+        discharges=get_avg_discharge(db),
+    )
+    process_time = perf_counter() - start_time
+    log_data = [process_time, None, current_user.num_document, current_user.rol]
+    await log_request(request, status.HTTP_200_OK, *log_data)
+    return stats
 
 
 @router.get("/api-historial")
