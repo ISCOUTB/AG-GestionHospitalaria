@@ -35,10 +35,10 @@ def test_delete_bed(
 ) -> None:
     bed = create_random_bed(db)
     response = client.delete(f"{endpoint}/{bed.room}", headers=superuser_token)
+    
+    assert response.status_code == 200
 
     content = response.json()
-
-    assert content["status"] == 200
     assert content["detail"] == "Cama eliminada de la habitación"
 
 

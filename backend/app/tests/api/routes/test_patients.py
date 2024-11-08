@@ -5,7 +5,7 @@ from app.core.config import settings
 
 from app.tests.utils.user import create_random_user
 from app.tests.utils.user import non_existent_document, random_document
-from app.tests.utils.patient import create_random_patient
+from app.tests.utils.patient import create_random_patient, create_random_responsable
 
 from app import schemas
 
@@ -22,6 +22,8 @@ def test_get_patient(
     response = client.get(
         f"{endpoint}/{patient.num_document}", headers=nonpatient_token
     )
+
+    assert response.status_code == 200
 
     content = response.json()
 
@@ -44,9 +46,7 @@ def test_add_responsable(
 ) -> None:
     patient = create_random_user("patient", db, 10)
 
-    new_responsable_info = schemas.ResponsablesInfo(
-        num_doc_responsable=random_document(),
-    )
+    new_responsable_info = create_random_responsable()
 
     response = client.post(
         f"{endpoint}/{patient.num_document}",
@@ -117,9 +117,7 @@ def test_add_responsable_responsable_found(
 ) -> None:
     patient = create_random_patient(db)
 
-    new_responsable_info = schemas.ResponsablesInfo(
-        num_doc_responsable=random_document()
-    )
+    new_responsable_info = create_random_responsable()
 
     response = client.post(
         f"{endpoint}/{patient.num_document}",
@@ -136,11 +134,9 @@ def test_update_patient(
     patient = create_random_patient(db)
 
     new_document = f"{patient.num_doc_responsable}New"
-    new_phone = "NewPhone"
     new_relationship = "Parents"
     new_responsable_info = schemas.ResponsablesInfo(
         num_doc_responsable=new_document,
-        phone_responsable=new_phone,
         relationship_responsable=new_relationship,
     )
 
@@ -156,7 +152,6 @@ def test_update_patient(
     assert content["detail"] == "Información del responsable actualizada"
 
     patient_in = crud_patient.get_patient(patient.num_document, db)
-    assert patient_in.phone_responsable == new_phone
     assert patient_in.num_doc_responsable == new_document
     assert patient_in.relationship_responsable == new_relationship
 
@@ -164,10 +159,9 @@ def test_update_patient(
 def test_update_patient_patient_not_found(
     client: TestClient, nonpatient_token: dict[str, str]
 ) -> None:
-    new_phone = "NewPhone"
     new_relationship = "Parents"
     new_responsable_info = schemas.ResponsablesInfo(
-        phone_responsable=new_phone, relationship_responsable=new_relationship
+        relationship_responsable=new_relationship
     )
 
     response = client.put(

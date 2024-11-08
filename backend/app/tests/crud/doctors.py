@@ -29,10 +29,11 @@ def test_add_doctor_speciality(db: Session) -> None:
 
     doctor = create_random_user("doctor", db, 10)
     speciality = create_new_speciality(db)
+    speciality.description = None
     out = crud_doctor.add_doctor_speciality(doctor.num_document, db, speciality)
     assert out == 2
 
-    speciality = create_random_speciality()
+    speciality = create_new_speciality(db)
     out = crud_doctor.add_doctor_speciality(doctor.num_document, db, speciality)
     assert out == 0
 

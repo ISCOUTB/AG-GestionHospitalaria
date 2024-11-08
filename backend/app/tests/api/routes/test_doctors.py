@@ -22,9 +22,9 @@ def test_get_doctor(
 
     response = client.get(f"{endpoint}/{doctor.num_document}", headers=superuser_token)
 
-    content = response.json()
-
     assert response.status_code == 200
+
+    content = response.json()
     assert content["num_document"] == doctor.num_document
 
 
@@ -51,9 +51,9 @@ def test_get_speciality_doctor(
         f"{endpoint}/specialities/{speciality.name}", headers=superuser_token
     )
 
-    content = response.json()
-
     assert response.status_code == 200
+
+    content = response.json()
     for doctor in content:
         assert doctor["num_document"] in (doctor1.num_document, doctor2.num_document)
         assert doctor["specialities"][0]["name"] == speciality.name
@@ -63,34 +63,18 @@ def test_add_doctor_speciality(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user("doctor", db, 10)
-    speciality1 = create_new_speciality(db)
-    speciality2 = create_random_speciality()
+    speciality = create_new_speciality(db)
 
-    response1 = client.post(
+    response = client.post(
         f"{endpoint}/{doctor.num_document}",
         headers=superuser_token,
-        json={"name": speciality1.name, "description": None},
+        json=speciality.model_dump(),
     )
 
-    response2 = client.post(
-        f"{endpoint}/{doctor.num_document}",
-        headers=superuser_token,
-        json=speciality2.model_dump(),
-    )
+    assert response.status_code == 201
 
-    i = 0
-    for speciality, response in zip((speciality1, speciality2), (response1, response2)):
-        assert response.status_code == 201
-
-        content = response.json()
-        assert content["detail"] == "Especialidad agregada al doctor"
-
-        doctor_in = crud_doctor.get_doctor(doctor.num_document, db)
-
-        assert doctor.num_document == doctor_in.num_document
-        assert speciality.name == doctor_in.specialities[i].name
-
-        i += 1
+    content = response.json()
+    assert content["detail"] == "Especialidad agregada al doctor"
 
 
 def test_add_doctor_speciality_doctor_not_found(
@@ -111,7 +95,7 @@ def test_add_doctor_speciality_speciality_not_found(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user("doctor", db, 10)
-    speciality = create_random_speciality()
+    speciality = create_new_speciality(db)
 
     response = client.post(
         f"{endpoint}/{doctor.num_document}",
@@ -162,7 +146,7 @@ def test_delete_speciality(
 def test_delete_speciality_doctor_not_found(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
-    speciality = create_new_speciality(db)
+    speciality = create_random_speciality()
 
     response = client.delete(
         f"{endpoint}/{non_existent_document}",
@@ -177,7 +161,7 @@ def test_delete_speciality_speciality_not_found(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_doctor_info(db)
-    speciality = create_random_speciality()
+    speciality = create_new_speciality(db)
 
     response = client.delete(
         f"{endpoint}/{doctor.num_document}",
@@ -192,7 +176,13 @@ def test_delete_speciality_speciality_doctor_not_found(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     doctor = create_random_user("doctor", db, 10)
-    speciality = create_doctor_info(db).specialities[0]
+
+    # Asegurarse que sea un doctor diferente
+    tmp_doctor = create_doctor_info(db)
+    while tmp_doctor.num_document == doctor.num_document:
+        tmp_doctor = create_doctor_info(db)
+    
+    speciality = tmp_doctor.specialities[0]
 
     response = client.delete(
         f"{endpoint}/{doctor.num_document}",

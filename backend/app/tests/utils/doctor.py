@@ -10,7 +10,7 @@ from app.tests.utils.user import create_random_user
 
 
 def create_random_speciality() -> Speciality:
-    number = random.choice(range(100))
+    number = random.choice(range(1_000_000))
     name = f"random_{number}"
     description = f"random description {number}"
 
@@ -18,7 +18,7 @@ def create_random_speciality() -> Speciality:
 
 
 def create_new_speciality(db: Session) -> Speciality:
-    number = random.choices(range(1000), k=3)
+    number = random.choices(range(1_000_000), k=3)
     speciality = Speciality(name=f"random_{number}")
 
     while (

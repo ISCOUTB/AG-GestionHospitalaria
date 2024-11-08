@@ -190,12 +190,29 @@ def test_discharge_hospitalization_patient_not_found(
     assert response.status_code == 404
 
 
-def test_discharge_hospitalization_bad_date_formatting(
+def test_discharge_hospitalization_bad_date_formatting_date_older(
     client: TestClient, doctor_token: dict[str, str], db: Session
 ) -> None:
     hospitalization = create_random_hospitalization(db)
     discharge = schemas.DischargeHospitalization(
         last_day=datetime.date.today() + datetime.timedelta(days=10)
+    )
+
+    response = client.put(
+        f"{endpoint}/{hospitalization.num_doc_patient}",
+        headers=doctor_token,
+        json=discharge.model_dump(),
+    )
+
+    assert response.status_code == 400
+
+
+def test_discharge_hospitalization_bad_date_formatting_date_less(
+    client: TestClient, doctor_token: dict[str, str], db: Session
+) -> None:
+    hospitalization = create_random_hospitalization(db)
+    discharge = schemas.DischargeHospitalization(
+        last_day=hospitalization.entry_day - datetime.timedelta(days=10)
     )
 
     response = client.put(

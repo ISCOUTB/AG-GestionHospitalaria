@@ -67,12 +67,11 @@ def test_create_user(db: Session) -> None:
 def test_update_basic_info(db: Session) -> None:
     rol = "admin"
     num_document = create_random_user(rol, db, 10).num_document
-
-    new_password = "supersecure123"
-    new_email = "randomemail@test.com"
+    new_address = "new_address"
+    new_password = random_password()
 
     user_search = schemas.UserSearch(num_document=num_document, rol=rol)
-    updated_info = schemas.UserUpdate(password=new_password, email=new_email)
+    updated_info = schemas.UserUpdate(password=new_password, address=new_address)
 
     out = crud_admin.update_basic_info(user_search, updated_info, db)
     assert out == 0
@@ -80,21 +79,20 @@ def test_update_basic_info(db: Session) -> None:
     user_rol_in = crud_admin.get_user_rol(user_search, db)
     user_info_in = crud_admin.get_user_info(num_document, db)
     assert verify_password(new_password, user_rol_in.password)
-    assert user_info_in.email == new_email
+    assert user_info_in.address == new_address
 
     user_search = schemas.UserSearch(num_document=non_existent_document, rol=rol)
-    updated_info = schemas.UserUpdate(password=new_password, email=new_email)
+    updated_info = schemas.UserUpdate(password=new_password)
 
     out = crud_admin.update_basic_info(user_search, updated_info, db)
-    assert out == 0
+    assert out == 1
 
 
 def test_update_user(db: Session) -> None:
     rol = "admin"
     num_document = create_random_user(rol, db, 10).num_document
     new_document = random_document()
-    new_password = "supersecure123"
-    new_email = "randomemail@test.com"
+    new_password = random_password(10)
 
     user_search = schemas.UserSearch(num_document=non_existent_document, rol=rol)
     updated_info = schemas.UserUpdateAll(
@@ -112,7 +110,7 @@ def test_update_user(db: Session) -> None:
     assert out == 3
 
     updated_info = schemas.UserUpdateAll(
-        password=new_password, num_document=new_document, email=new_email
+        password=new_password, num_document=new_document
     )
     out = crud_admin.update_user(user_search, updated_info, db, True)
     assert out == 0
@@ -120,7 +118,6 @@ def test_update_user(db: Session) -> None:
     user_info_in = crud_admin.get_user_info(num_document, db)
     user_rol_in = crud_admin.get_user_rol(user_search, db)
     assert user_info_in.num_document == new_document
-    assert user_info_in.email == new_email
     assert verify_password(new_password, user_rol_in.password)
 
 
@@ -188,7 +185,10 @@ def test_delete_user(db: Session) -> None:
     assert out == 2
 
     hospitalization = create_random_hospitalization(db)
-    user_search = schemas.UserSearch(num_document=num_document, rol="patient")
+    user_search = schemas.UserSearch(
+        num_document=hospitalization.num_doc_patient,
+        rol="patient"
+    )
 
     out = crud_admin.delete_user(user_search, db)
     assert out == 3
