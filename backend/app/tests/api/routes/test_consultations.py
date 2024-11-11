@@ -24,9 +24,11 @@ def test_add_consultation(
         num_doc_patient=patient.num_document,
         area="area1",
     )
+    json = new_consultation.model_dump()
+    json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
     response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=new_consultation.model_dump()
+        f"{endpoint}/", headers=doctor_token, json=json
     )
 
     assert response.status_code == 201
@@ -45,9 +47,11 @@ def test_add_consultation_patient_not_found(
         num_doc_patient=non_existent_document,
         area="area1",
     )
+    json = new_consultation.model_dump()
+    json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
     response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=new_consultation.model_dump()
+        f"{endpoint}/", headers=doctor_token, json=json
     )
 
     assert response.status_code == 404
@@ -63,9 +67,11 @@ def test_add_consultation_doctor_not_found(
         num_doc_patient=patient.num_document,
         area="area1",
     )
+    json = new_consultation.model_dump()
+    json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
     response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=new_consultation.model_dump()
+        f"{endpoint}/", headers=doctor_token, json=json
     )
 
     assert response.status_code == 404
@@ -90,9 +96,11 @@ def test_add_consultation_patient_doctor_same_document(
         num_doc_patient=document,
         area="area1",
     )
+    json = new_consultation.model_dump()
+    json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
     response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=new_consultation.model_dump()
+        f"{endpoint}/", headers=doctor_token, json=json
     )
 
     assert response.status_code == 409

@@ -48,7 +48,7 @@ def test_get_speciality_doctor(
     assert crud_doctor.add_doctor_speciality(doctor2.num_document, db, speciality) == 0
 
     response = client.get(
-        f"{endpoint}/specialities/{speciality.name}", headers=superuser_token
+        f"{settings.API_V1_STR}/specialities/{speciality.name}", headers=superuser_token
     )
 
     assert response.status_code == 200

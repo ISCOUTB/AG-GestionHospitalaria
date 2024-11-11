@@ -134,7 +134,7 @@ def test_update_user(
     )
 
     response = client.put(
-        f"{endpoint}/{admin.num_document}",
+        f"{endpoint}/{admin.num_document}/{admin.rol}",
         headers=superuser_token,
         json=updated_info.model_dump(),
     )
@@ -144,11 +144,11 @@ def test_update_user(
     content = response.json()
     assert content["detail"] == "Información del usuario actualizada"
 
-    user_search = schemas.UserSearch(num_document=admin.num_document, rol="admin")
+    user_search = schemas.UserSearch(num_document=new_document, rol="admin")
     admin_rol = crud_admin.get_user_rol(user_search, db)
-    admin_info = crud_admin.get_user_info(admin.num_document, db)
+    admin_info = crud_admin.get_user_info(new_document, db)
 
-    assert verify_password(new_password, admin_rol.password)
+    assert verify_password(new_password, str(admin_rol.password))
     assert admin_info.num_document == new_document
 
 
@@ -159,7 +159,7 @@ def test_update_user_non_superuser(
     empty_info = schemas.UserUpdateAll()
 
     response = client.put(
-        f"{endpoint}/{admin.num_document}",
+        f"{endpoint}/{admin.num_document}/{admin.rol}",
         headers=non_superuser_token,
         json=empty_info.model_dump(),
     )
@@ -173,7 +173,7 @@ def test_update_user_user_not_found(
     empty_info = schemas.UserUpdateAll()
 
     response = client.put(
-        f"{endpoint}/{non_existent_document}",
+        f"{endpoint}/{non_existent_document}/doctor",
         headers=superuser_token,
         json=empty_info.model_dump(),
     )
@@ -184,14 +184,14 @@ def test_update_user_user_not_found(
 def test_update_user_num_document_used(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
-    admin_params = ("admin", db, 10)
-    admin1 = create_random_user(*admin_params)
-    admin2 = create_random_user(*admin_params)
+    params = ("admin", db, 10)
+    admin1 = create_random_user(*params)
+    admin2 = create_random_user(*params)
 
     updated_info_admin1 = schemas.UserUpdateAll(num_document=admin2.num_document)
 
     response = client.put(
-        f"{endpoint}/{admin1.num_document}",
+        f"{endpoint}/{admin1.num_document}/{params[0]}",
         headers=superuser_token,
         json=updated_info_admin1.model_dump(),
     )
@@ -208,7 +208,7 @@ def test_update_user_invalid_email_bad(
     )
 
     response = client.put(
-        f"{endpoint}/{user.num_document}",
+        f"{endpoint}/{user.num_document}/{user.rol}",
         headers=superuser_token,
         json=data.model_dump(),
     )
@@ -226,7 +226,7 @@ def test_update_user_invalid_email_repeated(
     )
 
     response = client.put(
-        f"{endpoint}/{user1.num_document}",
+        f"{endpoint}/{user1.num_document}/{user1.rol}",
         headers=superuser_token,
         json=data.model_dump(),
     )
@@ -235,7 +235,7 @@ def test_update_user_invalid_email_repeated(
 
     user = create_random_user("admin", db, 10)
     response = client.put(
-        f"{endpoint}/{user.num_document}",
+        f"{endpoint}/{user.num_document}/{user.rol}",
         headers=superuser_token,
         json=data.model_dump(),
     )
@@ -257,9 +257,12 @@ def test_delete_user(
     content = response.json()
     assert content["detail"] == "Usuario eliminado"
 
-    user_search = schemas.UserSearch(num_document=user.num_document, rol=user.rol)
-    user_in = crud_admin.get_user_rol(user_search, db, False)
-    assert user_in.is_active == False
+    user_search = schemas.UserSearch(
+        num_document=user.num_document,
+        rol=user.rol
+    )
+    user_in = crud_admin.get_user_rol(user_search, db)
+    assert user_in is None
 
 
 def test_delete_user_user_not_found(
