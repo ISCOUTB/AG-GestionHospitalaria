@@ -60,7 +60,7 @@ class CRUDDocuments:
         """
         if not os.path.isdir(f"{settings.PATIENT_DOCS_PATH}/{num_document}"):
             return None
-        
+
         history = self.get_history(num_document)
         orders = self.get_files(num_document, "orders").filenames
         results = self.get_files(num_document, "results").filenames
@@ -83,7 +83,7 @@ class CRUDDocuments:
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         if not os.path.isdir(patient_path):
             return None
-        
+
         return f"{patient_path}/{settings.HISTORY_FILENAME}"
 
     def get_histories(self) -> list[str]:
@@ -103,7 +103,9 @@ class CRUDDocuments:
 
         return histories
 
-    def get_files(self, num_document: str, kind: schemas.KindFiles) -> schemas.Files | None:
+    def get_files(
+        self, num_document: str, kind: schemas.KindFiles
+    ) -> schemas.Files | None:
         """
         Obtiene el nombre de todos los archivos de un tipo de documento dentro del hospital
         dado su número de documento sin incluir el archivo de la historia clínica
@@ -141,7 +143,7 @@ class CRUDDocuments:
         patient_path: str = f"{settings.PATIENT_DOCS_PATH}/{num_document}"
         if os.path.exists(patient_path):
             return None
-        
+
         os.mkdir(patient_path)
         os.mkdir(
             f"{patient_path}/histories"

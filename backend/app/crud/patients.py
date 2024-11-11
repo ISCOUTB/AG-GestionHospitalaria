@@ -185,16 +185,16 @@ class CRUDPatients(CRUDBase):
             responsable.type_doc_responsable = updated_info.type_doc_responsable
 
         if updated_info.name_responsable is not None:
-            responsable.name_responsable = updated_info.type_doc_responsable
+            responsable.name_responsable = updated_info.name_responsable
 
         if updated_info.surname_responsable is not None:
-            responsable.surname_responsable = updated_info.type_doc_responsable
+            responsable.surname_responsable = updated_info.surname_responsable
 
         if updated_info.phone_responsable is not None:
             responsable.phone_responsable = updated_info.phone_responsable
 
         if updated_info.relationship_responsable is not None:
-            responsable.relationship_responsable = updated_info.phone_responsable
+            responsable.relationship_responsable = updated_info.relationship_responsable
 
         db.commit()
         db.refresh(responsable)

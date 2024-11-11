@@ -156,12 +156,16 @@ class CRUDAdmins(CRUDUsers):
             user_info.address = updated_info.address
 
         if updated_info.phone is not None:
-            if updated_info.phone != user_info.phone and not self.valid_phone(updated_info.phone, db):
+            if updated_info.phone != user_info.phone and not self.valid_phone(
+                updated_info.phone, db
+            ):
                 return 5
             user_info.phone = updated_info.phone
 
         if updated_info.email is not None:
-            if updated_info.email != user_info.email and not self.valid_email(updated_info.email, db):
+            if updated_info.email != user_info.email and not self.valid_email(
+                updated_info.email, db
+            ):
                 return 4
             user_info.email = updated_info.email
 
@@ -175,12 +179,14 @@ class CRUDAdmins(CRUDUsers):
         except sqlalchemy.exc.IntegrityError:
             return 3
 
-        if updated_info.num_document is not None and \
-            user_search.rol == "patient":
-            old_path = os.path.join(settings.PATIENT_DOCS_PATH, user_search.num_document)
-            new_path = os.path.join(settings.PATIENT_DOCS_PATH, updated_info.num_document)
+        if updated_info.num_document is not None and user_search.rol == "patient":
+            old_path = os.path.join(
+                settings.PATIENT_DOCS_PATH, user_search.num_document
+            )
+            new_path = os.path.join(
+                settings.PATIENT_DOCS_PATH, updated_info.num_document
+            )
             os.rename(old_path, new_path)
-
 
         return 0
 
@@ -216,7 +222,7 @@ class CRUDAdmins(CRUDUsers):
             stmt = select(models.BedsUsed.id_patient).where(
                 user.id == models.BedsUsed.id_patient
             )
-            if not db.execute(stmt):
+            if db.execute(stmt).first() is not None:
                 return 3
 
         user.is_active = False

@@ -35,16 +35,17 @@ def test_add_hospitalization(db: Session) -> None:
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 1
 
+    # Creando doctor y paciente con el mismo documento
     document = random_document()
     new_user = schemas.UserCreate(
         num_document=document,
         rol="patient",
         password=random_password(10),
     )
-    crud_admin.create_user(new_user, db)
+    assert crud_admin.create_user(new_user, db) == 0
 
     new_user.rol = "doctor"
-    crud_admin.create_user(new_user, db)
+    assert crud_admin.create_user(new_user, db) == 0
 
     new_hospitalization = schemas.RegisterHospitalization(
         num_doc_doctor=document,
@@ -55,6 +56,11 @@ def test_add_hospitalization(db: Session) -> None:
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 3
 
+    new_hospitalization = schemas.RegisterHospitalization(
+        num_doc_doctor=doctor.num_document,
+        num_doc_patient=patient.num_document,
+        room=non_existent_bed,
+    )
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 4
 
@@ -63,7 +69,6 @@ def test_add_hospitalization(db: Session) -> None:
         num_doc_patient=patient.num_document,
         room=hospitalization.room,
     )
-
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 5
 
@@ -72,7 +77,6 @@ def test_add_hospitalization(db: Session) -> None:
         num_doc_patient=hospitalization.num_doc_patient,
         room=bed.room,
     )
-
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 6
 
@@ -81,7 +85,6 @@ def test_add_hospitalization(db: Session) -> None:
         num_doc_patient=patient.num_document,
         room=bed.room,
     )
-
     out = crud_hospitalization.add_hospitalization(new_hospitalization, db)
     assert out == 0
 
@@ -89,26 +92,39 @@ def test_add_hospitalization(db: Session) -> None:
 def test_discharge_hospitalization(db: Session) -> None:
     hospitalization: schemas.RegisterHospitalization = create_random_hospitalization(db)
     patient = create_random_patient(db)
+
+    # Mal formato de fecha: Fecha mayor a la actual
     discharge_info = schemas.DischargeHospitalization(
         last_day=datetime.date.today() + datetime.timedelta(days=10)
     )
-
     out = crud_hospitalization.discharge_hospitalization(
         num_doc_patient=patient.num_document, discharge_info=discharge_info, db=db
     )
     assert out == 2
 
+    # Mal formato de fecha: Fecha menor a la de ingreso
+    discharge_info = schemas.DischargeHospitalization(
+        last_day=hospitalization.entry_day - datetime.timedelta(days=10)
+    )
+    out = crud_hospitalization.discharge_hospitalization(
+        num_doc_patient=patient.num_document, discharge_info=discharge_info, db=db
+    )
+    assert out == 2
+
+    # Número de documento del paciente inexistente
     discharge_info = schemas.DischargeHospitalization()
     out = crud_hospitalization.discharge_hospitalization(
         num_doc_patient=non_existent_document, discharge_info=discharge_info, db=db
     )
     assert out == 1
 
+    # Paciente en el hospital pero no hospitalizado
     out = crud_hospitalization.discharge_hospitalization(
         num_doc_patient=patient.num_document, discharge_info=discharge_info, db=db
     )
     assert out == 1
 
+    # Paciente ahora sí dado de alta
     out = crud_hospitalization.discharge_hospitalization(
         num_doc_patient=hospitalization.num_doc_patient,
         discharge_info=discharge_info,
@@ -116,6 +132,7 @@ def test_discharge_hospitalization(db: Session) -> None:
     )
     assert out == 0
 
+    # Paciente ya dado de alta
     out = crud_hospitalization.discharge_hospitalization(
         num_doc_patient=hospitalization.num_doc_patient,
         discharge_info=discharge_info,

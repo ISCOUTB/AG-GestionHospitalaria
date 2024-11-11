@@ -27,6 +27,7 @@ def test_add_responsable(db: Session) -> None:
     assert out == 1
 
     responsable = schemas.ResponsablesInfo(num_doc_responsable=user.num_document)
+    out = crud_patient.add_responsable(user.num_document, responsable, db)
     assert out == 2
 
     out = crud_patient.add_responsable(patient_eg.num_document, responsable, db)
@@ -48,20 +49,26 @@ def test_update_patient(db: Session) -> None:
     patient1 = create_random_patient(db)
     patient2 = create_random_patient(db)
     patient = create_random_user("patient", db, 10)
-    responsable = schemas.ResponsablesInfo(num_doc_responsable=patient1.num_document)
 
+    responsable = schemas.ResponsablesInfo(num_doc_responsable=patient1.num_document)
     out = crud_patient.update_patient(patient1.num_document, responsable, db)
     assert out == 2
 
+    responsable = schemas.ResponsablesInfo(num_doc_responsable=patient2.num_document)
     out = crud_patient.update_patient(patient2.num_document, responsable, db)
     assert out == 3
 
+    responsable = schemas.ResponsablesInfo()
     out = crud_patient.update_patient(patient.num_document, responsable, db)
     assert out == 4
 
     responsable = create_random_responsable()
-    crud_patient.add_responsable(patient.num_document, responsable, db)
-    assert out == 0
+    out = crud_patient.add_responsable(patient1.num_document, responsable, db)
+    if responsable.num_doc_responsable not in (
+        patient1.num_document,
+        patient2.num_document,
+    ):
+        assert out == 0
 
 
 def test_delete_responsable(db: Session) -> None:

@@ -30,21 +30,19 @@ def get_avg_stay(db: Session) -> float:
         float: Promedio de estancia de los pacientes en el hospital.
     """
     hospitalizations: list[models.Hospitalizations] = (
-        db.query(models.Hospitalizations).
-        filter(
-            models.Hospitalizations.last_day.is_not(None)
-        )
+        db.query(models.Hospitalizations)
+        .filter(models.Hospitalizations.last_day.is_not(None))
         .all()
     )
 
     n: int = len(hospitalizations)
     if n == 0:
         return 0.0
-    
+
     days_sum: int = sum(
         [
-            (hospitalization.last_day - hospitalization.entry_day).days 
-            for hospitalization in hospitalizations 
+            (hospitalization.last_day - hospitalization.entry_day).days
+            for hospitalization in hospitalizations
         ]
     )
 
@@ -83,7 +81,9 @@ def get_avg_discharge(db: Session) -> float:
     """
     query = db.query(models.Hospitalizations.last_day)
     discharges: list[int] = []
-    for day in query.filter(models.Hospitalizations.last_day.is_not(None)).distinct().all():
+    for day in (
+        query.filter(models.Hospitalizations.last_day.is_not(None)).distinct().all()
+    ):
         discharges.append(
             query.filter(models.Hospitalizations.last_day == day[0]).count()
         )

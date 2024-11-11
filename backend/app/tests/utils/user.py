@@ -40,7 +40,7 @@ def get_non_superuser_token(client: TestClient, db: Session) -> dict[str, str]:
         rol="admin",
     )
 
-    crud_admin.create_user(new_user, db, True)
+    assert crud_admin.create_user(new_user, db, True) == 0
 
     login_data = {
         "username": new_user.num_document,
@@ -62,7 +62,7 @@ def get_doctor_token(client: TestClient, db: Session) -> dict[str, str]:
         rol="doctor",
     )
 
-    crud_admin.create_user(new_user, db)
+    assert crud_admin.create_user(new_user, db) == 0
 
     login_data = {
         "username": new_user.num_document,
@@ -75,4 +75,3 @@ def get_doctor_token(client: TestClient, db: Session) -> dict[str, str]:
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
-

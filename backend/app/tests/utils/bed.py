@@ -10,7 +10,7 @@ non_existent_bed = "NonExistentBed"
 
 
 def random_bed() -> BedBase:
-    room = f"random_bed{random.choice(range(100))}"
+    room = f"random_bed{random.choice(range(1_000_000))}"
     return BedBase(room=room)
 
 

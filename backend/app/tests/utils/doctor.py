@@ -10,16 +10,20 @@ from app.tests.utils.user import create_random_user
 
 
 def create_random_speciality() -> Speciality:
-    number = random.choice(range(100))
-    name = f"random_{number}"
-    description = f"random description {number}"
+    number = random.choices(range(0, 10), k=5)
+    number_str = "".join(str(x) for x in number)
+    name = f"random_{number_str}"
+    description = f"random description {number_str}"
 
     return Speciality(name=name, description=description)
 
 
 def create_new_speciality(db: Session) -> Speciality:
-    number = random.choices(range(1000), k=3)
-    speciality = Speciality(name=f"random_{number}")
+    number = random.choices(range(0, 10), k=5)
+    number_str = "".join(str(x) for x in number)
+    speciality = Speciality(
+        name=f"random_{number_str}", description=f"random description {number_str}"
+    )
 
     while (
         db.query(Specialities).filter(Specialities.name == speciality.name).first()
