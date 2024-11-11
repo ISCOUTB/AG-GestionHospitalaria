@@ -77,7 +77,7 @@ class CRUDBase:
             .join(models.DoctorSpecialities, isouter=True)
             .join(models.Specialities, isouter=True)
         ).where(models.UserRoles.rol == "doctor")
-    
+
         if active:
             stmt = stmt.where(models.UserRoles.is_active == True)
 
@@ -187,15 +187,15 @@ class CRUDBase:
             .filter(models.UsersInfo.num_document == num_document)
             .first()
         )
-    
+
     def valid_email(self, email: str, db: Session) -> bool:
         """
         Valida si el email es válido de utilizar en el sistema, incluyendo la existencia de un usuario con el mismo email
-        
+
         Args:
             email (str): Correo electrónico del usuario a validar.
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
-        
+
         Returns:
             bool: Retorna `True` si el email es válido, en caso contrario retorna `False`.
         """
@@ -210,15 +210,15 @@ class CRUDBase:
             return False
 
         return True
-    
+
     def valid_phone(self, phone: str, db: Session) -> bool:
         """
         Valida si el número de teléfono es válido de utilizar en el sistema
-        
+
         Args:
             phone (str): Número de teléfono del usuario a validar.
             db (sqlalchemy.orm.Session): Sesión de la base de datos para hacer las consultas a la base de datos en Postgresql.
-        
+
         Returns:
             bool: Retorna `True` si el número de teléfono es válido, en caso contrario retorna `False`.
         """

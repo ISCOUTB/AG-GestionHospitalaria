@@ -50,7 +50,7 @@ async def add_consultation(
     if out == 2:
         await log_request(request, status.HTTP_404_NOT_FOUND, *log_data)
         raise exceptions.doctor_not_found
-    
+
     if out == 3:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.patient_doctor_same_document

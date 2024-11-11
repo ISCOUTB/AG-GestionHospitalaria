@@ -31,7 +31,9 @@ def test_get_doctor(
 def test_get_doctor_doctor_not_found(
     client: TestClient, superuser_token: dict[str, str]
 ) -> None:
-    response = client.get(f"{endpoint}/{non_existent_document}", headers=superuser_token)
+    response = client.get(
+        f"{endpoint}/{non_existent_document}", headers=superuser_token
+    )
 
     assert response.status_code == 404
 
@@ -181,7 +183,7 @@ def test_delete_speciality_speciality_doctor_not_found(
     tmp_doctor = create_doctor_info(db)
     while tmp_doctor.num_document == doctor.num_document:
         tmp_doctor = create_doctor_info(db)
-    
+
     speciality = tmp_doctor.specialities[0]
 
     response = client.delete(

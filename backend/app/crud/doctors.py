@@ -164,9 +164,11 @@ class CRUDDoctors(CRUDBase):
                 )
             )
 
-        speciality: models.Specialities = db.query(
-            models.Specialities
-        ).filter(models.Specialities.name == speciality.name).first()
+        speciality: models.Specialities = (
+            db.query(models.Specialities)
+            .filter(models.Specialities.name == speciality.name)
+            .first()
+        )
 
         try:
             db.add(
@@ -195,19 +197,20 @@ class CRUDDoctors(CRUDBase):
                 - 0: Respuesta existosa.
                 - 1: Especialidad no existe.
         """
-        speciality: models.Specialities | None = db.query(models.Specialities) \
-            .filter(models.Specialities.name == updated_speciality.name) \
+        speciality: models.Specialities | None = (
+            db.query(models.Specialities)
+            .filter(models.Specialities.name == updated_speciality.name)
             .first()
+        )
 
         if speciality is None:
             return 1
-        
+
         speciality.description = updated_speciality.description
         db.commit()
         db.refresh(speciality)
 
         return 0
-
 
     def delete_speciality(
         self, num_document: str, speciality_name: schemas.SpecialityBase, db: Session

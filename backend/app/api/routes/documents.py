@@ -170,7 +170,7 @@ async def update_history(
     if os.path.splitext(history.filename)[1] not in settings.ALLOWED_EXTENSIONS_HISTORY:
         print(1, history.filename)
         raise exceptions.file_extention_not_allowed
-    
+
     out = await crud_document.update_history(num_document, history)
     process_time = perf_counter() - start_time
 
@@ -201,8 +201,11 @@ async def add_file(
     Agrega un documento médico (ya sea orden o resultados de un examen) a un determinado paciente
     """
     start_time = perf_counter()
-    allowed_extensions = settings.ALLOWED_EXTENSIONS_ORDERS if kind == "orders" \
+    allowed_extensions = (
+        settings.ALLOWED_EXTENSIONS_ORDERS
+        if kind == "orders"
         else settings.ALLOWED_EXTENSIONS_RESULTS
+    )
 
     if os.path.splitext(file.filename)[1] not in allowed_extensions:
         raise exceptions.file_extention_not_allowed

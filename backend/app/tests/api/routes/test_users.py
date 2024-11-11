@@ -203,9 +203,7 @@ def test_update_user_invalid_email_bad(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:
     user = create_random_user("admin", db, 10)
-    data = schemas.UserUpdateAll(
-        email="bad_email"
-    )
+    data = schemas.UserUpdateAll(email="bad_email")
 
     response = client.put(
         f"{endpoint}/{user.num_document}/{user.rol}",
@@ -221,9 +219,7 @@ def test_update_user_invalid_email_repeated(
 ) -> None:
     user1 = create_random_user("admin", db, 10)
     email = f"{user1.num_document}@test.com"
-    data = schemas.UserUpdateAll(
-        email=email
-    )
+    data = schemas.UserUpdateAll(email=email)
 
     response = client.put(
         f"{endpoint}/{user1.num_document}/{user1.rol}",
@@ -257,10 +253,7 @@ def test_delete_user(
     content = response.json()
     assert content["detail"] == "Usuario eliminado"
 
-    user_search = schemas.UserSearch(
-        num_document=user.num_document,
-        rol=user.rol
-    )
+    user_search = schemas.UserSearch(num_document=user.num_document, rol=user.rol)
     user_in = crud_admin.get_user_rol(user_search, db)
     assert user_in is None
 
@@ -298,7 +291,9 @@ def test_delete_user_patient_in_bed(
     assert response.status_code == 409
 
 
-def test_get_user(client: TestClient, superuser_token: dict[str, str], db: Session) -> None:
+def test_get_user(
+    client: TestClient, superuser_token: dict[str, str], db: Session
+) -> None:
     user = create_random_user("admin", db, 10)
 
     response = client.get(
@@ -314,6 +309,8 @@ def test_get_user(client: TestClient, superuser_token: dict[str, str], db: Sessi
 def test_get_user_user_not_found(
     client: TestClient, superuser_token: dict[str, str]
 ) -> None:
-    response = client.get(f"{endpoint}/{non_existent_document}", headers=superuser_token)
+    response = client.get(
+        f"{endpoint}/{non_existent_document}", headers=superuser_token
+    )
 
     assert response.status_code == 404

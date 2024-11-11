@@ -17,7 +17,9 @@ router = APIRouter()
 
 
 @router.get("/stats", summary="Get Statistics About Hospital")
-async def get_stats(request: Request, current_user: Admin, db: SessionDep) -> schemas.Stats:
+async def get_stats(
+    request: Request, current_user: Admin, db: SessionDep
+) -> schemas.Stats:
     """
     Obtiene los indicadores estadísiticos del hospital.
 
@@ -50,7 +52,7 @@ async def get_api_historial(
     url: str | None = None,
 ) -> list[schemas.ApiHistorial]:
     """
-    Obtiene el historial de la API guardadas en la base de datos en mongodb. 
+    Obtiene el historial de la API guardadas en la base de datos en mongodb.
     """
     start_time = perf_counter()
 
@@ -64,7 +66,7 @@ async def get_api_historial(
     if end_date is not None:
         date_filter["$lte"] = datetime.combine(end_date, datetime.max.time())
 
-    query = {"timestamp": date_filter} if date_filter else {}    
+    query = {"timestamp": date_filter} if date_filter else {}
 
     if method is not None:
         query["method"] = method.upper()

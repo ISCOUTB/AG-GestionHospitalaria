@@ -44,7 +44,7 @@ class ApiHistorial(BaseModel):
 class Stats(BaseModel):
     """
     Clase para obtener los indicadores estadísticos del hospital.
-    
+
     Attributes:
         percent_occupation (float): Porcentaje de ocupación hospitalaria.
         avg_stay (float): Promedio de estancia de los pacientes en el hospital.

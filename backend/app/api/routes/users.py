@@ -156,11 +156,11 @@ async def update_user(
     if out == 3:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.num_document_used
-    
+
     if out == 4:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.invalid_email
-    
+
     if out == 5:
         await log_request(request, status.HTTP_409_CONFLICT, *log_data)
         raise exceptions.existent_phone

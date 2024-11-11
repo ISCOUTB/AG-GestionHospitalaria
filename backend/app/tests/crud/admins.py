@@ -186,8 +186,7 @@ def test_delete_user(db: Session) -> None:
 
     hospitalization = create_random_hospitalization(db)
     user_search = schemas.UserSearch(
-        num_document=hospitalization.num_doc_patient,
-        rol="patient"
+        num_document=hospitalization.num_doc_patient, rol="patient"
     )
 
     out = crud_admin.delete_user(user_search, db)

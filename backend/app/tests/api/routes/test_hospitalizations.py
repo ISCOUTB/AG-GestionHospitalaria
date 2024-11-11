@@ -33,9 +33,7 @@ def test_add_hospitalization(
     json = hospitalization.model_dump()
     json["entry_day"] = hospitalization.entry_day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 201
 
@@ -57,9 +55,7 @@ def test_add_hospitalization_patient_not_found(
     json = hospitalization.model_dump()
     json["entry_day"] = hospitalization.entry_day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 404
 
@@ -78,9 +74,7 @@ def test_add_hospitalization_doctor_not_found(
     json = hospitalization.model_dump()
     json["entry_day"] = hospitalization.entry_day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 404
 
@@ -99,9 +93,7 @@ def test_add_hospitalization_bed_not_found(
     json = hospitalization.model_dump()
     json["entry_day"] = hospitalization.entry_day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 404
 
@@ -129,9 +121,7 @@ def test_add_hospitalization_patient_doctor_same_document(
     json = hospitalization.model_dump()
     json["entry_day"] = hospitalization.entry_day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 409
 
@@ -151,9 +141,7 @@ def test_add_hospitalization_bed_already_used(
     json = hospitalization.model_dump()
     json["entry_day"] = hospitalization.entry_day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 409
 
@@ -165,9 +153,7 @@ def test_add_hospitalization_patient_already_hospitalized(
     json = hospitalization.model_dump()
     json["entry_day"] = hospitalization.entry_day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 409
 

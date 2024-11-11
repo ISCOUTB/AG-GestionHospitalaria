@@ -75,4 +75,3 @@ def get_doctor_token(client: TestClient, db: Session) -> dict[str, str]:
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
-

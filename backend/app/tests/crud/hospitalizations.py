@@ -92,7 +92,7 @@ def test_add_hospitalization(db: Session) -> None:
 def test_discharge_hospitalization(db: Session) -> None:
     hospitalization: schemas.RegisterHospitalization = create_random_hospitalization(db)
     patient = create_random_patient(db)
-    
+
     # Mal formato de fecha: Fecha mayor a la actual
     discharge_info = schemas.DischargeHospitalization(
         last_day=datetime.date.today() + datetime.timedelta(days=10)

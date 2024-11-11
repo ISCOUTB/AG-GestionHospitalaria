@@ -42,7 +42,7 @@ def test_get_patient_patient_not_found(
 
 
 def test_add_responsable(
-        client: TestClient, nonpatient_token: dict[str, str], db: Session
+    client: TestClient, nonpatient_token: dict[str, str], db: Session
 ) -> None:
     patient = create_random_user("patient", db, 10)
 

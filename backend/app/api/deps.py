@@ -114,7 +114,7 @@ async def log_request(
         for key, value in body.items():
             if isinstance(value, date):
                 body[key] = value.strftime("%Y-%m-%d")
-        
+
     log_data = {
         "username": username,
         "rol": rol,

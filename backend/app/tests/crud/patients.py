@@ -64,7 +64,10 @@ def test_update_patient(db: Session) -> None:
 
     responsable = create_random_responsable()
     out = crud_patient.add_responsable(patient1.num_document, responsable, db)
-    if responsable.num_doc_responsable not in (patient1.num_document, patient2.num_document):
+    if responsable.num_doc_responsable not in (
+        patient1.num_document,
+        patient2.num_document,
+    ):
         assert out == 0
 
 

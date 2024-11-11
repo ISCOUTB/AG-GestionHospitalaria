@@ -142,12 +142,16 @@ class CRUDUsers(CRUDBase):
             user_info.address = updated_info.address
 
         if updated_info.phone is not None:
-            if updated_info.phone != user_info.phone and not self.valid_phone(updated_info.phone, db):
+            if updated_info.phone != user_info.phone and not self.valid_phone(
+                updated_info.phone, db
+            ):
                 return 3
             user_info.phone = updated_info.phone
 
         if updated_info.email is not None:
-            if updated_info.email != user_info.email and not self.valid_email(updated_info.email, db):
+            if updated_info.email != user_info.email and not self.valid_email(
+                updated_info.email, db
+            ):
                 return 2
             user_info.email = updated_info.email
 

@@ -11,7 +11,7 @@ from app.tests.utils.user import create_random_user
 
 def create_random_speciality() -> Speciality:
     number = random.choices(range(0, 10), k=5)
-    number_str = ''.join(str(x) for x in number)
+    number_str = "".join(str(x) for x in number)
     name = f"random_{number_str}"
     description = f"random description {number_str}"
 
@@ -20,10 +20,9 @@ def create_random_speciality() -> Speciality:
 
 def create_new_speciality(db: Session) -> Speciality:
     number = random.choices(range(0, 10), k=5)
-    number_str = ''.join(str(x) for x in number)
+    number_str = "".join(str(x) for x in number)
     speciality = Speciality(
-        name=f"random_{number_str}",
-        description=f"random description {number_str}"
+        name=f"random_{number_str}", description=f"random description {number_str}"
     )
 
     while (

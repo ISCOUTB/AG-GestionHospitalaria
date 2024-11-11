@@ -27,9 +27,7 @@ def test_add_consultation(
     json = new_consultation.model_dump()
     json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 201
 
@@ -50,9 +48,7 @@ def test_add_consultation_patient_not_found(
     json = new_consultation.model_dump()
     json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 404
 
@@ -70,9 +66,7 @@ def test_add_consultation_doctor_not_found(
     json = new_consultation.model_dump()
     json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 404
 
@@ -87,7 +81,7 @@ def test_add_consultation_patient_doctor_same_document(
         password=random_password(10),
     )
     crud_admin.create_user(new_user, db)
-    
+
     new_user.rol = "doctor"
     crud_admin.create_user(new_user, db)
 
@@ -99,8 +93,6 @@ def test_add_consultation_patient_doctor_same_document(
     json = new_consultation.model_dump()
     json["day"] = new_consultation.day.strftime("%Y-%m-%d")
 
-    response = client.post(
-        f"{endpoint}/", headers=doctor_token, json=json
-    )
+    response = client.post(f"{endpoint}/", headers=doctor_token, json=json)
 
     assert response.status_code == 409
