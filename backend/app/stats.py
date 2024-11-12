@@ -66,7 +66,10 @@ def get_avg_admission(db: Session) -> float:
             query.filter(models.Hospitalizations.entry_day == day[0]).count()
         )
 
-    return sum(admissions) / len(admissions)
+    try:
+        return sum(admissions) / len(admissions)
+    except ZeroDivisionError:
+        return 0.0
 
 
 def get_avg_discharge(db: Session) -> float:
@@ -88,4 +91,7 @@ def get_avg_discharge(db: Session) -> float:
             query.filter(models.Hospitalizations.last_day == day[0]).count()
         )
 
-    return sum(discharges) / len(discharges)
+    try:
+        return sum(discharges) / len(discharges)
+    except ZeroDivisionError:
+        return 0.0
