@@ -1,0 +1,236 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: white;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #eeeeee;
+}
+
+.block{
+    display: block;
+    background: #94C7BA;
+    height: 2.5vh;
+    margin-top: .5em;
+    margin-bottom: .5em;
+}
+
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.user-info .user-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 10px;
+    background-color: #ccc;
+}
+
+
+
+.logout {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.logout .logout-icon {
+    width: 20px;
+    height: 20px;
+}
+
+.container {
+    display: flex;
+    height: calc(90vh - 60px);
+    position: relative;
+}
+.container h1{
+    display: flex;
+    position: relative;
+    padding: 10px;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 30px;
+    box-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+    height: 1.5em;
+    align-items: center;
+    justify-content: center;
+}
+.sidebar {
+    width: 20%;
+    background: rgba(239, 239, 239, 1);
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    border-radius: 30px;
+    height: 95%;
+}
+
+.sidebar button {
+    padding: 10px;
+    background-color: #e0e0e0;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    border-radius: 30px;
+    box-shadow: 0 4px 8px 3px rgba(0, 0, 0, 0.15);
+}
+
+.sidebar button:hover {
+    background-color: #cccccc;
+}
+
+.main-content {
+    width: 80%;
+    padding: 20px;
+    background-color: #f8f8f8;
+    border-radius: 30px;
+    height: 95%;
+}
+
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tabs button {
+    padding: 10px;
+    background-color: #e0e0e0;
+    border: none;
+    cursor: pointer;
+}
+
+.tabs button:hover {
+    background-color: #cccccc;
+}
+
+.content-box {
+    background-color: #eeeeee;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 30px;
+    height: 100%;
+    padding: 3em;
+}
+
+.content-box input {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 200px;
+}
+
+.content-box button {
+    padding: 8px 15px;
+    background-color: #999;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.data-display {
+    margin-top: 20px;
+    background-color: #f2f2f2;
+    height: 200px;
+    border-radius: 10px;
+}
+
+
+.boton-archivo {
+    position: relative;
+    top: -3em;
+    display: inline-block;
+    padding: 10px 20px;
+    background: #94C7BA;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#nombre-archivo {
+    position: relative;
+    top: -3em;
+    margin-top: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.act_history{
+    background-color: #eeeeee;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    border-radius: 30px;
+    height: 100%;
+    padding: 3em;
+}
+
+.act_history h1{
+    position: relative;
+    top:-2.5em;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.inputBox{
+
+    display: flex;
+    flex-direction: column;
+    position: relative;
+
+    justify-content: center;
+    outline: none;
+    align-items: center;
+
+    margin: 5vh 5vw;
+    top: -3em;
+    height: 8vh;
+    width: 24vw;
+
+}
+.parrafo{
+    display: flex;
+    position: relative;
+    top:-4.3em;
+}
+
+.act_history .act{
+    position: relative;
+    display: inline-block;
+    padding: 10px 20px;
+    background: #94C7BA;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.act_history .get{
+    display: inline-flex;
+
+    padding: 10px 20px;
+    background: #94C7BA;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+}

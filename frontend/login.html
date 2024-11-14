@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Gestión Hospitalaria</title>
+    <link rel="stylesheet" href="styles/login.css">
+    <script defer src="/scripts/login.js"></script>
+
+</head>
+<body>
+    <header class="head">
+        <a class="title">Gestión Hospitalaria</a>
+    </header>
+    <div class="block"></div>
+    <div class="contenedor">
+    <div class="form">
+        <form action="">
+            <h1>INICIAR SESIÓN</h1>
+            <div class="inputBox" id="user">
+                <input type="text" placeholder="Número de identificación" required>
+            </div>
+            <div class="inputBox" id="password">
+                <input type="password" placeholder="Contraseña" required>
+            </div>
+            <div class="selectBox">
+                <select id="role" required>
+                    <option value="" disabled selected>Rol</option>
+                    <option value="medic">Médico</option>
+                    <option value="admin">Administrador</option>
+                    <option value="user">Paciente</option>
+                </select>
+            </div>
+            <button type="submit" class="button">INICIAR</button>
+        </form>
+    </div>
+    <div class="carrusel">
+        <div class = grande>
+            <img src="/src/assets/imagen%201.jpeg" alt="imagen 1" class="img">
+            <img src="/src/assets/imagen%202.jpeg" alt="imagen 2" class="img">
+        </div>
+
+        <ul class="puntos">
+            <li class="punto"></li>
+            <li class="punto"></li>
+        </ul>
+    </div>
+    </div>
+
+</body>
+</html>

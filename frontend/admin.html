@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Hospitalaria</title>
+    <link rel="stylesheet" href="/styles/profile.css">
+    <script defer src="/scripts/profile.js"></script>
+</head>
+<body>
+<!-- Encabezado -->
+<header>
+    <div class="user-info">
+        <img src="/src/assets/medico.png" alt="Usuario" class="user-icon">
+        <span>BIENVENIDO</span>
+        <small>Cambiar de usuario</small>
+    </div>
+    <div class="logout">
+        <span>Cerrar sesión</span>
+        <img src="/src/assets/cerrar-sesion.png" alt="Cerrar sesión" class="logout-icon">
+    </div>
+</header>
+
+<div class="block"></div>
+
+<!-- Contenedor principal -->
+<div class="container">
+    <!-- Menú lateral -->
+    <aside class="sidebar">
+        <h1>MENÚ</h1>
+        <button onclick="cambiarContenido('act_history')">Actualizar historia clínica</button>
+        <button onclick="cambiarContenido('get_history')">Obtener historia clínica</button>
+        <button onclick="cambiarContenido('contenido3')">Administrar usuarios</button>
+        <button onclick="cambiarContenido('contenido4')">Estadísticas clínicas</button>
+        <button onclick="cambiarContenido('contenido5')">Crear nuevo usuario</button>
+    </aside>
+
+    <!-- Sección de contenido principal -->
+    <main class="main-content">
+        <div class="content-box" id="contenedor">
+
+            <div class="data-display"></div>
+        </div>
+    </main>
+</div>
+</body>
+</html>
