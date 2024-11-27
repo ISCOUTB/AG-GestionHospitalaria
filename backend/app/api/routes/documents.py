@@ -33,7 +33,7 @@ async def get_all_documents(
     return documents
 
 
-@router.get("/all/")
+@router.get("/all")
 async def get_all(request: Request, current_user: NonPatient) -> list[schemas.AllFiles]:
     """
     Obtiene todos los documentos de todos los pacientes en un archivo .zip
@@ -70,7 +70,7 @@ async def download_history(
     return file
 
 
-@router.get("/histories/", summary="Get Clinical Histories")
+@router.get("/histories", summary="Get Clinical Histories")
 async def get_histories(request: Request, current_user: NonPatient) -> list[str]:
     """
     Obtiene todas las historias clínicas de todos los pacientes
