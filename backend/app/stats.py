@@ -16,7 +16,7 @@ def get_percent_occupation(db: Session) -> float:
     n_beds: int = db.query(models.Beds).count()
     n_occupied: int = db.query(models.BedsUsed).count()
 
-    return n_occupied / n_beds
+    return n_occupied / n_beds if n_beds else 0
 
 
 def get_avg_stay(db: Session) -> float:
