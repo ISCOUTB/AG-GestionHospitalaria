@@ -14,6 +14,37 @@ from app.crud import crud_patient
 endpoint = f"{settings.API_V1_STR}/patients"
 
 
+def test_get_documents(
+    client: TestClient, patient_token: dict[str, str], db: Session
+) -> None:
+    response = client.get(
+        f"{endpoint}/documents", headers=patient_token
+    )
+
+    assert response.status_code == 200
+
+    content = response.json()
+
+    assert "num_document" in content
+    assert "content" in content
+    assert "orders" in content
+    assert "results" in content
+
+
+def test_get_clients(
+    client: TestClient, nonpatient_token: dict[str, str]
+) -> None:
+    response= client.get(
+        f"{endpoint}/", headers=nonpatient_token
+    )
+
+    assert response.status_code == 200
+
+    content= response.json()
+
+    assert isinstance(content, list)
+
+
 def test_get_patient(
     client: TestClient, nonpatient_token: dict[str, str], db: Session
 ) -> None:

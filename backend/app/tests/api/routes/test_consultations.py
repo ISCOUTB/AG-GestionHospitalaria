@@ -13,6 +13,27 @@ from app import schemas
 endpoint = f"{settings.API_V1_STR}/consultations"
 
 
+def test_get_consultation(client: TestClient, superuser_token: dict[str, str]) -> None:
+    response = client.get(
+        f"{endpoint}/", headers=superuser_token
+    )
+
+    assert response.status_code == 200
+
+    content = response.json()
+    assert isinstance(content, list)
+
+    if len(content) == 0:
+        return None
+
+    consultation_example = content[0]
+
+    assert "num_doc_patient" in consultation_example
+    assert "num_doc_doctor" in consultation_example
+    assert "area" in consultation_example
+    assert "day" in consultation_example
+
+
 def test_add_consultation(
     client: TestClient, doctor_token: dict[str, str], db: Session
 ) -> None:

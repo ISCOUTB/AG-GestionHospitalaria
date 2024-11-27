@@ -1,3 +1,5 @@
+import os
+
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
@@ -15,6 +17,36 @@ from app import schemas
 from app.crud import crud_admin
 
 endpoint = f"{settings.API_V1_STR}/users"
+
+
+def test_create_patient_files(
+    client: TestClient, non_superuser_token: dict[str, str], db: Session    
+) -> None:
+    patient = schemas.UserCreate(
+        num_document=random_document(), password=random_password(10), rol="patient"
+    )
+
+    response = client.post(
+        f"{endpoint}/", headers=non_superuser_token, json=patient.model_dump()
+    )
+
+    assert response.status_code == 201
+
+    assert os.path.exists(
+        os.path.join(settings.PATIENT_DOCS_PATH, patient.num_document)
+    )
+    assert os.path.exists(
+        os.path.join(settings.PATIENT_DOCS_PATH, patient.num_document, settings.HISTORY_FILENAME)
+    )
+    assert os.path.exists(
+        os.path.join(settings.PATIENT_DOCS_PATH, patient.num_document, "histories")
+    )
+    assert os.path.exists(
+        os.path.join(settings.PATIENT_DOCS_PATH, patient.num_document, "orders")
+    )
+    assert os.path.exists(
+        os.path.join(settings.PATIENT_DOCS_PATH, patient.num_document, "results")
+    )
 
 
 def test_create_user(
@@ -150,6 +182,39 @@ def test_update_user(
 
     assert verify_password(new_password, str(admin_rol.password))
     assert admin_info.num_document == new_document
+
+
+def test_update_patient_document(
+    client: TestClient, superuser_token: dict[str, str], db: Session
+) -> None:
+    patient = schemas.UserCreate(
+        num_document=random_document(), password=random_password(10), rol="patient"
+    )
+
+    response = client.post(
+        f"{endpoint}/", headers=superuser_token, json=patient.model_dump()
+    )
+
+    assert response.status_code == 201
+
+    new_document = f"{patient.num_document}new"
+    updated_info = schemas.UserUpdateAll(
+        num_document=new_document
+    )
+
+    response = client.put(
+        f"{endpoint}/{patient.num_document}/{patient.rol}",
+        headers=superuser_token,
+        json=updated_info.model_dump(),
+    )
+
+    assert response.status_code == 200
+    assert not os.path.exists(
+        os.path.join(settings.PATIENT_DOCS_PATH, str(patient.num_document))
+    )
+    assert os.path.exists(
+        os.path.join(settings.PATIENT_DOCS_PATH, new_document)
+    )
 
 
 def test_update_user_non_superuser(

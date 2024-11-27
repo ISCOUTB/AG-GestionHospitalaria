@@ -15,6 +15,18 @@ from app.crud import crud_doctor
 endpoint = f"{settings.API_V1_STR}/doctors"
 
 
+def test_get_doctors(
+    client: TestClient, superuser_token: dict[str, str]
+) -> None:
+    response = client.get(f"{endpoint}/", headers=superuser_token)
+
+    assert response.status_code == 200
+
+    content = response.json()
+    
+    assert isinstance(content, list)
+
+
 def test_get_doctor(
     client: TestClient, superuser_token: dict[str, str], db: Session
 ) -> None:

@@ -18,6 +18,27 @@ from app.crud import crud_admin
 endpoint = f"{settings.API_V1_STR}/hospitalizations"
 
 
+def test_get_hospitalization(client: TestClient, superuser_token: dict[str, str]) -> None:
+    response = client.get(
+        f"{endpoint}/", headers=superuser_token
+    )
+
+    assert response.status_code == 200
+
+    content = response.json()
+    assert isinstance(content, list)
+
+    if len(content) == 0:
+        return None
+
+    hospitalization_example = content[0]
+
+    assert "num_doc_patient" in hospitalization_example
+    assert "num_doc_doctor" in hospitalization_example
+    assert "entry_day" in hospitalization_example
+    assert "last_day" in hospitalization_example
+
+
 def test_add_hospitalization(
     client: TestClient, doctor_token: dict[str, str], db: Session
 ) -> None:
