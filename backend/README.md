@@ -136,3 +136,5 @@ Para ello, esto ocasionaría que se generen los archivos html y xml dentro del c
 backend$docker cp ag-gestionhospitalaria-backend-1:./app/htmlcov .
 backend$docker cp ag-gestionhospitalaria-backend-1:./app/coverage.xml .
 ```
+
+Luego, en los archivos copiados se puede abrir desde el navegador al archivo `htmlcov/index.html`, y ahí se podrá ver un recopilatorio del coverage en cada uno de los archivos.
