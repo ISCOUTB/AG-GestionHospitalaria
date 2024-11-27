@@ -10,6 +10,7 @@ from app.main import app
 
 from app.tests.utils.utils import get_superuser_token
 from app.tests.utils.user import get_doctor_token, get_non_superuser_token
+from app.tests.utils.patient import get_patient_token
 
 
 @pytest.fixture(scope="session", autouse=True)
@@ -43,3 +44,8 @@ def nonpatient_token(client: TestClient) -> dict[str, str]:
 @pytest.fixture(scope="module")
 def doctor_token(client: TestClient, db: Session) -> dict[str, str]:
     return get_doctor_token(client, db)
+
+
+@pytest.fixture(scope="module")
+def patient_token(client: TestClient, db: Session) -> dict[str, str]:
+    return get_patient_token(client, db)
