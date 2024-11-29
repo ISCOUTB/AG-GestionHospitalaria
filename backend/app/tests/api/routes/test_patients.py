@@ -15,7 +15,7 @@ endpoint = f"{settings.API_V1_STR}/patients"
 
 
 def test_get_documents(
-    client: TestClient, patient_token: dict[str, str], db: Session
+    client: TestClient, patient_token: dict[str, str]
 ) -> None:
     response = client.get(
         f"{endpoint}/documents", headers=patient_token
