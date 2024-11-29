@@ -68,7 +68,7 @@ def test_update_basic_info(db: Session) -> None:
     rol = "admin"
     num_document = create_random_user(rol, db, 10).num_document
     new_address = "new_address"
-    new_password = random_password()
+    new_password = random_password(10)
 
     user_search = schemas.UserSearch(num_document=num_document, rol=rol)
     updated_info = schemas.UserUpdate(password=new_password, address=new_address)
@@ -109,10 +109,10 @@ def test_update_user(db: Session) -> None:
     out = crud_admin.update_user(user_search, updated_info, db, True)
     assert out == 3
 
-    updated_info = schemas.UserUpdateAll(
+    updated_info1 = schemas.UserUpdateAll(
         password=new_password, num_document=new_document
     )
-    out = crud_admin.update_user(user_search, updated_info, db, True)
+    out = crud_admin.update_user(user_search, updated_info1, db, True)
     assert out == 0
 
     user_info_in = crud_admin.get_user_info(num_document, db)
