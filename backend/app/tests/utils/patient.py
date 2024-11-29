@@ -1,7 +1,7 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
-from app.crud import crud_patient, crud_document
+from app.crud import crud_patient, crud_document, crud_admin
 
 from app.schemas import ResponsablesInfo, PatientAll, UserCreate
 from app.tests.utils.user import create_random_user
@@ -27,7 +27,13 @@ def create_random_patient(db: Session, k: int = 10) -> PatientAll:
 
 
 def get_patient_token(client: TestClient, db: Session) -> dict[str, str]:
-    new_user = create_random_patient(db)
+    new_user = UserCreate(
+        num_document=random_document(),
+        password=random_password(10),
+        rol="doctor",
+    )
+
+    assert crud_admin.create_user(new_user, db) == 0
 
     login_data = {
         "username": new_user.num_document,
